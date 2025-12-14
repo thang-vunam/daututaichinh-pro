@@ -4,245 +4,182 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Đầu tư và Tài chính chuyên sâu | daututaichinh.pro</title>
-  <meta name="description" content="Website trong hệ sinh thái kênh YouTube Đầu tư và Tài chính chuyên sâu – chia sẻ kiến thức đầu tư, chứng khoán, tài chính cá nhân một cách rõ ràng, logic và dễ hiểu.">
+  <meta name="description" content="Website chính thức của kênh Đầu tư & Tài chính chuyên sâu – phân tích thị trường, kiến thức đầu tư và tài chính cá nhân cho nhà đầu tư Việt Nam.">
   <link rel="stylesheet" href="style.css" />
+
+  <!-- FIX: Anchor offset + hover link -->
+  <style>
+    /* FIX mất chữ khi click menu */
+    section {
+      scroll-margin-top: 96px;
+    }
+
+    /* Hover cho link trong Liên hệ */
+    #contact a {
+      color: #8ab4ff;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    #contact a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+  </style>
 </head>
+
 <body>
-  <header class="top-bar">
-    <div class="container nav">
-
-      <!-- Updated LOGO Section -->
-      <div class="logo">
-        <img src="logo.png" alt="Logo" class="logo-img">
-        <div class="logo-text">
-          <span class="logo-title">Đầu tư & Tài chính chuyên sâu</span>
-          <span class="logo-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
-        </div>
+<header class="top-bar">
+  <div class="container nav">
+    <div class="logo">
+      <img src="logo.png" alt="Logo" class="logo-img">
+      <div class="logo-text">
+        <span class="logo-title">Đầu tư & Tài chính chuyên sâu</span>
+        <span class="logo-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
       </div>
-
-      <nav class="nav-links">
-        <a href="#hero">Trang chủ</a>
-        <a href="#thi-truong">Thị trường</a>
-        <a href="#blog">Bài viết</a>
-        <a href="#tai-lieu">Tài liệu</a>
-        <a href="#contact">Liên hệ</a>
-      </nav>
-
     </div>
-  </header>
 
-  <main>
-    <!-- HERO: đẩy traffic về YouTube -->
-    <section id="hero" class="hero">
-      <div class="container hero-grid">
-        <div class="hero-text">
-          <p class="tagline">Kênh YouTube: Đầu tư &amp; Tài chính chuyên sâu</p>
-          <h1>Hiểu sâu về tài chính để đầu tư tự tin và bền vững</h1>
-          <p class="hero-desc">
-            Website chính thức của kênh Đầu tư &amp; Tài chính chuyên sâu — nơi tổng hợp video phân tích thị trường, kiến thức đầu tư, tài chính cá nhân và các bài viết chuyên sâu được cập nhật liên tục. Nội dung được hệ thống hóa giúp nhà đầu tư Việt Nam hiểu đúng bản chất tài chính, nâng cao tư duy, quản lý rủi ro và xây dựng chiến lược đầu tư thông minh – bền vững.
-          </p>
-          <div class="hero-actions">
-            <a class="btn primary" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
-              Xem kênh YouTube
-            </a>
-            <a class="btn ghost" href="#videos">
-              Xem video nổi bật
-            </a>
-          </div>
-          <p class="hero-note">
-            🎯 Mục tiêu: Giúp nhà đầu tư cá nhân hiểu bản chất – không chạy theo tin đồn.
-          </p>
-        </div>
+    <nav class="nav-links">
+      <a href="#hero">Trang chủ</a>
+      <a href="#thi-truong">Thị trường</a>
+      <a href="#blog">Bài viết</a>
+      <a href="#tai-lieu">Tài liệu</a>
+      <a href="#contact">Liên hệ</a>
+    </nav>
+  </div>
+</header>
 
-        <div class="hero-card">
-          <h2>Video nổi bật</h2>
-          <div class="video-wrapper">
-            <iframe 
-              src="https://www.youtube.com/embed/8l0zjB_xTqk"
-              title="Video từ kênh Đầu tư &amp; Tài chính chuyên sâu"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen>
-            </iframe>
-          </div>
-          <a class="link-inline" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
-            Xem thêm video trên YouTube →
+<main>
+  <!-- HERO -->
+  <section id="hero" class="hero">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <p class="tagline">Kênh YouTube: Đầu tư &amp; Tài chính chuyên sâu</p>
+        <h1>Hiểu sâu về tài chính để đầu tư tự tin và bền vững</h1>
+        <p class="hero-desc">
+          Website chính thức của kênh Đầu tư &amp; Tài chính chuyên sâu — nơi tổng hợp video phân tích thị trường,
+          kiến thức đầu tư, tài chính cá nhân và các bài viết chuyên sâu cho nhà đầu tư Việt Nam.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
+            Xem kênh YouTube
+          </a>
+          <a class="btn ghost" href="#videos">
+            Xem video nổi bật
           </a>
         </div>
-      </div>
-    </section>
-
-    <!-- VIDEO GRID: đẩy người xem sang các playlist/video quan trọng -->
-    <section id="videos" class="section">
-      <div class="container">
-        <h2>Video &amp; playlist nên xem đầu tiên</h2>
-        <p class="section-desc">
-          Chọn một vài chủ đề “xương sống” của kênh để dẫn người mới vào đúng đường ray:
-          tư duy đầu tư, quản lý rủi ro, cách đọc báo cáo, ETF, v.v.
+        <p class="hero-note">
+          🎯 Mục tiêu: Hiểu đúng bản chất – quản lý rủi ro – đầu tư bền vững.
         </p>
-        <div class="grid cards-3">
-          <article class="card">
-            <h3>Series: Tư duy đầu tư nền tảng</h3>
-            <p>Giúp người mới hiểu bản chất thị trường, tránh những sai lầm tâm lý phổ biến.</p>
-            <a class="link-inline" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
-              Xem playlist trên YouTube →
-            </a>
-          </article>
-          <article class="card">
-            <h3>Series: Phân tích cổ phiếu &amp; ngành</h3>
-            <p>Góc nhìn chuyên sâu, có dữ liệu, giúp bạn hiểu doanh nghiệp mình đang mua.</p>
-            <a class="link-inline" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
-              Xem playlist trên YouTube →
-            </a>
-          </article>
-          <article class="card">
-            <h3>Series: Tài chính cá nhân &amp; quản lý vốn</h3>
-            <p>Xây nền tài chính vững trước khi “lao vào” các sản phẩm rủi ro hơn.</p>
-            <a class="link-inline" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
-              Xem playlist trên YouTube →
-            </a>
-          </article>
+      </div>
+
+      <div class="hero-card">
+        <h2>Video nổi bật</h2>
+        <div class="video-wrapper">
+          <iframe 
+            src="https://www.youtube.com/embed/8l0zjB_xTqk"
+            title="Video từ kênh Đầu tư &amp; Tài chính chuyên sâu"
+            frameborder="0"
+            allowfullscreen>
+          </iframe>
         </div>
+        <a class="link-inline" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank">
+          Xem thêm video trên YouTube →
+        </a>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- NEW: THỊ TRƯỜNG -->
-    <section id="thi-truong" class="section section-alt">
-      <div class="container">
-        <h2>Thị trường chứng khoán</h2>
-        <p class="section-desc">
-          Nhận định thị trường chứng khoán Việt Nam theo tuần và theo sự kiện,
-          tập trung vào xu hướng, rủi ro và bối cảnh vĩ mô – không chạy theo tin đồn.
-        </p>
-
-        <!-- Gợi ý bố cục (sẽ làm chi tiết ở bước tiếp theo) -->
-        <!-- 1) Nhận định tuần (Chủ nhật) -->
-        <!-- 2) Sự kiện nổi bật trong tuần -->
+  <!-- VIDEO GRID -->
+  <section id="videos" class="section">
+    <div class="container">
+      <h2>Video &amp; playlist nên xem đầu tiên</h2>
+      <p class="section-desc">
+        Các chủ đề nền tảng giúp nhà đầu tư hiểu thị trường, tránh sai lầm và xây tư duy dài hạn.
+      </p>
+      <div class="grid cards-3">
+        <article class="card">
+          <h3>Tư duy đầu tư nền tảng</h3>
+          <p>Hiểu thị trường trước khi tìm kiếm lợi nhuận.</p>
+        </article>
+        <article class="card">
+          <h3>Phân tích cổ phiếu &amp; ngành</h3>
+          <p>Đọc doanh nghiệp bằng dữ liệu, không cảm xúc.</p>
+        </article>
+        <article class="card">
+          <h3>Tài chính cá nhân &amp; quản lý vốn</h3>
+          <p>Nền tảng sống còn của nhà đầu tư dài hạn.</p>
+        </article>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- NEW: TÀI LIỆU -->
-    <section id="tai-lieu" class="section">
-      <div class="container">
-        <h2>Tài liệu đầu tư &amp; tài chính</h2>
-        <p class="section-desc">
-          Tổng hợp các tài liệu PDF về đầu tư, chứng khoán và tài chính cá nhân.
-          Người dùng cần để lại thông tin để tải về.
-        </p>
-
-        <!-- Sau này đặt form + danh sách tài liệu -->
-      </div>
-    </section>
-
-    <!-- BLOG PREVIEW -->
-    <section id="blog" class="section section-alt">
-      <div class="container">
-        <h2>Bài viết gần đây</h2>
-        <p class="section-desc">
-          Mỗi bài viết có thể đi sâu hơn so với nội dung trên video – hoặc tổng hợp lại những ý chính
-          cho người thích đọc nhanh. Trong mỗi bài, hãy gắn link &amp; nhúng video tương ứng.
-        </p>
-        <div class="grid cards-3">
-          <article class="card">
-            <span class="badge">Bài viết • Cơ bản</span>
-            <h3>ETF là gì? Khi nào phù hợp với nhà đầu tư mới?</h3>
-            <p>
-              Giải thích ETF một cách đơn giản, tránh các thuật ngữ khó nhằn, kèm ví dụ thực tế
-              với thị trường Việt Nam.
-            </p>
-            <a class="link-inline" href="#">
-              Đọc bài viết →
-            </a>
-          </article>
-          <article class="card">
-            <span class="badge">Bài viết • Tâm lý</span>
-            <h3>Vì sao chúng ta hay mua đỉnh bán đáy?</h3>
-            <p>
-              Tâm lý FOMO, sợ lỗ, sợ bỏ lỡ cơ hội – và cách xây hệ thống giao dịch kỷ luật hơn.
-            </p>
-            <a class="link-inline" href="#">
-              Đọc bài viết →
-            </a>
-          </article>
-          <article class="card">
-            <span class="badge">Bài viết • Phân tích</span>
-            <h3>Chu kỳ kinh tế &amp; tác động tới VN-Index</h3>
-            <p>
-              Góc nhìn tổng quan giúp nhà đầu tư cá nhân bớt hoảng loạn khi thị trường biến động mạnh.
-            </p>
-            <a class="link-inline" href="#">
-              Đọc bài viết →
-            </a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABOUT (giữ lại, nhưng đã gộp “Giới thiệu” vào Trang chủ nên không cần menu riêng) -->
-    <section id="about" class="section">
-      <div class="container grid about-grid">
-        <div>
-          <h2>Về kênh “Đầu tư &amp; Tài chính chuyên sâu”</h2>
-          <p class="section-desc">
-            Mục tiêu không phải là “phím hàng”, mà là giúp bạn xây một nền tảng tư duy tài chính
-            vững chắc, biết mình đang làm gì với tiền của mình.
-          </p>
-          <ul class="icon-list">
-            <li>• Giải thích khái niệm tài chính &amp; đầu tư theo ngôn ngữ dễ hiểu.</li>
-            <li>• Ưu tiên chất lượng &amp; chiều sâu hơn là tin nóng, tin đồn.</li>
-            <li>• Tôn trọng rủi ro, quản lý vốn và kỷ luật giao dịch.</li>
-          </ul>
-        </div>
-        <div class="about-box">
-          <h3>Hệ sinh thái nội dung</h3>
-          <ul class="icon-list small">
-            <li>🎥 Kênh YouTube: phân tích, chia sẻ, case thực tế.</li>
-            <li>📝 Website: tổng hợp, tóm tắt, bài viết mở rộng.</li>
-            <li>📨 (Tùy chọn) Email/Zalo: cập nhật khi có nội dung mới.</li>
-          </ul>
-          <a class="btn secondary" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
-            Đến kênh YouTube ngay
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact" class="section section-alt">
-      <div class="container">
-        <h2>Kết nối &amp; đặt câu hỏi</h2>
-        <p class="section-desc">
-          Nếu bạn có chủ đề muốn được phân tích sâu hơn trong video hoặc bài viết,
-          hãy gửi gợi ý cho mình. Mình sẽ chọn lọc và đưa vào kế hoạch nội dung.
-        </p>
-        <div class="contact-grid">
-          <div>
-            <h3>Gửi email</h3>
-            <p>Email: <a href="mailto:thangvu@phs.vn">thangvu@phs.vn</a></p>
-            <p class="hint"></p>
-          </div>
-          <div>
-            <h3>Kết nối nhanh</h3>
-            <ul class="icon-list small">
-              <li>• YouTube: <a href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">https://www.youtube.com/@dautuvataichinhchuyensau</a></li>
-              <li>• (Tùy chọn) Zalo / Telegram: nhóm thảo luận riêng.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="container footer-inner">
-      <p>© <span id="year"></span> daututaichinh.pro — Một phần trong hệ sinh thái nội dung “Đầu tư &amp; Tài chính chuyên sâu”.</p>
-      <p class="footer-small">
-        Không phải khuyến nghị mua/bán. Hãy tự chịu trách nhiệm với quyết định tài chính của mình.
+  <!-- THỊ TRƯỜNG -->
+  <section id="thi-truong" class="section section-alt">
+    <div class="container">
+      <h2>Thị trường chứng khoán</h2>
+      <p class="section-desc">
+        Nhận định thị trường theo tuần và theo sự kiện – tập trung xu hướng, rủi ro và bối cảnh vĩ mô.
       </p>
     </div>
-    <script>
-      document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
-  </footer>
+  </section>
+
+  <!-- TÀI LIỆU -->
+  <section id="tai-lieu" class="section">
+    <div class="container">
+      <h2>Tài liệu đầu tư &amp; tài chính</h2>
+      <p class="section-desc">
+        Tài liệu PDF chọn lọc giúp bạn hiểu sâu hơn về đầu tư và quản lý tài chính cá nhân.
+      </p>
+    </div>
+  </section>
+
+  <!-- BLOG -->
+  <section id="blog" class="section section-alt">
+    <div class="container">
+      <h2>Bài viết gần đây</h2>
+      <p class="section-desc">
+        Phân tích chuyên sâu – có hệ thống – hỗ trợ nội dung video.
+      </p>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section section-alt">
+    <div class="container">
+      <h2>Kết nối &amp; liên hệ</h2>
+      <div class="contact-grid">
+        <div>
+          <h3>Gửi email</h3>
+          <p>Email: <a href="mailto:thangvu@phs.vn">thangvu@phs.vn</a></p>
+        </div>
+        <div>
+          <h3>Kết nối nhanh</h3>
+          <ul class="icon-list small">
+            <li>YouTube:
+              <a href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank">
+                @dautuvataichinhchuyensau
+              </a>
+            </li>
+            <li>(Tùy chọn) Zalo / Telegram</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p>© <span id="year"></span> daututaichinh.pro</p>
+    <p class="footer-small">
+      Không phải khuyến nghị mua/bán. Nhà đầu tư tự chịu trách nhiệm với quyết định của mình.
+    </p>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
