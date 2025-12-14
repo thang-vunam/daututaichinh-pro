@@ -9,7 +9,7 @@ body {
   color: #e5e7eb;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
 .top-bar {
   position: fixed;
   top: 0;
@@ -18,11 +18,65 @@ body {
   height: 84px;
   background: #0b1220;
   z-index: 1000;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 84px;
+}
+
+/* LOGO FIX */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-height: 84px;
+}
+
+.logo-img {
+  width: 48px;        /* 🔒 KHÓA KÍCH THƯỚC */
+  height: 48px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.logo-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+}
+
+.logo-sub {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* NAV LINKS */
+.nav-links a {
+  margin-left: 20px;
+  color: #cbd5f5;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+/* ================= MAIN ================= */
 main {
-  padding-top: 84px;
+  padding-top: 84px; /* tránh header đè */
 }
 
 /* CONTAINER */
@@ -72,7 +126,7 @@ a:hover {
   border-radius: 12px;
 }
 
-/* ===== THỊ TRƯỜNG ===== */
+/* ================= THỊ TRƯỜNG ================= */
 .section-header {
   max-width: 720px;
   margin-bottom: 48px;
@@ -124,7 +178,7 @@ a:hover {
   border-top: 1px solid rgba(255,255,255,0.05);
 }
 
-/* RESPONSIVE */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 900px) {
   .market-grid {
     grid-template-columns: 1fr;
@@ -132,5 +186,13 @@ a:hover {
 
   .contact-grid {
     grid-template-columns: 1fr;
+  }
+
+  .logo-title {
+    font-size: 14px;
+  }
+
+  .logo-sub {
+    display: none;
   }
 }
