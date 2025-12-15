@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tải tài liệu | daututaichinh.pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Tải tài liệu đầu tư, chứng khoán và tài chính cá nhân sau khi điền form.">
+
+  <link rel="stylesheet" href="../style.css">
+
+  <style>
+    .download-box {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 20px;
+    }
+
+    .download-box h1 {
+      margin-bottom: 12px;
+    }
+
+    .download-box p {
+      color: #bfc6d1;
+      margin-bottom: 24px;
+    }
+
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .download-card {
+      background: #0f1a2e;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: 0.2s;
+    }
+
+    .download-card:hover {
+      transform: translateY(-4px);
+      border-color: #3b82f6;
+    }
+
+    .download-card h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .download-card a {
+      color: #60a5fa;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .download-card a:hover {
+      text-decoration: underline;
+    }
+
+    .warning {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      background: #2563eb;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+
+<body>
+
+<main class="section">
+  <div class="download-box">
+
+    <h1>📥 Nhận link tải tài liệu</h1>
+    <p>
+      Để truy cập kho tài liệu đầu tư, vui lòng để lại thông tin cơ bản.
+      Sau khi điền form, bạn có thể tải từng nhóm tài liệu theo nhu cầu.
+    </p>
+
+    <!-- CHƯA ĐIỀN FORM -->
+    <div id="need-form" style="display:none">
+      <a class="btn" href="https://docs.google.com/forms/d/1HwUXe8CiZ0q98pH-T5_4hrPh3wHXIKT7CYiGIG0apN0/viewform" target="_blank">
+        👉 Mở Google Form
+      </a>
+    </div>
+
+    <!-- ĐÃ ĐIỀN FORM -->
+    <div id="download-area" style="display:none">
+
+      <div class="download-grid">
+
+        <div class="download-card">
+          <h3>📊 Excel ứng dụng</h3>
+          <a href="excel.html">Truy cập thư mục →</a>
+        </div>
+
+        <div class="download-card">
+          <h3>📈 Phân tích (Cơ bản & Kỹ thuật)</h3>
+          <a href="phan-tich.html">Truy cập thư mục →</a>
+        </div>
+
+        <div class="download-card">
+          <h3>💼 Quản trị tài chính doanh nghiệp</h3>
+          <a href="tai-chinh.html">Truy cập thư mục →</a>
+        </div>
+
+        <div class="download-card">
+          <h3>📚 Đầu tư & Danh mục</h3>
+          <a href="dau-tu.html">Truy cập thư mục →</a>
+        </div>
+
+        <div class="download-card">
+          <h3>🏢 Phân tích doanh nghiệp</h3>
+          <a href="doanh-nghiep.html">Truy cập thư mục →</a>
+        </div>
+
+        <div class="download-card">
+          <h3>🌍 Kinh tế vĩ mô</h3>
+          <a href="kinh-te-vi-mo.html">Truy cập thư mục →</a>
+        </div>
+
+        <div class="download-card">
+          <h3>📂 Tài liệu khác</h3>
+          <a href="khac.html">Truy cập thư mục →</a>
+        </div>
+
+      </div>
+
+      <p class="warning">
+        ⚠️ Tài liệu mang tính tham khảo, không phải khuyến nghị mua/bán.
+        Người đọc tự chịu trách nhiệm với quyết định đầu tư của mình.
+      </p>
+
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const hasSubmitted = localStorage.getItem("formSubmitted");
+
+  if (hasSubmitted === "yes") {
+    document.getElementById("download-area").style.display = "block";
+  } else {
+    document.getElementById("need-form").style.display = "block";
+  }
+</script>
+
+</body>
+</html>
