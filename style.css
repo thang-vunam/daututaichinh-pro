@@ -172,3 +172,27 @@ main {
     display: none;
   }
 }
+
+/* ===== Contact links: đồng bộ màu + hover rõ ràng ===== */
+:root{
+  --link-color: #7fb4ff;      /* màu link mặc định */
+  --link-hover: #a9d0ff;      /* màu khi hover */
+}
+
+.contact-link{
+  color: var(--link-color);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color .15s ease, border-bottom-color .15s ease;
+}
+
+.contact-link:hover{
+  color: var(--link-hover);
+  border-bottom-color: currentColor; /* gạch chân cùng màu link */
+}
+
+/* Nếu có chỗ nào bị theme “đè” màu link trong phần contact */
+#contact a.contact-link:visited{
+  color: var(--link-color);
+}
+
