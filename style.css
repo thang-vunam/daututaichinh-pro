@@ -196,3 +196,32 @@ main {
   color: var(--link-color);
 }
 
+/* ===== Video reference box (dark theme) ===== */
+.video-ref-box {
+  margin: 24px 0;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #0f1b2d, #12233d);
+  border-left: 4px solid #2f80ed;
+  border-radius: 8px;
+}
+
+.video-ref-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #a9c4ff;
+  margin-bottom: 6px;
+}
+
+.video-ref-link {
+  color: #6ea8ff;
+  font-weight: 500;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.video-ref-link:hover {
+  text-decoration: underline;
+  color: #9cc2ff;
+}
+
