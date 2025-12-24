@@ -225,3 +225,109 @@ main {
   color: #9cc2ff;
 }
 
+/* ===============================
+   BLOG ARTICLE – STANDARD STYLE
+   =============================== */
+
+/* Wrapper cho nội dung bài viết */
+.blog-article {
+  max-width: 820px;
+  margin: 0 auto;
+  line-height: 1.85;
+  font-size: 17px;
+  color: #e6ecf3;
+}
+
+/* Đoạn văn */
+.blog-article p {
+  margin: 0 0 22px;
+  color: #e6ecf3;
+}
+
+/* Tiêu đề bài viết */
+.blog-article h1 {
+  font-size: 34px;
+  line-height: 1.3;
+  margin-bottom: 28px;
+  color: #ffffff;
+}
+
+/* Tiêu đề các mục lớn (1,2,3,4…) */
+.blog-article h2 {
+  font-size: 26px;
+  margin: 48px 0 18px;
+  color: #ffffff;
+}
+
+/* Tiêu đề mục nhỏ (nếu có) */
+.blog-article h3 {
+  font-size: 21px;
+  margin: 36px 0 14px;
+  color: #ffffff;
+}
+
+/* Chữ nhấn mạnh */
+.blog-article strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Danh sách gạch đầu dòng */
+.blog-article ul {
+  margin: 0 0 28px 22px;
+}
+
+.blog-article li {
+  margin-bottom: 12px;
+}
+
+/* Box tóm tắt nhanh */
+.blog-summary {
+  background: linear-gradient(180deg, rgba(16,30,55,0.9), rgba(10,20,40,0.9));
+  border-radius: 12px;
+  padding: 22px 26px;
+  margin: 36px 0;
+}
+
+.blog-summary h3 {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+/* Box link video */
+.blog-video-box {
+  margin: 32px 0 40px;
+  padding: 18px 22px;
+  border-left: 4px solid #3b82f6;
+  background: rgba(15,30,55,0.85);
+  border-radius: 8px;
+}
+
+.blog-video-box a {
+  color: #60a5fa;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.blog-video-box a:hover {
+  text-decoration: underline;
+}
+
+/* Link trong bài */
+.blog-article a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.blog-article a:hover {
+  text-decoration: underline;
+}
+
+/* Đoạn kết luận */
+.blog-conclusion {
+  margin-top: 48px;
+  padding-top: 24px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
