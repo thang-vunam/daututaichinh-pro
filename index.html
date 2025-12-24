@@ -10,16 +10,20 @@
 
 <body>
 
+<!-- ================= HEADER ================= -->
 <header class="top-bar">
   <div class="container nav">
-    <div class="logo">
-      <img src="logo.png" alt="Logo" class="logo-img">
-      <div class="logo-text">
-        <span class="logo-title">Đầu tư & Tài chính chuyên sâu</span>
-        <span class="logo-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
-      </div>
-    </div>
 
+    <!-- BRAND -->
+    <a href="/" class="brand">
+      <img src="logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
+      <div class="brand-text">
+        <span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
+        <span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
+      </div>
+    </a>
+
+    <!-- NAV -->
     <nav class="nav-links">
       <a href="#hero">Trang chủ</a>
       <a href="#thi-truong">Thị trường</a>
@@ -27,12 +31,13 @@
       <a href="#tai-lieu">Tài liệu</a>
       <a href="#contact">Liên hệ</a>
     </nav>
+
   </div>
 </header>
 
 <main>
 
-  <!-- HERO -->
+  <!-- ================= HERO ================= -->
   <section id="hero" class="hero">
     <div class="container hero-grid">
       <div class="hero-text">
@@ -50,7 +55,7 @@
         <div class="video-wrapper">
           <iframe
             src="https://www.youtube.com/embed/TfOVXRiiqbI"
-            title="Phân tích PVS – Đầu tư & Tài chính chuyên sâu"
+            title="Video từ kênh Đầu tư & Tài chính chuyên sâu"
             frameborder="0"
             allowfullscreen>
           </iframe>
@@ -65,60 +70,56 @@
   <!-- ================= THỊ TRƯỜNG ================= -->
   <section id="thi-truong" class="section section-alt">
     <div class="container">
-      <h2>Thị trường chứng khoán</h2>
-      <p class="section-desc">
-        Nhận định thị trường chứng khoán Việt Nam theo tuần và các sự kiện nổi bật,
-        tập trung vào bối cảnh, rủi ro và chiến lược cho nhà đầu tư cá nhân.
-      </p>
+
+      <div class="section-header">
+        <h2>Thị trường chứng khoán</h2>
+        <p class="section-desc">
+          Nhận định thị trường chứng khoán Việt Nam theo tuần và
+          các sự kiện nổi bật, tập trung vào bối cảnh, rủi ro
+          và chiến lược cho nhà đầu tư cá nhân.
+        </p>
+      </div>
+
+      <div class="market-grid">
+
+        <article class="market-card featured">
+          <span class="market-tag">Nhận định tuần</span>
+          <h3>Nhận định thị trường chứng khoán tuần XX (dd/mm – dd/mm)</h3>
+          <p>
+            Phân tích xu hướng VN-Index, dòng tiền,
+            các kịch bản thị trường và chiến lược hành động
+            cho nhà đầu tư trong tuần tới.
+          </p>
+          <a href="/market/nhan-dinh-thi-truong-tuan-xx.html" class="link-inline">
+            Đọc phân tích chi tiết →
+          </a>
+        </article>
+
+        <article class="market-card">
+          <span class="market-tag alt">Sự kiện</span>
+          <h3>Sự kiện nổi bật trong tuần</h3>
+          <p>
+            Tổng hợp các thông tin và diễn biến đáng chú ý
+            ảnh hưởng đến tâm lý và xu hướng thị trường.
+          </p>
+          <a href="/market/su-kien-noi-bat-tuan-xx.html" class="link-inline">
+            Xem nhanh →
+          </a>
+        </article>
+
+      </div>
+
     </div>
   </section>
 
-  <!-- ================= BÀI VIẾT NỔI BẬT ================= -->
+  <!-- ================= BLOG ================= -->
   <section id="blog" class="section">
     <div class="container">
-
-      <h2>Bài viết nổi bật</h2>
+      <h2>Bài viết gần đây</h2>
       <p class="section-desc">
-        Phân tích chuyên sâu, tập trung vào bản chất doanh nghiệp và các “bất thường giá trị”
-        mà thị trường thường bỏ qua.
+        Các bài viết phân tích chuyên sâu, hệ thống hóa nội dung
+        từ video và mở rộng thêm góc nhìn đầu tư.
       </p>
-
-      <article class="card featured-article">
-
-        <span class="badge">Phân tích chuyên sâu</span>
-
-        <h3>
-          4 Nghịch Lý Khó Tin Về PVS: Cổ Phiếu Năng Lượng Bị Thị Trường “Bỏ Quên”
-        </h3>
-
-        <p>
-          PVS đang rơi vào một trường hợp hiếm gặp: lượng tiền mặt ròng cao hơn cả
-          vốn hóa thị trường, lợi nhuận ở mức cao nhất 5 năm nhưng định giá lại thấp nhất 5 năm.
-          Khi các rủi ro pháp lý lớn đã được tháo gỡ và động cơ tăng trưởng dài hạn xuất hiện rõ ràng,
-          đây trở thành một ví dụ điển hình của “bất thường giá trị”.
-        </p>
-
-        <h4>Tóm tắt nhanh cho người bận:</h4>
-        <ul>
-          <li>PVS đang nắm ~16.500 tỷ đồng tiền mặt ròng.</li>
-          <li>Lợi nhuận cao nhất 5 năm nhưng định giá P/E thấp nhất 5 năm.</li>
-          <li>Rủi ro pháp lý Lô B – Ô Môn đã được tháo gỡ.</li>
-          <li>Điện gió ngoài khơi trở thành động cơ tăng trưởng dài hạn.</li>
-        </ul>
-
-        <div class="video-box">
-          <strong>🎥 Xem phân tích chi tiết bằng video:</strong><br>
-          <a href="https://youtu.be/TfOVXRiiqbI" target="_blank" rel="noopener">
-            https://youtu.be/TfOVXRiiqbI
-          </a>
-        </div>
-
-        <a class="btn primary" href="/blog/pvs-nghich-ly-gia-tri.html">
-          Đọc bài phân tích đầy đủ →
-        </a>
-
-      </article>
-
     </div>
   </section>
 
@@ -128,18 +129,13 @@
       <h2>Tài liệu đầu tư</h2>
       <p class="section-desc">
         Tài liệu PDF chọn lọc về đầu tư, chứng khoán và tài chính cá nhân.
-        Người dùng cần điền form để nhận link truy cập tài liệu.
       </p>
-      <a class="btn secondary" href="/download/">
-        Truy cập kho tài liệu →
-      </a>
     </div>
   </section>
 
   <!-- ================= CONTACT ================= -->
   <section id="contact" class="section">
     <div class="container contact-grid">
-
       <div>
         <h3>Liên hệ</h3>
         <p>Email:
@@ -153,25 +149,24 @@
         <ul class="icon-list small">
           <li>
             YouTube:
-            <a class="contact-link" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank">
+            <a class="contact-link" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
               @dautuvataichinhchuyensau
             </a>
           </li>
           <li>
             TikTok:
-            <a class="contact-link" href="https://www.tiktok.com/@dautuvataichinhchuyensau" target="_blank">
+            <a class="contact-link" href="https://www.tiktok.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
               @dautuvataichinhchuyensau
             </a>
           </li>
           <li>
             Zalo:
-            <a class="contact-link" href="https://zalo.me/g/pvscez363" target="_blank">
+            <a class="contact-link" href="https://zalo.me/g/pvscez363" target="_blank" rel="noopener">
               Nhóm thảo luận Zalo
             </a>
           </li>
         </ul>
       </div>
-
     </div>
   </section>
 
@@ -180,9 +175,6 @@
 <footer class="footer">
   <div class="container">
     <p>© <span id="year"></span> daututaichinh.pro</p>
-    <p class="footer-small">
-      Nội dung mang tính phân tích – không phải khuyến nghị mua/bán.
-    </p>
   </div>
 </footer>
 
