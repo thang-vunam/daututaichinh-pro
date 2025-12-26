@@ -429,7 +429,10 @@ main {
   width: 44px;
   height: 44px;
   object-fit: contain;
+  border-radius: 50%;        /* ✅ LOGO TRÒN */
+  background: #ffffff;       /* giữ nền trắng giống blog */
 }
+
 
 .brand-text {
   display: flex;
