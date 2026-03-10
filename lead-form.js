@@ -9,7 +9,10 @@
  * Xem file HUONG-DAN-SETUP.md để biết cách lấy URL này.
  */
 
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4UH7b2ChxJ67t7h8FdIq7AroId_4PsZrFmMVhgXdk-VDRSrgD0rQspwOCTXwhZzDfPg/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxD7TnNMKJGKb-ZOLKj1QESmy_c3bQ6lrXjlwn4fVbQh1yXcubwLnM19ellixFLjYOYog/exec';
+
+// Link nhóm Zalo
+const ZALO_GROUP_URL = 'https://zalo.me/g/pvscez363';
 
 // ─── Form HTML Template ──────────────────────────────────
 function createFormHTML(formId) {
@@ -50,6 +53,52 @@ function createFormHTML(formId) {
   `;
 }
 
+// ─── Submit to Google Sheets via hidden iframe (bypasses CORS) ───
+function submitToGoogleSheets(data) {
+  return new Promise((resolve) => {
+    // Create hidden iframe
+    const iframeName = 'lead-submit-iframe-' + Date.now();
+    const iframe = document.createElement('iframe');
+    iframe.name = iframeName;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // Create hidden form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GOOGLE_SCRIPT_URL;
+    form.target = iframeName;
+    form.style.display = 'none';
+
+    // Add form fields
+    for (const [key, value] of Object.entries(data)) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+
+    // Listen for iframe load (submission complete)
+    iframe.addEventListener('load', function() {
+      // Clean up after a delay
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+        document.body.removeChild(form);
+      }, 1000);
+      resolve(true);
+    });
+
+    // Submit the form
+    form.submit();
+
+    // Fallback: resolve after 5s even if iframe doesn't fire load
+    setTimeout(() => resolve(true), 5000);
+  });
+}
+
 // ─── Form Submission Handler ─────────────────────────────
 function handleFormSubmit(form) {
   form.addEventListener('submit', async function(e) {
@@ -83,33 +132,32 @@ function handleFormSubmit(form) {
     msgEl.style.display = 'none';
 
     try {
-      // Send to Google Sheets via URL-encoded form data (reliable with no-cors)
-      const formData = new URLSearchParams();
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('phone', phone || '(không có)');
-      formData.append('interest', interest);
-      formData.append('source', window.location.pathname);
-      formData.append('timestamp', new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }));
-
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString()
+      // Send to Google Sheets via hidden iframe (reliable, no CORS issues)
+      await submitToGoogleSheets({
+        name: name,
+        email: email,
+        phone: phone || '(không có)',
+        interest: interest,
+        source: window.location.pathname,
+        timestamp: new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
       });
 
       // Mark as submitted
       localStorage.setItem('formSubmitted', 'yes');
       localStorage.setItem('leadName', name);
 
-      // Show success
+      // Show success with Zalo invite
       showMessage(msgEl, 'success',
         `✅ Cảm ơn <strong>${name}</strong>! Thông tin đã được ghi nhận.<br>
-         Bạn có thể truy cập kho tài liệu ngay bây giờ.`
+         Bạn có thể truy cập kho tài liệu ngay bây giờ.<br><br>
+         💬 <strong>Tham gia nhóm Zalo</strong> để nhận phân tích thị trường & thảo luận cùng cộng đồng nhà đầu tư:<br>
+         <a href="${ZALO_GROUP_URL}" target="_blank" rel="noopener" 
+            style="display:inline-block;margin-top:8px;padding:10px 20px;background:#0068FF;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;">
+           💬 Tham gia nhóm Zalo ngay
+         </a>`
       );
 
-      // If on download page, show downloads after 2s
+      // If on download page, show downloads after 3s
       const downloadArea = document.getElementById('download-area');
       if (downloadArea) {
         setTimeout(() => {
@@ -117,13 +165,13 @@ function handleFormSubmit(form) {
           if (needForm) needForm.style.display = 'none';
           downloadArea.style.display = 'block';
           downloadArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 2000);
+        }, 3000);
       }
 
-      // Close popup after 3s (if popup)
+      // Close popup after 5s (if popup) — give time to see Zalo button
       const popup = document.querySelector('.lead-popup-overlay.active');
       if (popup) {
-        setTimeout(() => closePopup(), 3000);
+        setTimeout(() => closePopup(), 5000);
       }
 
     } catch (err) {
