@@ -239,7 +239,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (ctaBtn) {
     ctaBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      if (hasSubmitted) {
+      // Check localStorage at click time (not stale closure)
+      if (localStorage.getItem('formSubmitted') === 'yes') {
         // Already submitted, go to download page
         window.location.href = '/download/';
       } else {
