@@ -6,6 +6,7 @@
   <title>Phân tích (Cơ bản & Kỹ thuật) | Tải tài liệu</title>
   <meta name="description" content="Tài liệu phân tích cơ bản và phân tích kỹ thuật chứng khoán, phục vụ nhà đầu tư cá nhân tại Việt Nam.">
   <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/lead-form.css" />
 </head>
 
 <body>
@@ -79,42 +80,37 @@
 
       <hr style="margin:40px 0;opacity:.2">
 
-      <h2>Nhận link tải tài liệu</h2>
+      <!-- ===== CHƯA ĐIỀN FORM: Hiện form thu lead ===== -->
+      <div id="need-form" style="display:none">
+        <h2>Nhận link tải tài liệu</h2>
+        <p class="section-desc">
+          Để truy cập thư mục tài liệu, vui lòng để lại thông tin cơ bản.
+          Link truy cập sẽ hiển thị ngay sau khi bạn gửi form.
+        </p>
+        <!-- Inline form sẽ được render bởi lead-form.js -->
+      </div>
 
-      <p class="section-desc">
-        Để truy cập thư mục tài liệu, vui lòng để lại thông tin
-        (họ tên, email, số điện thoại).  
-        Link truy cập sẽ hiển thị ngay sau khi bạn gửi form.
-      </p>
+      <!-- ===== ĐÃ ĐIỀN FORM: Hiện link OneDrive trực tiếp ===== -->
+      <div id="download-area" style="display:none">
+        <h2>📂 Truy cập thư mục tài liệu</h2>
+        <p class="section-desc">
+          Cảm ơn bạn đã đăng ký! Click vào link bên dưới để truy cập thư mục tài liệu đầy đủ.
+        </p>
 
-      <div class="grid cards-2">
-
-        <article class="card">
-          <h3>Bước 1: Điền form</h3>
-          <p>
-            Nhập thông tin cơ bản để nhận link truy cập
-            thư mục tài liệu.
-          </p>
-          <a class="link-inline"
-             href="https://docs.google.com/forms/d/1HwUXe8CiZ0q98pH-T5_4hrPh3wHXIKT7CYiGIG0apN0/viewform"
-             target="_blank" rel="noopener">
-            Mở Google Form →
-          </a>
-        </article>
-
-        <article class="card">
-          <h3>Bước 2: Truy cập thư mục OneDrive</h3>
-          <p>
-            Sau khi gửi form, bạn sẽ nhận được link
-            dẫn tới thư mục tài liệu đầy đủ.
-          </p>
-          <a class="link-inline"
-             href="https://1drv.ms/f/c/974925e1ecbe2885/IgCFKL7s4SVJIICX4j8EAAAAAW16O6KlHrTxAotIOdhEhgs?e=qgdTlW"
-             target="_blank" rel="noopener">
-            Mở thư mục tài liệu →
-          </a>
-        </article>
-
+        <div class="grid cards-2">
+          <article class="card">
+            <h3>📥 Mở thư mục tài liệu</h3>
+            <p>
+              Truy cập thư mục OneDrive chứa toàn bộ tài liệu
+              phân tích cơ bản và kỹ thuật.
+            </p>
+            <a class="link-inline"
+               href="https://1drv.ms/f/c/974925e1ecbe2885/IgCFKL7s4SVJIICX4j8EAAAAAW16O6KlHrTxAotIOdhEhgs?e=qgdTlW"
+               target="_blank" rel="noopener">
+              Mở thư mục tài liệu →
+            </a>
+          </article>
+        </div>
       </div>
 
       <p style="margin-top:30px;font-size:0.95em;opacity:.8;">
@@ -136,7 +132,15 @@
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
-
+<script src="/lead-form.js"></script>
+<script>
+  // Check if already submitted via lead form
+  const hasSubmitted = localStorage.getItem("formSubmitted") === "yes";
+  if (hasSubmitted) {
+    document.getElementById("download-area").style.display = "block";
+  } else {
+    document.getElementById("need-form").style.display = "block";
+  }
+</script>
 </body>
 </html>
-
