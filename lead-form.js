@@ -9,7 +9,7 @@
  * Xem file HUONG-DAN-SETUP.md để biết cách lấy URL này.
  */
 
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQwA5OuOfntXB7MICd-Bao-zHpTbgUCl5U7EMtC87zdH_b2cnqFnMNTKI-0UIvIefi/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4UH7b2ChxJ67t7h8FdIq7AroId_4PsZrFmMVhgXdk-VDRSrgD0rQspwOCTXwhZzDfPg/exec';
 
 // ─── Form HTML Template ──────────────────────────────────
 function createFormHTML(formId) {
@@ -83,19 +83,20 @@ function handleFormSubmit(form) {
     msgEl.style.display = 'none';
 
     try {
-      // Send to Google Sheets
+      // Send to Google Sheets via URL-encoded form data (reliable with no-cors)
+      const formData = new URLSearchParams();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('phone', phone || '(không có)');
+      formData.append('interest', interest);
+      formData.append('source', window.location.pathname);
+      formData.append('timestamp', new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' }));
+
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          phone: phone || '(không có)',
-          interest: interest,
-          source: window.location.pathname,
-          timestamp: new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
-        })
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
       });
 
       // Mark as submitted
