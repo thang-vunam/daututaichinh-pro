@@ -81,7 +81,8 @@ Khi người dùng yêu cầu so sánh (ví dụ: "so sánh SSI với VND"):
 // ─── State ──────────────────────────────────────────────
 let chatHistory = [];
 let messageCount = 0;
-let leadCollected = false;
+let formDone = false;   // User đã submit form nhận tài liệu
+let zaloDone = false;   // User đã click tham gia Zalo
 let isWaitingResponse = false;
 let chatbotInitialized = false;
 let welcomeShown = false;
@@ -91,9 +92,10 @@ function initChatbot() {
   if (chatbotInitialized) return;
   chatbotInitialized = true;
 
-  // Check if lead was already collected
-  leadCollected = localStorage.getItem('chatbotLeadCollected') === 'yes'
-                || localStorage.getItem('formSubmitted') === 'yes';
+  // Check saved states separately
+  formDone = localStorage.getItem('formSubmitted') === 'yes'
+           || localStorage.getItem('chatbotLeadCollected') === 'yes';
+  zaloDone = localStorage.getItem('zaloJoined') === 'yes';
 
   // Create toggle button
   const toggleBtn = document.createElement('button');
@@ -312,8 +314,8 @@ async function sendMessage() {
     // Add to history
     chatHistory.push({ role: 'model', parts: [{ text: botReply }] });
 
-    // Smart lead collection (after 3-4 messages, if not yet collected)
-    if (!leadCollected && messageCount >= 3 && messageCount % 3 === 0) {
+    // Smart lead collection (after 3 messages, if there's still something to show)
+    if (!(formDone && zaloDone) && messageCount >= 3 && messageCount % 3 === 0) {
       setTimeout(() => suggestLeadCollection(), 1500);
     }
 
@@ -335,17 +337,53 @@ async function sendMessage() {
 
 // ─── Lead Collection ────────────────────────────────────
 function suggestLeadCollection() {
-  const leadHTML = `
-    💡 Nhân tiện, mình có kho tài liệu đầu tư miễn phí (PDF phân tích, mô hình Excel...).
-    <br><br>
-    Bạn muốn mình gửi cho không? Chỉ cần để lại email hoặc tham gia nhóm Zalo nhé!
-    <div class="chat-welcome-actions" style="margin-top:10px">
+  // Re-check states in case user just submitted form or clicked Zalo
+  formDone = localStorage.getItem('formSubmitted') === 'yes'
+           || localStorage.getItem('chatbotLeadCollected') === 'yes';
+  zaloDone = localStorage.getItem('zaloJoined') === 'yes';
+
+  // Both done → don't show anything
+  if (formDone && zaloDone) return;
+
+  let messageText = '';
+  let buttonsHTML = '';
+
+  if (!formDone && !zaloDone) {
+    // Neither done → show both
+    messageText = '💡 Nhân tiện, mình có kho tài liệu đầu tư miễn phí (PDF phân tích, mô hình Excel...).<br><br>Bạn muốn mình gửi cho không? Chỉ cần để lại email hoặc tham gia nhóm Zalo nhé!';
+    buttonsHTML = `
       <button class="chat-welcome-btn" onclick="openLeadPopup()">📥 Nhận tài liệu miễn phí</button>
-      <a class="chat-welcome-btn" href="${CHATBOT_ZALO_URL}" target="_blank" rel="noopener">💬 Tham gia nhóm Zalo</a>
+      <a class="chat-welcome-btn" href="${CHATBOT_ZALO_URL}" target="_blank" rel="noopener" onclick="markZaloJoined()">💬 Tham gia nhóm Zalo</a>
+    `;
+  } else if (formDone && !zaloDone) {
+    // Form done → only show Zalo
+    messageText = '💡 Nhân tiện, bạn đã nhận tài liệu rồi đúng không? Nếu muốn thảo luận thêm với cộng đồng nhà đầu tư, tham gia nhóm Zalo nhé!';
+    buttonsHTML = `
+      <a class="chat-welcome-btn" href="${CHATBOT_ZALO_URL}" target="_blank" rel="noopener" onclick="markZaloJoined()">💬 Tham gia nhóm Zalo</a>
+    `;
+  } else if (!formDone && zaloDone) {
+    // Zalo done → only show form
+    messageText = '💡 Nhân tiện, mình có kho tài liệu đầu tư miễn phí (PDF phân tích, mô hình Excel...). Bạn muốn nhận không?';
+    buttonsHTML = `
+      <button class="chat-welcome-btn" onclick="openLeadPopup()">📥 Nhận tài liệu miễn phí</button>
+    `;
+  }
+
+  const leadHTML = `
+    ${messageText}
+    <div class="chat-welcome-actions" style="margin-top:10px">
+      ${buttonsHTML}
     </div>
   `;
-  addMessage('bot', leadHTML);
+  addMessage('bot', leadHTML, true); // noScroll = true, don't interrupt user reading
 }
+
+// Mark Zalo as joined when user clicks the Zalo link
+function markZaloJoined() {
+  localStorage.setItem('zaloJoined', 'yes');
+  zaloDone = true;
+}
+window.markZaloJoined = markZaloJoined;
 
 // Open existing lead popup
 function openLeadPopup() {
@@ -359,7 +397,7 @@ window.openLeadPopup = openLeadPopup;
 
 
 // ─── UI Helpers ─────────────────────────────────────────
-function addMessage(sender, html) {
+function addMessage(sender, html, noScroll = false) {
   const messagesEl = document.getElementById('chatbot-messages');
   const avatarEmoji = sender === 'bot' ? '🤖' : '👤';
 
@@ -371,6 +409,10 @@ function addMessage(sender, html) {
   `;
 
   messagesEl.appendChild(msgEl);
+
+  // If noScroll is true (e.g. lead collection popup), don't scroll at all
+  // to avoid interrupting user who is still reading above content
+  if (noScroll) return;
 
   // Bot messages: scroll to the TOP of the new message so user reads from top down
   // User messages & others: scroll to bottom as usual
