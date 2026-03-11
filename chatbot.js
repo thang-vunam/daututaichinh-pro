@@ -371,7 +371,14 @@ function addMessage(sender, html) {
   `;
 
   messagesEl.appendChild(msgEl);
-  scrollToBottom();
+
+  // Bot messages: scroll to the TOP of the new message so user reads from top down
+  // User messages & others: scroll to bottom as usual
+  if (sender === 'bot') {
+    scrollToMessage(msgEl);
+  } else {
+    scrollToBottom();
+  }
 }
 
 function showTyping() {
@@ -399,6 +406,17 @@ function scrollToBottom() {
   if (messagesEl) {
     requestAnimationFrame(() => {
       messagesEl.scrollTop = messagesEl.scrollHeight;
+    });
+  }
+}
+
+// Scroll so the top of a specific message element is visible at the top of the chat area
+function scrollToMessage(msgEl) {
+  const messagesEl = document.getElementById('chatbot-messages');
+  if (messagesEl && msgEl) {
+    requestAnimationFrame(() => {
+      // Scroll the messages container so the new message starts at the top
+      messagesEl.scrollTop = msgEl.offsetTop - messagesEl.offsetTop;
     });
   }
 }
