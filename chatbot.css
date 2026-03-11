@@ -113,7 +113,7 @@
   padding: 8px 16px;
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
-  pointer-events: none;
+  cursor: pointer;
   animation: labelSlideIn 0.6s ease 3s both, labelPulse 3s ease-in-out 4s infinite;
 }
 
