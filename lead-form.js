@@ -82,6 +82,9 @@ function createZaloStepHTML(name) {
 
 // ─── When Zalo button is clicked ─────────────────────────
 function onZaloClicked(el) {
+  // Mark Zalo as joined so chatbot won't show Zalo prompt again
+  localStorage.setItem('zaloJoined', 'yes');
+
   // Show the "Continue to download" button after clicking Zalo
   const continueWrapper = el.closest('.zalo-step').querySelector('#zalo-continue');
   if (continueWrapper) {
