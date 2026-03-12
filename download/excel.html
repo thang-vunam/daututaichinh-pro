@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Excel ứng dụng | Tải tài liệu</title>
+  <meta name="description" content="Tài liệu Excel ứng dụng trong tài chính, đầu tư và phân tích dữ liệu.">
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/lead-form.css" />
+</head>
+
+<body>
+
+  <header class="top-bar">
+    <div class="container nav">
+      <div class="logo">
+        <a href="/" style="display:flex;align-items:center;gap:12px;text-decoration:none;">
+          <img src="/logo.png" alt="Logo" class="logo-img">
+          <div class="logo-text">
+            <span class="logo-title">Đầu tư & Tài chính chuyên sâu</span>
+            <span class="logo-sub">Excel ứng dụng</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="nav-links">
+        <a href="/">Trang chủ</a>
+        <a href="/#tai-lieu">Tài liệu</a>
+        <a href="/#contact">Liên hệ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="section section-alt">
+      <div class="container">
+
+        <h1>📊 Excel ứng dụng</h1>
+
+        <p class="section-desc">
+          Thư mục tổng hợp các file <strong>Excel ứng dụng</strong> trong lĩnh vực
+          tài chính và đầu tư. Bao gồm các mô hình tính toán, template phân tích
+          và công cụ hỗ trợ ra quyết định đầu tư.
+        </p>
+
+        <div class="grid cards-3">
+
+          <article class="card">
+            <h3>📊 Mô hình tài chính</h3>
+            <p>
+              Các template Excel cho định giá cổ phiếu, DCF,
+              phân tích báo cáo tài chính và dự phóng doanh thu.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>📈 Công cụ phân tích</h3>
+            <p>
+              Bảng tính theo dõi danh mục, tính toán lợi nhuận,
+              quản lý rủi ro và các chỉ số tài chính quan trọng.
+            </p>
+          </article>
+
+          <article class="card">
+            <h3>📁 Cấu trúc thư mục</h3>
+            <p>
+              Tài liệu được phân loại theo từng chủ đề.
+              Click vào link bên dưới để truy cập thư mục đầy đủ.
+            </p>
+          </article>
+
+        </div>
+
+        <hr style="margin:40px 0;opacity:.2">
+
+        <!-- ===== CHƯA ĐIỀN FORM ===== -->
+        <div id="need-form" style="display:none">
+          <h2>Nhận link tải tài liệu</h2>
+          <p class="section-desc">
+            Để truy cập thư mục tài liệu, vui lòng để lại thông tin cơ bản.
+            Link truy cập sẽ hiển thị ngay sau khi bạn gửi form.
+          </p>
+        </div>
+
+        <!-- ===== ĐÃ ĐIỀN FORM ===== -->
+        <div id="download-area" style="display:none">
+          <h2>📂 Truy cập thư mục tài liệu</h2>
+          <p class="section-desc">
+            Cảm ơn bạn đã đăng ký! Click vào link bên dưới để truy cập thư mục tài liệu đầy đủ.
+          </p>
+
+          <div class="grid cards-2">
+            <article class="card">
+              <h3>📥 Mở thư mục tài liệu</h3>
+              <p>
+                Truy cập thư mục OneDrive chứa toàn bộ tài liệu
+                Excel ứng dụng.
+              </p>
+              <a class="link-inline"
+                href="https://1drv.ms/f/c/974925e1ecbe2885/IgCFKL7s4SVJIICX3j8EAAAAAaw2lvc_Nd8V3PKO5c4WVMI?e=guTMcb"
+                target="_blank" rel="noopener">
+                Mở thư mục tài liệu →
+              </a>
+            </article>
+          </div>
+        </div>
+
+        <p style="margin-top:30px;font-size:0.95em;opacity:.8;">
+          ⚠️ Lưu ý: Tài liệu mang tính tham khảo, không phải khuyến nghị mua/bán.
+          Người đọc tự chịu trách nhiệm với quyết định đầu tư của mình.
+        </p>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© <span id="year"></span> daututaichinh.pro</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+  <script src="/lead-form.js"></script>
+  <script>
+    const hasSubmitted = localStorage.getItem("formSubmitted") === "yes";
+    if (hasSubmitted) {
+      document.getElementById("download-area").style.display = "block";
+    } else {
+      document.getElementById("need-form").style.display = "block";
+    }
+  </script>
+</body>
+
+</html>
