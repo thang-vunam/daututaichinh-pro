@@ -173,6 +173,57 @@ main {
   }
 }
 
+@media (max-width: 768px) {
+  .top-bar {
+    height: auto;
+    padding: 12px 0;
+  }
+  
+  .nav {
+    flex-direction: column;
+    height: auto;
+    gap: 12px;
+  }
+
+  .brand {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+  
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand-title {
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .brand-sub {
+    display: none; /* Hide subtitle on very small screens to save vertical space */
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    gap: 8px 12px;
+  }
+  
+  .nav-links a {
+    margin-left: 0;
+    font-size: 13px;
+  }
+
+  main {
+    padding-top: 110px; /* Adjusted spacing for the stacked header */
+  }
+}
+
 /* ===== Contact links: đồng bộ màu + hover rõ ràng ===== */
 :root{
   --link-color: #7fb4ff;      /* màu link mặc định */
