@@ -54,7 +54,7 @@ async function callGemini(apiKey, history, systemPrompt, useSearch) {
   };
 
   if (useSearch) {
-    geminiBody.tools = [{ googleSearch: {} }];
+    geminiBody.tools = [{ google_search: {} }];
   }
 
   try {
