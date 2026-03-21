@@ -10,7 +10,7 @@
 
 // ─── Configuration ───────────────────────────────────────
 // URL của Cloudflare Worker proxy (thay đổi sau khi deploy Worker)
-const CHATBOT_WORKER_URL = 'https://chatbot-api.thangvu-dht.workers.dev';
+const CHATBOT_WORKER_URL = '/api/chat';
 
 // Google Sheets endpoint (dùng chung với lead-form.js)
 const CHATBOT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxD7TnNMKJGKb-ZOLKj1QESmy_c3bQ6lrXjlwn4fVbQh1yXcubwLnM19ellixFLjYOYog/exec';
