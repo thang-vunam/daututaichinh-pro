@@ -26,7 +26,6 @@ export default async function handler(request) {
       return jsonResponse({ error: 'API key not configured in Vercel' }, 500, request);
     }
 
-    // Lọc ra câu hỏi cuối cùng của user để bắt mã cổ phiếu
     let lastUserMessage = '';
     for (let i = history.length - 1; i >= 0; i--) {
       if (history[i].role === 'user') {
@@ -36,30 +35,33 @@ export default async function handler(request) {
       }
     }
 
-    // Regex thông minh: Tìm các từ có 3 chữ cái viết liền (giả định là mã CK)
-    const tickerMatch = lastUserMessage.match(/\b([a-zA-Z]{3})\b/i);
+    // Regex lấy tất cả từ 3 chữ cái (VNM), hoặc 2 chữ cái + 1 số có/không có khoảng trắng (PC1, pc 1, nt 2)
+    const matches = [...lastUserMessage.matchAll(/\b([a-zA-Z]{3}|[a-zA-Z]{2}\s?[0-9])\b/gi)];
+    const candidates = matches.map(m => m[1].replace(/\s+/g, '').toUpperCase());
+    
+    // Loại trừ các từ phổ biến 3 chữ trong tiếng Việt
+    const excludeList = ['CHO', 'MUA', 'BAN', 'BÁN', 'GIA', 'GIÁ', 'XEM', 'HAY', 'TIN', 'BAO', 'BÁO', 'VOI', 'THI', 'LAI', 'SAO', 'NAO', 'MAI', 'XIN', 'BAI', 'NEN', 'TUC'];
+    
     let injectedData = '';
     
-    if (tickerMatch) {
-      const ticker = tickerMatch[1].toUpperCase();
-      // Loại trừ các chữ 3 âm tiết phổ biến trong tiếng Việt để tránh nhận diện nhầm
-      const excludeList = ['CHO', 'MUA', 'BÁN', 'GIA', 'XEM', 'HAY', 'TIN', 'BAO', 'VOI', 'THI', 'LAI', 'SAO', 'NAO', 'MAI', 'XIN'];
+    for (const rawTicker of candidates) {
+      if (excludeList.includes(rawTicker)) continue;
       
-      if (!excludeList.includes(ticker)) {
-        console.log('Detected potential ticker in user message:', ticker);
-        try {
-          const res = await fetch(`https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=-date&q=code:${ticker}&size=1`);
-          if (res.ok) {
-            const data = await res.json();
-            if (data && data.data && data.data.length > 0) {
-              const s = data.data[0];
-              injectedData = `\n\n=== [QUAN TRỌNG] DỮ LIỆU API HỆ THỐNG NẠP TỰ ĐỘNG KHÔNG ĐƯỢC CÃI ===\nMã cổ phiếu: ${ticker}\nGiá đóng cửa gần nhất (VND): ${s.close * 1000} đồng\nBiến động giá: ${s.change * 1000} đồng (${s.pctChange}% so với phiên trước)\nNgày giao dịch gần nhất: ${s.date}\n>>> CHỈ THỊ CHO AI: Khi trả lời khách hàng về mã ${ticker}, BẮT BUỘC dùng số liệu từ [DỮ LIỆU API HỆ THỐNG] này! Không cần dùng Google Search nữa! Báo cáo rõ ngày giao dịch gần nhất cho khách.\n================================================================`;
-              console.log('Successfully injected API data for', ticker);
-            }
+      try {
+        console.log('Testing potential ticker:', rawTicker);
+        const res = await fetch(`https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=-date&q=code:${rawTicker}&size=1`);
+        if (res.ok) {
+          const data = await res.json();
+          // Nếu API báo có data thật -> Chắc chắn đây là mã chứng khoán!
+          if (data && data.data && data.data.length > 0) {
+            const s = data.data[0];
+            injectedData += `\n\n=== [QUAN TRỌNG] DỮ LIỆU BẢNG ĐIỆN TỬ: MÃ ${rawTicker} ===\nGiá đóng cửa gần nhất (VND): ${s.close * 1000} đồng\nBiến động giá: ${s.change * 1000} đồng (${s.pctChange}%)\nNgày ghi nhận: ${s.date}\n>>> CHỈ THỊ: BẮT BUỘC dùng số liệu từ bảng điện này khi phân tích mã ${rawTicker}. Không tự bịa hay lấy từ báo cũ!\n================================================================`;
+            console.log('Successfully injected API data for', rawTicker);
+            break; // Stop after finding the first valid stock
           }
-        } catch (e) {
-          console.error('Lỗi khi tự động fetch mã cổ phiếu:', e);
         }
+      } catch (e) {
+        console.error('Lỗi khi fetch', rawTicker);
       }
     }
 
