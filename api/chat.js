@@ -65,7 +65,11 @@ export default async function handler(request) {
       }
     }
 
-    let finalSystemPrompt = systemPrompt + injectedData;
+    // Bơm thời gian thực và lệnh cấm quá khứ vào não AI
+    const rn = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    const timeContext = `\n\n[ĐỒNG HỒ HỆ THỐNG] Hôm nay là: ${rn}. Bối cảnh: Năm 2026.\n>>> LỆNH CẤM KỴ: TUYỆT ĐỐI KHÔNG được đem dịch bệnh COVID-19 hay sự kiện của những năm 2020-2025 ra ví von, so sánh với hiện tại. Luôn tương tác với người dùng ở thì hiện tại (2026).`;
+
+    let finalSystemPrompt = systemPrompt + injectedData + timeContext;
 
     // Thử Google Search grounding trước
     let result = await callGemini(apiKey, history, finalSystemPrompt, true);
