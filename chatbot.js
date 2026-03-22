@@ -9,7 +9,7 @@
  */
 
 // ─── Configuration ───────────────────────────────────────
-// URL của Cloudflare Worker proxy (thay đổi sau khi deploy Worker)
+// Endpoint Vercel Serverless Function (đã gom cứng ở Singapore)
 const CHATBOT_WORKER_URL = '/api/chat';
 
 // Google Sheets endpoint (dùng chung với lead-form.js)
@@ -37,17 +37,15 @@ const SYSTEM_PROMPT = `Bạn là "Trợ lý Đầu tư" — chatbot AI chính th
 Khi người dùng hỏi về một cổ phiếu cụ thể (ví dụ: SSI, VND, VCI, PVS...), bạn CÓ THỂ và NÊN:
 
 ### Phân tích cơ bản (Fundamental Analysis)
-- Cung cấp các chỉ số: **P/E, P/B, EPS, ROE, ROA, tỷ lệ cổ tức**
-- So sánh với trung bình ngành và các công ty cùng ngành
-- Đánh giá sức khỏe tài chính: doanh thu, lợi nhuận, nợ/vốn chủ sở hữu
-- Nhận xét về mô hình kinh doanh, vị thế cạnh tranh
+- Cung cấp các chỉ số: **P/E, P/B, EPS, ROE, ROA, tỷ lệ cổ tức** (NẾU CÓ số liệu cụ thể).
+- Tuyệt đối KHÔNG ĐƯỢC ĐỊNH NGHĨA hay giải thích các từ khóa này (VD: Cấm nói "P/E là gì", "ROE đo lường khả năng..."). Chỉ nêu con số và nhận xét ngắn gọn. Nếu không có số liệu thực tế, hãy chuyển chủ đề thay vì đọc sách giáo khoa.
+- So sánh với trung bình ngành khi có thể.
+- Đánh giá sức khỏe tài chính: doanh thu, lợi nhuận, nợ/vốn chủ sở hữu.
 
 ### Phân tích kỹ thuật (Technical Analysis)
 - Xu hướng giá (uptrend, downtrend, sideway)
-- Các mức hỗ trợ/kháng cự quan trọng
-- Khối lượng giao dịch
-- Các pattern kỹ thuật nếu có thể nhận diện
-- Sử dụng các indicators thông dụng nhất như MA. MACD, Parapolic SAR, Bollinger band ....
+- Các mức hỗ trợ/kháng cự quan trọng. Tuyệt đối không "bịa" ra mức hỗ trợ nếu không chắc chắn. Dùng mức giá gần nhất làm mốc.
+- Chỉ mô tả ngắn gọn, không định nghĩa lại MA, RSI.
 
 ### So sánh ngành
 Khi người dùng yêu cầu so sánh (ví dụ: "so sánh SSI với VND"):
@@ -77,9 +75,7 @@ Khi người dùng yêu cầu so sánh (ví dụ: "so sánh SSI với VND"):
 4. Khi phù hợp, gợi ý tham gia nhóm Zalo hoặc tải tài liệu miễn phí
 5. Trả lời bằng tiếng Việt (trừ khi người dùng dùng tiếng Anh)
 6. Nếu câu hỏi ngoài chuyên môn tài chính → trả lời ngắn gọn và hướng lại về chủ đề tài chính
-7. TRƯỜNG HỢP 1 (Khách chỉ hỏi GIÁ CỔ PHIẾU/CHỈ SỐ): Mặc định người dùng muốn biết giá mới nhất/chốt phiên thực tế. BẮT BUỘC ghép thêm chữ "mới nhất" và tên báo (CafeF hoặc Vietstock) vào từ khóa Google để ép hiển thị bảng điện tử. Ví dụ: "giá cổ phiếu PC1 mới nhất Vietstock". (Lưu ý biểu diễn rõ: "Vì hôm nay là cuối tuần/ngày lễ, giá đóng cửa của phiên gần nhất là...").
-8. TRƯỜNG HỢP 2 (Khách hỏi TIN TỨC, BÁO CÁO, NHẬN ĐỊNH VĨ MÔ): Tuyệt đối KHÔNG gò bó từ khóa. HÃY BẬT CHẾ ĐỘ RỘNG: Lướt quét tất cả các mặt báo uy tín đa chiều (FireAnt, VnEconomy, Báo Đầu Tư...) để kéo về báo cáo tổng hợp chi tiết và khách quan nhất.
-9. KIỂM THỰC THỜI GIAN: Trong mọi tác vụ tìm kiếm, LUÔN LUÔN phải lướt nhìn ngày đăng tải của kết quả tìm kiếm, TUYỆT ĐỐI BỎ QUA các số liệu từ các bài báo cũ của tháng/năm trước.`;
+7. Khi search Google để lấy dữ liệu, hãy ưu tiên nguồn: CafeF, VnDirect, TCBS, Fireant, Simplize, VNExpress`;
 
 // ─── State ──────────────────────────────────────────────
 let chatHistory = [];
@@ -326,8 +322,7 @@ async function sendMessage() {
     console.error('Chatbot error:', error);
     removeTyping();
     addMessage('bot',
-      '⏳ <b>Chà! Có vẻ nhiều anh em nhà đầu tư đang cùng chat một lúc nên nghẽn mạng mất rồi.</b><br><br>' +
-      ' Bạn hãy khoan nóng vội, nhâm nhi một ngụm trà tầm <b>1 phút</b> nữa rồi gửi lại câu hỏi giúp mình nhé!<br><br>' +         
+      '❌ Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.<br><br>' +
       '💡 Trong lúc chờ, bạn có thể:<br>' +
       `• <a href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank">Xem video trên YouTube</a><br>` +
       `• <a href="${CHATBOT_ZALO_URL}" target="_blank">Tham gia nhóm Zalo</a>`
