@@ -39,31 +39,35 @@ export default async function handler(request) {
     // Luôn luôn nạp VNINDEX vào danh sách cào dữ liệu để AI luôn biết điểm số thị trường thật, chống bịa đặt Hỗ trợ/Kháng cự.
     const candidates = ['VNINDEX', ...new Set(matches.map(m => m[1].replace(/\s+/g, '').toUpperCase()))];
     
-    // Loại trừ các từ phổ biến 3 chữ trong tiếng Việt
-    const excludeList = ['CHO', 'MUA', 'BAN', 'BÁN', 'GIA', 'GIÁ', 'XEM', 'HAY', 'TIN', 'BAO', 'BÁO', 'VOI', 'THI', 'LAI', 'SAO', 'NAO', 'MAI', 'XIN', 'BAI', 'NEN', 'TUC', 'ANH', 'CHI', 'EM ', 'NAY', 'QUA', 'DAU', 'ROI', 'GIO', 'LEN', 'XUONG', 'CAI', 'CON', 'CHI', 'HON', 'THE'];
-    
-    // Xử lý fetch song song để giảm lag, loại bỏ các kết quả lỗi/rỗng môt cách im lặng
-    const fetchPromises = candidates.map(async (rawTicker) => {
-      if (excludeList.includes(rawTicker)) return '';
-      try {
-        const res = await fetch(`https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=-date&q=code:${rawTicker}&size=1`, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-            'Accept': 'application/json'
+      // Loại trừ các từ phổ biến 3 chữ trong tiếng Việt
+      const excludeList = ['CHO', 'MUA', 'BAN', 'BÁN', 'GIA', 'GIÁ', 'XEM', 'HAY', 'TIN', 'BAO', 'BÁO', 'VOI', 'THI', 'LAI', 'SAO', 'NAO', 'MAI', 'XIN', 'BAI', 'NEN', 'TUC', 'ANH', 'CHI', 'EM ', 'NAY', 'QUA', 'DAU', 'ROI', 'GIO', 'LEN', 'XUONG', 'CAI', 'CON', 'CHI', 'HON', 'THE'];
+      
+      // Xử lý fetch song song với TCBS
+      const fetchPromises = candidates.map(async (rawTicker) => {
+        if (excludeList.includes(rawTicker)) return '';
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1500); // Ngắt kết nối sớm nếu IP bị chặn
+        try {
+          const res = await fetch(`https://apipubaws.tcbs.com.vn/tcanalysis/v1/ticker/${rawTicker}/overview`, {
+            signal: controller.signal,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+              'Accept': 'application/json'
+            }
+          });
+          clearTimeout(timeoutId);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.ticker === rawTicker && data.price) {
+              return `\n\n=== [QUAN TRỌNG] DỮ LIỆU BẢNG ĐIỆN TỬ: MÃ ${rawTicker} ===\nGiá hiện tại (VND): ${data.price} đồng\nBiến động giá: ${data.change} đồng\n>>> LỆNH TỐI CAO: BẮT BUỘC dùng số liệu này khi nói về giá mã ${rawTicker}! Không tự bịa hay dùng số Google!\n================================================================`;
+            }
           }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.data?.length > 0) {
-            const s = data.data[0];
-            return `\n\n=== [QUAN TRỌNG] DỮ LIỆU BẢNG ĐIỆN TỬ: MÃ ${rawTicker} ===\nGiá đóng cửa gần nhất (VND): ${s.close * 1000} đồng\nBiến động giá: ${s.change * 1000} đồng (${s.pctChange}% so với phiên trước)\nNgày ghi nhận: ${s.date}\n>>> LỆNH TỐI CAO: BẮT BUỘC dùng số liệu này khi nói về giá mã ${rawTicker}! Không tự bịa hay dùng số Google!\n================================================================`;
-          }
+        } catch (e) {
+          clearTimeout(timeoutId);
+          console.error('Lỗi hoặc Timeout khi fetch TCBS', rawTicker);
         }
-      } catch (e) {
-        console.error('Lỗi khi fetch', rawTicker);
-      }
-      return ''; // Im lặng thả qua nếu API sập hoặc chữ đó không phải là mã chứng khoán (data.length = 0)
-    });
+        return ''; 
+      });
     
     const results = await Promise.all(fetchPromises);
     const injectedData = results.join('');
@@ -74,7 +78,7 @@ export default async function handler(request) {
 >>> LỆNH CẤM KỴ TỪ HỆ THỐNG: 
 1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 hay sự kiện của những năm 2020-2025 ra ví von, so sánh với hiện tại.
 2. Khi khách hỏi "Vĩ mô, Biến động tuần mới, Điểm tin": TRƯỚC TIÊN hãy tự kiểm tra "Google Search có trả về bài báo/tin tức cụ thể nào GẦN ĐÂY không?". NẾU CÓ số liệu chứng minh, hãy điểm tin. NẾU KHÔNG CÓ (hoặc chỉ có mẫu tin cũ rích), bạn PHẢI TRẢ LỜI NGAY: "Chào bạn, hiện tại thị trường chưa có tin tức vĩ mô nổi bật nào mới được cập nhật." - CẤM mở đầu bằng "Dưới đây là một số tin..." rồi để trống.
-3. TUYỆT ĐỐI KHÔNG TỰ BỊA RA XU HƯỚNG, ĐIỂM SỐ VN-INDEX (như VN-Index 1800) hay các mốc Hỗ Trợ/Kháng Cự nếu không dưa trên Dữ Liệu Bảng Điện Tử mà hệ thống vừa cung cấp!`;
+3. TUYỆT ĐỐI KHÔNG TỰ BỊA RA XU HƯỚNG, ĐIỂM SỐ VN-INDEX (như VN-Index 1800) hay các mốc Hỗ Trợ/Kháng Cự nếu không dưa trên Dữ Liệu Bảng Điện Tử mà hệ thống vừa cung cấp! Mọi sai số bịa đặt mốc MA20 hay 1800 sẽ bị trừng phạt gắt gao.`;
 
     let finalSystemPrompt = systemPrompt + injectedData + timeContext;
 
