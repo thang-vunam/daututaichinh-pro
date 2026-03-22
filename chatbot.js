@@ -17,6 +17,16 @@ const CHATBOT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxD7TnNMKJGK
 // Zalo group
 const CHATBOT_ZALO_URL = 'https://zalo.me/g/pvscez363';
 
+// ─── Session Management ───────────────────────────────────
+function getSessionId() {
+  let sid = localStorage.getItem('chatSessionId');
+  if (!sid) {
+    sid = 'DTC_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+    localStorage.setItem('chatSessionId', sid);
+  }
+  return sid;
+}
+
 // ─── System Prompt ──────────────────────────────────────
 const SYSTEM_PROMPT = `Bạn là "Trợ lý Đầu tư" — chatbot AI chính thức của website daututaichinh.pro, thuộc kênh YouTube "Đầu tư & Tài chính chuyên sâu".
 
@@ -76,7 +86,7 @@ Khi nhắc đến các link trên, BẮT BUỘC phải dùng định dạng Mark
 3. CÓ THỂ nói "cổ phiếu đang có P/E hấp dẫn so với ngành" hoặc "định giá đang ở mức cao" — đây là nhận xét khách quan
 4. Khi phù hợp, gợi ý tham gia nhóm Zalo hoặc tải tài liệu miễn phí
 5. Trả lời bằng tiếng Việt (trừ khi người dùng dùng tiếng Anh)
-6. Bạn là AI trợ lý thông minh đa năng: CỨ THOẢI MÁI trả lời chi tiết và cập nhật các câu hỏi về tin tức thế giới, chiến tranh, xã hội, công nghệ, lịch sử, v.v. TUYỆT ĐỐI KHÔNG từ chối trả lời chỉ vì câu hỏi nằm ngoài lĩnh vực chứng khoán. Tuy nhiên, nếu có thể, hãy khéo léo mở rộng góc nhìn bằng cách liên kết câu trả lời thực tế đó với ảnh hưởng đến kinh tế vĩ mô hoặc thị trường tài chính!`;
+7. Khi khách hàng hỏi các câu tư vấn chuyên sâu về danh mục cá nhân, mã cổ phiếu đang lỗ lãi, hoặc hỏi tư vấn đầu tư với số tiền cụ thể: HÃY KHÉO LÉO ĐỀ NGHỊ HỌ ĐỂ LẠI SỐ ĐIỆN THOẠI ZALO NGAY TRONG KHUNG CHAT để chuyên gia (hoặc bạn) có thể hỗ trợ trực tiếp và gửi biểu đồ chi tiết.`;
 
 // ─── State ──────────────────────────────────────────────
 let chatHistory = [];
@@ -295,6 +305,7 @@ async function sendMessage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        sessionId: getSessionId(),
         history: chatHistory,
         systemPrompt: SYSTEM_PROMPT
       })

@@ -10,6 +10,16 @@
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxD7TnNMKJGKb-ZOLKj1QESmy_c3bQ6lrXjlwn4fVbQh1yXcubwLnM19ellixFLjYOYog/exec';
 const ZALO_GROUP_URL = 'https://zalo.me/g/pvscez363';
 
+// ─── Session Management ───────────────────────────────────
+function getSessionId() {
+  let sid = localStorage.getItem('chatSessionId');
+  if (!sid) {
+    sid = 'DTC_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+    localStorage.setItem('chatSessionId', sid);
+  }
+  return sid;
+}
+
 // ─── Form HTML Template ──────────────────────────────────
 function createFormHTML(formId) {
   return `
@@ -172,6 +182,7 @@ function handleFormSubmit(form) {
         phone: phone || '(không có)',
         interest,
         source: window.location.pathname,
+        sessionId: getSessionId(),
         timestamp: new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
       });
 
