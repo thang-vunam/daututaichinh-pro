@@ -40,30 +40,33 @@ export default async function handler(request) {
     const candidates = matches.map(m => m[1].replace(/\s+/g, '').toUpperCase());
     
     // Loại trừ các từ phổ biến 3 chữ trong tiếng Việt
-    const excludeList = ['CHO', 'MUA', 'BAN', 'BÁN', 'GIA', 'GIÁ', 'XEM', 'HAY', 'TIN', 'BAO', 'BÁO', 'VOI', 'THI', 'LAI', 'SAO', 'NAO', 'MAI', 'XIN', 'BAI', 'NEN', 'TUC'];
+    const excludeList = ['CHO', 'MUA', 'BAN', 'BÁN', 'GIA', 'GIÁ', 'XEM', 'HAY', 'TIN', 'BAO', 'BÁO', 'VOI', 'THI', 'LAI', 'SAO', 'NAO', 'MAI', 'XIN', 'BAI', 'NEN', 'TUC', 'ANH', 'CHI', 'EM ', 'NAY', 'QUA', 'DAU', 'ROI', 'GIO', 'LEN', 'XUONG', 'CAI', 'CON', 'CHI', 'HON', 'THE'];
     
-    let injectedData = '';
-    
-    for (const rawTicker of candidates) {
-      if (excludeList.includes(rawTicker)) continue;
-      
+    // Xử lý fetch song song để giảm lag, loại bỏ các kết quả lỗi/rỗng môt cách im lặng
+    const fetchPromises = candidates.map(async (rawTicker) => {
+      if (excludeList.includes(rawTicker)) return '';
       try {
-        console.log('Testing potential ticker:', rawTicker);
-        const res = await fetch(`https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=-date&q=code:${rawTicker}&size=1`);
+        const res = await fetch(`https://finfo-api.vndirect.com.vn/v4/stock_prices?sort=-date&q=code:${rawTicker}&size=1`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+            'Accept': 'application/json'
+          }
+        });
         if (res.ok) {
           const data = await res.json();
-          // Nếu API báo có data thật -> Chắc chắn đây là mã chứng khoán!
-          if (data && data.data && data.data.length > 0) {
+          if (data?.data?.length > 0) {
             const s = data.data[0];
-            injectedData += `\n\n=== [QUAN TRỌNG] DỮ LIỆU BẢNG ĐIỆN TỬ: MÃ ${rawTicker} ===\nGiá đóng cửa gần nhất (VND): ${s.close * 1000} đồng\nBiến động giá: ${s.change * 1000} đồng (${s.pctChange}%)\nNgày ghi nhận: ${s.date}\n>>> CHỈ THỊ: BẮT BUỘC dùng số liệu từ bảng điện này khi phân tích mã ${rawTicker}. Không tự bịa hay lấy từ báo cũ!\n================================================================`;
-            console.log('Successfully injected API data for', rawTicker);
-            break; // Stop after finding the first valid stock
+            return `\n\n=== [QUAN TRỌNG] DỮ LIỆU BẢNG ĐIỆN TỬ: MÃ ${rawTicker} ===\nGiá đóng cửa gần nhất (VND): ${s.close * 1000} đồng\nBiến động giá: ${s.change * 1000} đồng (${s.pctChange}% so với phiên trước)\nNgày ghi nhận: ${s.date}\n>>> LỆNH TỐI CAO: BẮT BUỘC dùng số liệu này khi nói về giá mã ${rawTicker}! Không tự bịa hay dùng số Google!\n================================================================`;
           }
         }
       } catch (e) {
         console.error('Lỗi khi fetch', rawTicker);
       }
-    }
+      return ''; // Im lặng thả qua nếu API sập hoặc chữ đó không phải là mã chứng khoán (data.length = 0)
+    });
+    
+    const results = await Promise.all(fetchPromises);
+    const injectedData = results.join('');
 
     // Bơm thời gian thực và lệnh cấm quá khứ vào não AI
     const rn = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
