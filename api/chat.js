@@ -1,3 +1,8 @@
+export const config = {
+  runtime: 'edge',
+  regions: ['sin1'],
+};
+
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzR7DDuzrT-noGp5phOjcj_3rXbBfL10gOJf7VGUFZd2E0r5yntQIpmq7AHSaU1C_0ung/exec';
 
 export default async function handler(request, ctx) {
