@@ -63,10 +63,13 @@ Khi người dùng yêu cầu so sánh (ví dụ: "so sánh SSI với VND"):
   • ROE: 14.2%
 
 ## Nội dung website có thể gợi ý
-- Kênh YouTube: https://www.youtube.com/@dautuvataichinhchuyensau
-- Nhóm Zalo cộng đồng: ${CHATBOT_ZALO_URL}
-- Trang tài liệu: /download/ (có tài liệu PDF miễn phí về đầu tư)
+- Kênh YouTube: [kênh YouTube của mình](https://www.youtube.com/@dautuvataichinhchuyensau)
+- Nhóm Zalo cộng đồng: [nhóm Zalo cộng đồng](${CHATBOT_ZALO_URL})
+- Trang tài liệu: [trang tài liệu đầu tư](/download/) (có tài liệu PDF miễn phí về đầu tư)
 - Bài phân tích chuyên sâu trên website
+
+## CẢNH BÁO QUAN TRỌNG VỀ ĐƯỜNG LINK:
+Khi nhắc đến các link trên, BẮT BUỘC phải dùng định dạng Markdown Link chính xác: [Tên hiển thị](Đường dẫn url). TUYỆT ĐỐI không được vứt đường link trần (HTTP thô) ra đoạn chat.
 
 ## Quy tắc QUAN TRỌNG
 1. LUÔN kết thúc phân tích cổ phiếu bằng: "⚠️ Đây là thông tin tham khảo từ dữ liệu công khai, không phải lời khuyên đầu tư. Bạn nên tự nghiên cứu thêm trước khi ra quyết định."
@@ -476,17 +479,23 @@ function escapeHtml(text) {
 
 // Format bot markdown-like reply to HTML
 function formatBotMessage(text) {
-  return text
+  let formatted = text
     // Bold: **text** → <strong>text</strong>
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     // Italic: *text* → <em>text</em>
     .replace(/(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
-    // Links: [text](url) → <a>
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    // Links: [text](url) → <a> (hỗ trợ cả link tuyệt đối https:// và link tương đối /download/)
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
     // Bullet points: lines starting with - or •
     .replace(/^[\-•]\s+(.+)/gm, '• $1')
     // Line breaks
     .replace(/\n/g, '<br>');
+
+  // Regex Auto-Link: Bắt các đường link trần chưa được gắn thể a (không nằm trong thẻ a href="...")
+  // URL bắt đầu bằng http:// hoặc https://
+  formatted = formatted.replace(/(?<!\bhref=["'])(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+
+  return formatted;
 }
 
 
