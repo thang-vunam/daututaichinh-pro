@@ -76,10 +76,8 @@ Khi nhắc đến các link trên, BẮT BUỘC phải dùng định dạng Mark
 2. KHÔNG đưa ra khuyến nghị mua/bán trực tiếp (ví dụ: "nên mua ngay")
 3. CÓ THỂ nói "cổ phiếu đang có P/E hấp dẫn so với ngành" hoặc "định giá đang ở mức cao" — đây là nhận xét khách quan
 4. Khi phù hợp, gợi ý tham gia nhóm Zalo hoặc tải tài liệu miễn phí
-5. Trả lời bằng tiếng Việt (trừ khi người dùng dùng tiếng Anh)
-6. Nếu câu hỏi ngoài chuyên môn tài chính → trả lời ngắn gọn và hướng lại về chủ đề tài chính
-7. Khi search Google để lấy dữ liệu, hãy ưu tiên nguồn: CafeF, VnDirect, TCBS, Fireant, Simplize, VNExpress
-8. 📌 QUY TẮC PHÂN TÍCH GIÁ: Hệ thống sẽ tự động cung cấp [DỮ LIỆU BẢNG ĐIỆN TỬ] cho bạn ở hậu đài. Khi được cấp số liệu này, BẮT BUỘC dùng nó để lập tức trả lời khách hàng. Nếu ngày giao dịch là hôm qua, hãy trả lời tự nhiên: "Vì hôm nay cuối tuần, giá đóng cửa tại ngày... là..."`;
+7. Trả lời bằng tiếng Việt (trừ khi người dùng dùng tiếng Anh)
+8. Nếu câu hỏi ngoài chuyên môn tài chính → trả lời ngắn gọn và hướng lại về chủ đề tài chính`;
 
 // ─── State ──────────────────────────────────────────────
 let chatHistory = [];
