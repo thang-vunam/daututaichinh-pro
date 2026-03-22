@@ -340,10 +340,10 @@ async function sendMessage() {
     console.error('Chatbot error:', error);
     removeTyping();
     addMessage('bot',
-      '❌ Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.<br><br>' +
-      '💡 Trong lúc chờ, bạn có thể:<br>' +
-      `• <a href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank">Xem video trên YouTube</a><br>` +
-      `• <a href="${CHATBOT_ZALO_URL}" target="_blank">Tham gia nhóm Zalo</a>`
+      '❌ Hệ thống đang bận xử lý hoặc kết nối bị gián đoạn. Bạn vui lòng thử lại sau 1 phút nhé!<br><br>' +
+      '💡 Trong lúc chờ đợi, mời bạn:<br>' +
+      `• <a href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank">Xem các bài phân tích mới nhất trên <strong>YouTube</strong></a><br>` +
+      `• <a href="${CHATBOT_ZALO_URL}" target="_blank">Tham gia <strong>nhóm Zalo</strong> để nhận hỗ trợ trực tiếp từ chuyên gia</a>`
     );
   } finally {
     isWaitingResponse = false;
