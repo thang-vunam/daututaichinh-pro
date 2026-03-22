@@ -9,8 +9,8 @@
  */
 
 // ─── Configuration ───────────────────────────────────────
-// Endpoint Vercel Serverless Function (đã gom cứng ở Singapore)
-const CHATBOT_WORKER_URL = '/api/chat';
+// Endpoint Vercel Serverless Function (đã gom cứng ở Singapore) hoặc Cloudflare Worker
+const CHATBOT_WORKER_URL = 'https://chatbot-api.thangvu-dht.workers.dev';
 
 // Google Sheets endpoint (dùng chung với lead-form.js)
 const CHATBOT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxD7TnNMKJGKb-ZOLKj1QESmy_c3bQ6lrXjlwn4fVbQh1yXcubwLnM19ellixFLjYOYog/exec';
