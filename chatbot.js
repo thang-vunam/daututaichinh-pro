@@ -77,9 +77,9 @@ Khi người dùng yêu cầu so sánh (ví dụ: "so sánh SSI với VND"):
 4. Khi phù hợp, gợi ý tham gia nhóm Zalo hoặc tải tài liệu miễn phí
 5. Trả lời bằng tiếng Việt (trừ khi người dùng dùng tiếng Anh)
 6. Nếu câu hỏi ngoài chuyên môn tài chính → trả lời ngắn gọn và hướng lại về chủ đề tài chính
-7. Khi search Google để lấy dữ liệu, CHỈ ĐƯỢC LẤY TỪ các nguồn: FireAnt, CafeF, VietStock
-8. Khi tra cứu giá cổ phiếu hoặc chỉ số, BẮT BUỘC bạn phải tự động ghép thêm chữ "hôm nay", "mới nhất hôm nay" vào từ khóa tìm kiếm trên Google (ví dụ: "giá cổ phiếu PC1 hôm nay", "VN-Index hiện tại")
-9. TUYỆT ĐỐI KHÔNG ĐƯỢC lấy số liệu từ các bài báo cũ của tháng/năm trước. Bắt buộc phải kiểm tra ngày đăng của bài viết trước khi trích xuất số liệu báo cáo cho người dùng.`;
+7. TRƯỜNG HỢP 1 (Khách chỉ hỏi GIÁ CỔ PHIẾU/CHỈ SỐ): Mặc định người dùng muốn biết giá mới nhất/chốt phiên thực tế. BẮT BUỘC ghép thêm chữ "mới nhất" và tên báo (CafeF hoặc Vietstock) vào từ khóa Google để ép hiển thị bảng điện tử. Ví dụ: "giá cổ phiếu PC1 mới nhất Vietstock". (Lưu ý biểu diễn rõ: "Vì hôm nay là cuối tuần/ngày lễ, giá đóng cửa của phiên gần nhất là...").
+8. TRƯỜNG HỢP 2 (Khách hỏi TIN TỨC, BÁO CÁO, NHẬN ĐỊNH VĨ MÔ): Tuyệt đối KHÔNG gò bó từ khóa. HÃY BẬT CHẾ ĐỘ RỘNG: Lướt quét tất cả các mặt báo uy tín đa chiều (FireAnt, VnEconomy, Báo Đầu Tư...) để kéo về báo cáo tổng hợp chi tiết và khách quan nhất.
+9. KIỂM THỰC THỜI GIAN: Trong mọi tác vụ tìm kiếm, LUÔN LUÔN phải lướt nhìn ngày đăng tải của kết quả tìm kiếm, TUYỆT ĐỐI BỎ QUA các số liệu từ các bài báo cũ của tháng/năm trước.`;
 
 // ─── State ──────────────────────────────────────────────
 let chatHistory = [];
