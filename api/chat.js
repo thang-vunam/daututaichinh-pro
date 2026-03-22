@@ -1,10 +1,7 @@
-export const config = {
-  runtime: 'edge',
-  regions: ['sin1'], // BẮT BUỘC: Gắn cứng máy chủ ở Singapore để Gemini AI luôn cấp phép
-};
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzR7DDuzrT-noGp5phOjcj_3rXbBfL10gOJf7VGUFZd2E0r5yntQIpmq7AHSaU1C_0ung/exec';
 
-export default async function handler(request) {
-  // Preflight CORS
+export default async function handler(request, ctx) {
+  // Preflight CORS (giữ nguyên)
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders(request) });
   }
@@ -14,7 +11,7 @@ export default async function handler(request) {
   }
 
   try {
-    const { history, systemPrompt } = await request.json();
+    const { history, systemPrompt, sessionId } = await request.json();
 
     if (!history || !Array.isArray(history)) {
       return jsonResponse({ error: 'Invalid request: history required' }, 400, request);
@@ -26,76 +23,91 @@ export default async function handler(request) {
       return jsonResponse({ error: 'API key not configured in Vercel' }, 500, request);
     }
 
-    // Lấy 3 tin nhắn gần nhất của user để làm "Bộ nhớ ngắn hạn" cho việc tìm mã
+    // (Giữ nguyên logic fetch song song SSI/TCBS và prompt...)
+    // Lấy 3 tin nhắn gần nhất của user để làm "Bộ nhớ ngắn hạn"
     const recentUserMessages = history
       .filter(msg => msg.role === 'user')
-      .slice(-3) // Lấy 3 câu gần nhất
+      .slice(-3)
       .flatMap(msg => msg.parts || [])
       .map(part => part.text || '')
       .join(' ');
 
-    // Regex lấy tất cả từ 3 chữ cái (VNM), hoặc 2 chữ cái + 1 số có/không có khoảng trắng (PC1, pc 1, nt 2)
     const matches = [...recentUserMessages.matchAll(/\b([a-zA-Z]{3}|[a-zA-Z]{2}\s?[0-9])\b/gi)];
-    // Luôn luôn nạp VNINDEX vào danh sách cào dữ liệu để AI luôn biết điểm số thị trường thật, chống bịa đặt Hỗ trợ/Kháng cự.
     const candidates = ['VNINDEX', ...new Set(matches.map(m => m[1].replace(/\s+/g, '').toUpperCase()))];
+    const excludeList = ['CHO', 'MUA', 'BAN', 'BÁN', 'GIA', 'GIÁ', 'XEM', 'HAY', 'TIN', 'BAO', 'BÁO', 'VOI', 'THI', 'LAI', 'SAO', 'NAO', 'MAI', 'XIN', 'BAI', 'NEN', 'TUC', 'ANH', 'CHI', 'EM ', 'NAY', 'QUA', 'DAU', 'ROI', 'GIO', 'LEN', 'XUONG', 'CAI', 'CON', 'CHI', 'HON', 'THE'];
     
-      // Loại trừ các từ phổ biến 3 chữ trong tiếng Việt
-      const excludeList = ['CHO', 'MUA', 'BAN', 'BÁN', 'GIA', 'GIÁ', 'XEM', 'HAY', 'TIN', 'BAO', 'BÁO', 'VOI', 'THI', 'LAI', 'SAO', 'NAO', 'MAI', 'XIN', 'BAI', 'NEN', 'TUC', 'ANH', 'CHI', 'EM ', 'NAY', 'QUA', 'DAU', 'ROI', 'GIO', 'LEN', 'XUONG', 'CAI', 'CON', 'CHI', 'HON', 'THE'];
-      
-      // Xử lý fetch song song với TCBS
-      const fetchPromises = candidates.map(async (rawTicker) => {
-        if (excludeList.includes(rawTicker)) return '';
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500); // Ngắt kết nối sớm nếu IP bị chặn
-        try {
-          const res = await fetch(`https://apipubaws.tcbs.com.vn/tcanalysis/v1/ticker/${rawTicker}/overview`, {
-            signal: controller.signal,
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-              'Accept': 'application/json'
-            }
-          });
+    const fetchPromises = candidates.map(async (rawTicker) => {
+      if (excludeList.includes(rawTicker)) return '';
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      try {
+        if (rawTicker === 'VNINDEX') {
+          const res = await fetch('https://iboard.ssi.com.vn/dchart/api/1.1/defaultAllStocks', { signal: controller.signal });
           clearTimeout(timeoutId);
           if (res.ok) {
             const data = await res.json();
-            if (data && data.ticker === rawTicker && data.price) {
-              return `\n\n=== [QUAN TRỌNG] DỮ LIỆU BẢNG ĐIỆN TỬ: MÃ ${rawTicker} ===\nGiá hiện tại (VND): ${data.price} đồng\nBiến động giá: ${data.change} đồng\n>>> LỆNH TỐI CAO: BẮT BUỘC dùng số liệu này khi nói về giá mã ${rawTicker}! Không tự bịa hay dùng số Google!\n================================================================`;
+            if (Array.isArray(data)) {
+              const vnModel = data.find(d => d.stockSymbol === 'VNINDEX' || d.code === 'VNINDEX');
+              if (vnModel) {
+                const price = vnModel.matchedPrice || vnModel.closePrice || 0;
+                const change = price - (vnModel.refPrice || price);
+                return `\n\n=== [QUAN TRỌNG] DỮ LIỆU THỊ TRƯỜNG CHUNG: VN-INDEX ===\nĐiểm số hiện tại: ${price} điểm\nBiến động: ${change >= 0 ? '+' : ''}${change.toFixed(2)} điểm\n>>> LỆNH TỐI CAO: BẮT BUỘC dùng số liệu này khi nói về điểm số VN-Index!\n================================================================`;
+              }
             }
           }
-        } catch (e) {
-          clearTimeout(timeoutId);
-          console.error('Lỗi hoặc Timeout khi fetch TCBS', rawTicker);
+          return '';
         }
-        return ''; 
-      });
+        const res = await fetch(`https://apipubaws.tcbs.com.vn/tcanalysis/v1/ticker/${rawTicker}/overview`, {
+          signal: controller.signal,
+          headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' }
+        });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.ticker === rawTicker && data.price) {
+            return `\n\n=== [QUAN TRỌNG] DỮ LIỆU BẢNG ĐIỆN TỬ: MÃ ${rawTicker} ===\nGiá hiện tại (VND): ${data.price} đồng\nBiến động giá: ${data.change} đồng\n>>> LỆNH TỐI CAO: BẮT BUỘC dùng số liệu này khi nói về giá mã ${rawTicker}! [Xem chi tiết mã ${rawTicker} tại mục Phân Tích](https://fireant.vn/dashboard/content/symbols/${rawTicker})\n================================================================`;
+          }
+        }
+      } catch (e) {
+        clearTimeout(timeoutId);
+      }
+      return ''; 
+    });
     
     const results = await Promise.all(fetchPromises);
     const injectedData = results.join('');
-
-    // Bơm thời gian thực và lệnh cấm quá khứ vào não AI
     const rn = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
-    const timeContext = `\n\n[ĐỒNG HỒ HỆ THỐNG] Hôm nay là: ${rn}. Bối cảnh: Năm 2026.
->>> LỆNH CẤM KỴ TỪ HỆ THỐNG: 
-1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 hay sự kiện của những năm 2020-2025 ra ví von, so sánh với hiện tại.
-2. Khi khách hỏi "Vĩ mô, Biến động tuần mới, Điểm tin": TRƯỚC TIÊN hãy tự kiểm tra "Google Search có trả về bài báo/tin tức cụ thể nào GẦN ĐÂY không?". NẾU CÓ số liệu chứng minh, hãy điểm tin. NẾU KHÔNG CÓ (hoặc chỉ có mẫu tin cũ rích), bạn PHẢI TRẢ LỜI NGAY: "Chào bạn, hiện tại thị trường chưa có tin tức vĩ mô nổi bật nào mới được cập nhật." - CẤM mở đầu bằng "Dưới đây là một số tin..." rồi để trống.
-3. TUYỆT ĐỐI KHÔNG TỰ BỊA RA XU HƯỚNG, ĐIỂM SỐ VN-INDEX (như VN-Index 1800) hay các mốc Hỗ Trợ/Kháng Cự nếu không dưa trên Dữ Liệu Bảng Điện Tử mà hệ thống vừa cung cấp! Mọi sai số bịa đặt mốc MA20 hay 1800 sẽ bị trừng phạt gắt gao.`;
-
+    const timeContext = `\n\n[ĐỒNG HỒ HỆ THỐNG] Hôm nay là: ${rn}. Bối cảnh: Năm 2026.\n1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 ra ví von.\n2. Phải kiểm tra tin tức vĩ mô trước khi nói.\n3. TUYỆT ĐỐI KHÔNG TỰ BỊA RA XU HƯỚNG.`;
     let finalSystemPrompt = systemPrompt + injectedData + timeContext;
 
-    // Thử Google Search grounding trước
+    // Call Gemini
     let result = await callGemini(apiKey, history, finalSystemPrompt, true);
-
-    // Nếu lỗi, thử lại KHÔNG kèm tìm kiếm
     if (!result.ok) {
-      console.log('Google Search grounding failed, retrying without it...');
       result = await callGemini(apiKey, history, finalSystemPrompt, false);
     }
 
     if (!result.ok) {
-      return jsonResponse({
-        error: 'Gemini API error',
-        details: result.status
-      }, 502, request);
+      return jsonResponse({ error: 'Gemini API error', details: result.status }, 502, request);
+    }
+
+    // Log to Google Sheets (Background)
+    if (sessionId && ctx && typeof ctx.waitUntil === 'function') {
+      const logData = {
+        action: 'log_chat',
+        sessionId: sessionId,
+        userMessage: history[history.length - 1]?.parts?.[0]?.text || '',
+        botReply: result.reply,
+        timestamp: new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })
+      };
+      
+      ctx.waitUntil(
+        fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(logData),
+          redirect: 'follow'
+        }).catch(e => console.error('Sheet Log Error:', e))
+      );
     }
 
     return jsonResponse({ reply: result.reply }, 200, request);
