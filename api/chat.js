@@ -72,7 +72,8 @@ export default async function handler(request) {
     const timeContext = `\n\n[ĐỒNG HỒ HỆ THỐNG] Hôm nay là: ${rn}. Bối cảnh: Năm 2026.
 >>> LỆNH CẤM KỴ TỪ HỆ THỐNG: 
 1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 hay sự kiện của những năm 2020-2025 ra ví von, so sánh với hiện tại.
-2. Khi khách hỏi "Điểm tin vĩ mô": TRƯỚC TIÊN hãy tự kiểm tra "Mình có số liệu tin tức cụ thể nào của ngày hôm nay không?". NẾU KHÔNG CÓ, bạn PHẢI TRẢ LỜI NGAY: "Hiện tại thị trường chưa có tin tức vĩ mô nổi bật nào mới được cập nhật." - CẤM mở đầu bằng "Dưới đây là một số tin..." rồi để trống. TUYỆT ĐỐI KHÔNG được xào nấu văn mẫu chung chung!`;
+2. Khi khách hỏi "Điểm tin vĩ mô": TRƯỚC TIÊN hãy tự kiểm tra "Mình có số liệu tin tức cụ thể nào của ngày hôm nay không?". NẾU KHÔNG CÓ, bạn PHẢI TRẢ LỜI NGAY: "Hiện tại thị trường chưa có tin tức vĩ mô nổi bật nào mới được cập nhật." - CẤM mở đầu bằng "Dưới đây là một số tin..." rồi để trống.
+3. NẾU CÓ TIN TỨC VĨ MÔ/THỊ TRƯỜNG: BẮT BUỘC mỗi ý tóm tắt phải đi kèm ĐƯỜNG LINK DẪN CHỨNG (URL) ở cuối câu. Format bắt buộc: "[Tóm tắt nội dung] - [Nguồn bài](Link_URL)". TUYỆT ĐỐI KHÔNG xào nấu văn mẫu chung chung!`;
 
     let finalSystemPrompt = systemPrompt + injectedData + timeContext;
 
