@@ -42,8 +42,12 @@ export default async function handler(request) {
 async function callGemini(apiKey, history, systemPrompt, useSearch) {
   const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
+  // --- CẤY ĐỒNG HỒ VIỆT NAM (Tự động lấy ngày giờ thực tế hiện tại) ---
+  const todayVN = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+  const finalPrompt = `BẮT BUỘC GHI NHỚ: Hôm nay chính xác là ngày ${todayVN}. Các bài báo có thời gian cũ hơn ngày này đều thuộc về quá khứ.\n\n` + (systemPrompt || 'Bạn là trợ lý tài chính thông minh.');
+
   const geminiBody = {
-    system_instruction: { parts: [{ text: systemPrompt || 'Bạn là trợ lý tài chính thông minh.' }] },
+    system_instruction: { parts: [{ text: finalPrompt }] },
     contents: history,
     generationConfig: { temperature: 0.7, topP: 0.9, topK: 40, maxOutputTokens: 2048 },
     safetySettings: [
