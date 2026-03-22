@@ -326,7 +326,8 @@ async function sendMessage() {
     console.error('Chatbot error:', error);
     removeTyping();
     addMessage('bot',
-      '❌ Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.<br><br>' +
+      '⏳ <b>Chà! Có vẻ nhiều anh em nhà đầu tư đang cùng chat một lúc nên nghẽn mạng mất rồi.</b><br><br>' +
+      ' Bạn hãy khoan nóng vội, nhâm nhi một ngụm trà tầm <b>1 phút</b> nữa rồi gửi lại câu hỏi giúp mình nhé!<br><br>' +         
       '💡 Trong lúc chờ, bạn có thể:<br>' +
       `• <a href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank">Xem video trên YouTube</a><br>` +
       `• <a href="${CHATBOT_ZALO_URL}" target="_blank">Tham gia nhóm Zalo</a>`
