@@ -36,7 +36,8 @@ export default async function handler(request) {
 
     // Regex lấy tất cả từ 3 chữ cái (VNM), hoặc 2 chữ cái + 1 số có/không có khoảng trắng (PC1, pc 1, nt 2)
     const matches = [...recentUserMessages.matchAll(/\b([a-zA-Z]{3}|[a-zA-Z]{2}\s?[0-9])\b/gi)];
-    const candidates = matches.map(m => m[1].replace(/\s+/g, '').toUpperCase());
+    // Luôn luôn nạp VNINDEX vào danh sách cào dữ liệu để AI luôn biết điểm số thị trường thật, chống bịa đặt Hỗ trợ/Kháng cự.
+    const candidates = ['VNINDEX', ...new Set(matches.map(m => m[1].replace(/\s+/g, '').toUpperCase()))];
     
     // Loại trừ các từ phổ biến 3 chữ trong tiếng Việt
     const excludeList = ['CHO', 'MUA', 'BAN', 'BÁN', 'GIA', 'GIÁ', 'XEM', 'HAY', 'TIN', 'BAO', 'BÁO', 'VOI', 'THI', 'LAI', 'SAO', 'NAO', 'MAI', 'XIN', 'BAI', 'NEN', 'TUC', 'ANH', 'CHI', 'EM ', 'NAY', 'QUA', 'DAU', 'ROI', 'GIO', 'LEN', 'XUONG', 'CAI', 'CON', 'CHI', 'HON', 'THE'];
@@ -73,7 +74,7 @@ export default async function handler(request) {
 >>> LỆNH CẤM KỴ TỪ HỆ THỐNG: 
 1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 hay sự kiện của những năm 2020-2025 ra ví von, so sánh với hiện tại.
 2. Khi khách hỏi "Vĩ mô, Biến động tuần mới, Điểm tin": TRƯỚC TIÊN hãy tự kiểm tra "Google Search có trả về bài báo/tin tức cụ thể nào GẦN ĐÂY không?". NẾU CÓ số liệu chứng minh, hãy điểm tin. NẾU KHÔNG CÓ (hoặc chỉ có mẫu tin cũ rích), bạn PHẢI TRẢ LỜI NGAY: "Chào bạn, hiện tại thị trường chưa có tin tức vĩ mô nổi bật nào mới được cập nhật." - CẤM mở đầu bằng "Dưới đây là một số tin..." rồi để trống.
-3. NẾU CÓ TIN TỨC VĨ MÔ/THỊ TRƯỜNG: BẮT BUỘC mỗi ý tóm tắt phải đi kèm ĐƯỜNG LINK DẪN CHỨNG (URL) ở cuối câu. Format bắt buộc: "[Tóm tắt nội dung] - [Nguồn bài](Link_URL)". TUYỆT ĐỐI KHÔNG xào nấu văn mẫu chung chung!`;
+3. TUYỆT ĐỐI KHÔNG TỰ BỊA RA XU HƯỚNG, ĐIỂM SỐ VN-INDEX (như VN-Index 1800) hay các mốc Hỗ Trợ/Kháng Cự nếu không dưa trên Dữ Liệu Bảng Điện Tử mà hệ thống vừa cung cấp!`;
 
     let finalSystemPrompt = systemPrompt + injectedData + timeContext;
 
@@ -141,8 +142,21 @@ async function callGemini(apiKey, history, systemPrompt, useSearch) {
     }
 
     const data = await response.json();
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text
+    let reply = data?.candidates?.[0]?.content?.parts?.[0]?.text
       || 'Xin lỗi, mình không thể trả lời lúc này.';
+
+    // Bóc tách siêu dữ liệu Grounding (Google Search URLs) từ Gemini API và nối vào đuôi tin nhắn
+    const chunks = data?.candidates?.[0]?.groundingMetadata?.groundingChunks;
+    if (chunks && chunks.length > 0) {
+      reply += "\n\n**🔗 Nguồn tham khảo:**\n";
+      const seenUrls = new Set();
+      chunks.forEach((chunk) => {
+        if (chunk.web && chunk.web.uri && !seenUrls.has(chunk.web.uri)) {
+          seenUrls.add(chunk.web.uri);
+          reply += `- [${chunk.web.title || 'Đọc chi tiết tại đây'}](${chunk.web.uri})\n`;
+        }
+      });
+    }
 
     return { ok: true, reply };
 
