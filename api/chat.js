@@ -26,17 +26,16 @@ export default async function handler(request) {
       return jsonResponse({ error: 'API key not configured in Vercel' }, 500, request);
     }
 
-    let lastUserMessage = '';
-    for (let i = history.length - 1; i >= 0; i--) {
-      if (history[i].role === 'user') {
-        const parts = history[i].parts || [];
-        lastUserMessage = parts.map(p => p.text).join(' ');
-        break;
-      }
-    }
+    // Lấy 3 tin nhắn gần nhất của user để làm "Bộ nhớ ngắn hạn" cho việc tìm mã
+    const recentUserMessages = history
+      .filter(msg => msg.role === 'user')
+      .slice(-3) // Lấy 3 câu gần nhất
+      .flatMap(msg => msg.parts || [])
+      .map(part => part.text || '')
+      .join(' ');
 
     // Regex lấy tất cả từ 3 chữ cái (VNM), hoặc 2 chữ cái + 1 số có/không có khoảng trắng (PC1, pc 1, nt 2)
-    const matches = [...lastUserMessage.matchAll(/\b([a-zA-Z]{3}|[a-zA-Z]{2}\s?[0-9])\b/gi)];
+    const matches = [...recentUserMessages.matchAll(/\b([a-zA-Z]{3}|[a-zA-Z]{2}\s?[0-9])\b/gi)];
     const candidates = matches.map(m => m[1].replace(/\s+/g, '').toUpperCase());
     
     // Loại trừ các từ phổ biến 3 chữ trong tiếng Việt
@@ -70,7 +69,10 @@ export default async function handler(request) {
 
     // Bơm thời gian thực và lệnh cấm quá khứ vào não AI
     const rn = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
-    const timeContext = `\n\n[ĐỒNG HỒ HỆ THỐNG] Hôm nay là: ${rn}. Bối cảnh: Năm 2026.\n>>> LỆNH CẤM KỴ: TUYỆT ĐỐI KHÔNG được đem dịch bệnh COVID-19 hay sự kiện của những năm 2020-2025 ra ví von, so sánh với hiện tại. Luôn tương tác với người dùng ở thì hiện tại (2026).`;
+    const timeContext = `\n\n[ĐỒNG HỒ HỆ THỐNG] Hôm nay là: ${rn}. Bối cảnh: Năm 2026.
+>>> LỆNH CẤM KỴ TỪ HỆ THỐNG: 
+1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 hay sự kiện của những năm 2020-2025 ra ví von, so sánh với hiện tại. Luôn tương tác với người dùng ở thì hiện tại (2026).
+2. Khi khách hỏi "Điểm tin", "Vĩ mô", "Thị trường chung", BẮT BUỘC chỉ được báo cáo các tin tức BẠN TÌM THẤY TRONG NGÀY HÔM NAY qua Google Search (Ví dụ: Khối ngoại nay mua/bán ròng bao nhiêu tỷ). TUYỆT ĐỐI KHÔNG tự bịa ra hay xào nấu lại các văn mẫu chung chung kiểu như "Chính phủ đẩy mạnh đầu tư công", "NHNN giảm lãi suất", "Khối ngoại đang mua ròng" nếu không có số liệu chứng minh của hôm nay! Nếu Google Search không có tin gì mới, hãy thành thực trả lời: "Hiện chưa có tin vĩ mô nổi bật nào được cập nhật cho phiên ngày mai".`;
 
     let finalSystemPrompt = systemPrompt + injectedData + timeContext;
 
