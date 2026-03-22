@@ -71,8 +71,8 @@ export default async function handler(request) {
     const rn = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
     const timeContext = `\n\n[ĐỒNG HỒ HỆ THỐNG] Hôm nay là: ${rn}. Bối cảnh: Năm 2026.
 >>> LỆNH CẤM KỴ TỪ HỆ THỐNG: 
-1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 hay sự kiện của những năm 2020-2025 ra ví von, so sánh với hiện tại. Luôn tương tác với người dùng ở thì hiện tại (2026).
-2. Khi khách hỏi "Điểm tin", "Vĩ mô", "Thị trường chung", BẮT BUỘC chỉ được báo cáo các tin tức BẠN TÌM THẤY TRONG NGÀY HÔM NAY qua Google Search (Ví dụ: Khối ngoại nay mua/bán ròng bao nhiêu tỷ). TUYỆT ĐỐI KHÔNG tự bịa ra hay xào nấu lại các văn mẫu chung chung kiểu như "Chính phủ đẩy mạnh đầu tư công", "NHNN giảm lãi suất", "Khối ngoại đang mua ròng" nếu không có số liệu chứng minh của hôm nay! Nếu Google Search không có tin gì mới, hãy thành thực trả lời: "Hiện chưa có tin vĩ mô nổi bật nào được cập nhật cho phiên ngày mai".`;
+1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 hay sự kiện của những năm 2020-2025 ra ví von, so sánh với hiện tại.
+2. Khi khách hỏi "Điểm tin vĩ mô": TRƯỚC TIÊN hãy tự kiểm tra "Mình có số liệu tin tức cụ thể nào của ngày hôm nay không?". NẾU KHÔNG CÓ, bạn PHẢI TRẢ LỜI NGAY: "Hiện tại thị trường chưa có tin tức vĩ mô nổi bật nào mới được cập nhật." - CẤM mở đầu bằng "Dưới đây là một số tin..." rồi để trống. TUYỆT ĐỐI KHÔNG được xào nấu văn mẫu chung chung!`;
 
     let finalSystemPrompt = systemPrompt + injectedData + timeContext;
 
