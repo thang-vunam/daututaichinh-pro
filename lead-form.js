@@ -7,7 +7,7 @@
  * FLOW: Điền form → Join Zalo → Truy cập tài liệu
  */
 
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxD7TnNMKJGKb-ZOLKj1QESmy_c3bQ6lrXjlwn4fVbQh1yXcubwLnM19ellixFLjYOYog/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzR7DDuzrT-noGp5phOjcj_3rXbBfL10gOJf7VGUFZd2E0r5yntQIpmq7AHSaU1C_0ung/exec';
 const ZALO_GROUP_URL = 'https://zalo.me/g/pvscez363';
 
 // ─── Session Management ───────────────────────────────────

@@ -12,7 +12,7 @@
 const CHATBOT_WORKER_URL = '/api/chat';
 
 // Google Sheets endpoint (dùng chung với lead-form.js)
-const CHATBOT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxD7TnNMKJGKb-ZOLKj1QESmy_c3bQ6lrXjlwn4fVbQh1yXcubwLnM19ellixFLjYOYog/exec';
+const CHATBOT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzR7DDuzrT-noGp5phOjcj_3rXbBfL10gOJf7VGUFZd2E0r5yntQIpmq7AHSaU1C_0ung/exec';
 
 // Zalo group
 const CHATBOT_ZALO_URL = 'https://zalo.me/g/pvscez363';
