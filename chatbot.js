@@ -8,9 +8,8 @@
  * FEATURES: AI Chat, Lead Collection, Content Suggestions
  */
 
-// ─── Configuration ───────────────────────────────────────
 // Endpoint Vercel Serverless Function (đã gom cứng ở Singapore) hoặc Cloudflare Worker
-const CHATBOT_WORKER_URL = 'https://chatbot-api.thangvu-dht.workers.dev';
+const CHATBOT_WORKER_URL = '/api/chat';
 
 // Google Sheets endpoint (dùng chung với lead-form.js)
 const CHATBOT_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxD7TnNMKJGKb-ZOLKj1QESmy_c3bQ6lrXjlwn4fVbQh1yXcubwLnM19ellixFLjYOYog/exec';
@@ -321,6 +320,12 @@ async function sendMessage() {
     }
 
   } catch (error) {
+    // Quan trọng: Xóa câu hỏi vừa rồi khỏi bộ nhớ nếu gọi API thất bại
+    // Nếu không xóa, lịch sử sẽ bị dồn 2 câu 'user' liên tiếp, làm Gemini API báo lỗi 400 vĩnh viễn ở các câu sau!
+    if (chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === 'user') {
+      chatHistory.pop();
+    }
+    
     console.error('Chatbot error:', error);
     removeTyping();
     addMessage('bot',
