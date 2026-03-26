@@ -306,8 +306,7 @@ async function sendMessage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         sessionId: getSessionId(),
-        history: chatHistory,
-        systemPrompt: SYSTEM_PROMPT
+        history: chatHistory
       })
     });
 
