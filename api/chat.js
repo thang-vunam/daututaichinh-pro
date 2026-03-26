@@ -188,7 +188,7 @@ export default async function handler(request, ctx) {
 
 // ─── Call Gemini API ────────────────────────────────────
 async function callGemini(apiKey, history, systemPrompt, useSearch) {
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
 
   const geminiBody = {
     system_instruction: {
@@ -217,7 +217,10 @@ async function callGemini(apiKey, history, systemPrompt, useSearch) {
   try {
     const response = await fetch(geminiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey
+      },
       body: JSON.stringify(geminiBody)
     });
 
