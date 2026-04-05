@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  
+    gtag('config', 'G-RJZJX69KDM');
+  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Agent - Đầu tư Tài chính</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.5);
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+        .logo { font-size: 1.25rem; font-weight: 700; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
+        .logo i { color: var(--primary); }
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 12px;
+            color: var(--text-muted);
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+        }
+        .nav-item.active { background: var(--primary); font-weight: 500;}
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 32px 48px;
+            overflow-y: auto;
+        }
+        
+        /* Glass Card */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        h2 { font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        
+        /* Form Elements */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+        textarea { resize: vertical; min-height: 120px; font-family: monospace; }
+        
+        /* Buttons */
+        .btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: rgba(255, 255, 255, 0.15); }
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 25px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+        
+        /* Grid Layouts */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        
+        /* Tags & Indicators */
+        .status-badge {
+            padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+        }
+        .status-good { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .status-warn { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+
+        /* Settings Modal */
+        #settings-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px); z-index: 50; align-items: center; justify-content: center;
+        }
+        #settings-modal.active { display: flex; }
+        .modal-content { max-width: 500px; width: 100%; }
+        
+        .hidden { display: none !important; }
+        
+        /* Loader */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--primary);
+            border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Trending Cards */
+        .suggest-card {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .suggest-card:hover {
+            background: rgba(99, 102, 241, 0.25);
+            border-color: var(--primary);
+            transform: translateX(6px);
+        }
+        .suggest-card .num {
+            background: var(--primary);
+            color: white;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        #suggest-panel { display: none; margin-top: 15px; }
+
+        /* Preview iframe */
+        .preview-frame {
+            width: 100%; height: 500px; border: 1px solid var(--border);
+            border-radius: 12px; background: white;
+        }
+        .tab-bar { display: flex; gap: 0; margin-bottom: 0; }
+        .tab-btn {
+            padding: 10px 20px; cursor: pointer; font-size: 0.9rem; font-weight: 500;
+            background: rgba(255,255,255,0.05); color: var(--text-muted);
+            border: 1px solid var(--border); border-bottom: none;
+            border-radius: 10px 10px 0 0; transition: all 0.2s;
+        }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        /* SEO bar */
+        .seo-bar { height: 6px; border-radius: 3px; margin-top: 6px; transition: width 0.3s; }
+        .seo-label { font-size: 0.75rem; margin-top: 4px; font-weight: 600; }
+
+        /* Mode toggle */
+        .mode-toggle { display: flex; gap: 0; margin-bottom: 20px; }
+        .mode-btn {
+            flex: 1; padding: 12px; cursor: pointer; text-align: center; font-weight: 600;
+            background: rgba(255,255,255,0.05); color: var(--text-muted);
+            border: 1px solid var(--border); transition: all 0.2s; font-size: 0.95rem;
+        }
+        .mode-btn:first-child { border-radius: 10px 0 0 10px; }
+        .mode-btn:last-child { border-radius: 0 10px 10px 0; }
+        .mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .mode-btn i { margin-right: 6px; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo"><i class="fa-solid fa-robot"></i> Content Agent</div>
+        <div class="nav-item active" onclick="switchTab('create')"><i class="fa-solid fa-pen-nib"></i> Viết Bài Mới</div>
+        <div class="nav-item" onclick="openSettings()"><i class="fa-solid fa-gear"></i> Cấu hình API</div>
+        <div style="margin-top: auto;">
+            <p style="font-size: 11px; color: var(--text-muted); text-align: center;">Powered by Gemini 1.5 Flash (Free Tier)</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <div class="header" style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1 style="font-size: 2rem; margin-bottom: 5px;">Bảng điều khiển AI</h1>
+                <p style="color: var(--text-muted);">Tự động hóa sản xuất nội dung daututaichinh.pro</p>
+            </div>
+            <div id="connection-status" class="status-badge status-warn"><i class="fa-solid fa-link-slash"></i> Chưa cấu hình API</div>
+        </div>
+
+        <!-- BƯỚC 1: NHẬP LIỆU -->
+        <div id="step-1" class="glass-card">
+            <h2><i class="fa-solid fa-wand-magic-sparkles"></i> 1. Tạo nội dung</h2>
+            
+            <!-- CHỌN CHẾ ĐỘ -->
+            <div class="mode-toggle">
+                <div class="mode-btn active" onclick="switchMode('ai')"><i class="fa-solid fa-robot"></i> AI viết bài</div>
+                <div class="mode-btn" onclick="switchMode('manual')"><i class="fa-solid fa-pen"></i> Tự viết bài</div>
+            </div>
+
+            <!-- CHẾ ĐỘ AI -->
+            <div id="mode-ai">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Chuyên mục lưu trữ</label>
+                        <select id="input-category">
+                            <option value="market">Thị trường (market/)</option>
+                            <option value="blog">Phân tích chuyên sâu (blog/)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hành động</label>
+                        <button class="btn" id="btn-suggest" onclick="suggestViralTopic()" style="width: 100%; justify-content: center;">
+                            <i class="fa-solid fa-fire"></i> Gợi ý Chủ đề Trending
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Panel gợi ý 3 chủ đề -->
+                <div id="suggest-panel">
+                    <label style="margin-bottom: 10px; display: block;"><i class="fa-solid fa-lightbulb" style="color: #facc15;"></i> Chọn 1 chủ đề bên dưới để viết bài:</label>
+                    <div id="suggest-list"></div>
+                </div>
+
+                <div class="grid-2" style="margin-top: 15px;">
+                    <div class="form-group">
+                        <label>Từ khóa chính (Focus Keyword) <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="input-topic" placeholder="Ví dụ: Cổ phiếu PVS, Giá vàng hôm nay..." />
+                    </div>
+                    <div class="form-group">
+                        <label>Từ khóa phụ (Secondary / LSI) <span style="color: #64748b; font-weight: normal;">(Bỏ trống AI sẽ tự sinh)</span></label>
+                        <input type="text" id="input-secondary-keywords" placeholder="Ví dụ: định giá dầu khí, dự phóng lợi nhuận..." />
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" id="btn-generate" onclick="generateDraft()">
+                    <span><i class="fa-solid fa-microchip"></i> Bắt đầu viết Bản nháp (~15s)</span>
+                </button>
+            </div>
+
+            <!-- CHẾ ĐỘ TỰ VIẾT -->
+            <div id="mode-manual" style="display: none;">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Chuyên mục lưu trữ</label>
+                        <select id="manual-category">
+                            <option value="market">Thị trường (market/)</option>
+                            <option value="blog">Phân tích chuyên sâu (blog/)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Từ khóa chính (Focus Keyword)</label>
+                        <input type="text" id="manual-keyword" placeholder="Ví dụ: cổ phiếu ACB, bất động sản 2026..." />
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Từ khóa phụ (Secondary / LSI) <span style="color: var(--text-muted); font-weight: normal;">(Tùy chọn)</span></label>
+                    <input type="text" id="manual-secondary-keywords" placeholder="Ví dụ: định giá ngân hàng, room tín dụng..." />
+                </div>
+
+                <div class="form-group">
+                    <label>Nội dung bài viết <span style="color: var(--text-muted);">(Viết HTML hoặc paste nội dung thuần)</span></label>
+                    <textarea id="manual-content" style="min-height: 300px; font-size: 14px; line-height: 1.6;" placeholder="Dán hoặc viết nội dung bài viết tại đây...
+
+Bạn có thể viết:
+• Văn bản thuần (sẽ được tự động bọc trong thẻ <p>)
+• HTML với các thẻ <h2>, <p>, <ul>, <a>...
+• Paste nội dung từ Word, Google Docs..."></textarea>
+                </div>
+                
+                <button class="btn btn-primary" id="btn-manual-seo" onclick="manualSeoOptimize()">
+                    <span><i class="fa-solid fa-magnifying-glass-chart"></i> AI Tối ưu SEO & Chuẩn bị đăng</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CÔNG CỤ QUẢN LÝ BÀI TỪ XA -->
+        <div class="glass-card" style="margin-bottom: 2rem; border-color: rgba(244, 63, 94, 0.3);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+                <i class="fa-solid fa-trash-can" style="color: #f43f5e; font-size: 1.2rem;"></i>
+                <h2 style="margin: 0; font-size: 1.2rem;">Quản lý / Xóa bài viết bất kỳ</h2>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Dán đường link đầy đủ của bài viết hoặc mã slug để xóa vĩnh viễn khỏi toàn bộ hệ thống (kể cả Danh sách và Trang chủ).</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="delete-url-input" placeholder="Ví dụ: https://daututaichinh.pro/blog/ten-bai-viet.html hoặc ten-bai-viet" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;" />
+                <button class="btn" id="btn-delete-any" onclick="deleteAnyArticle()" style="background: #f43f5e; color: white;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Chấp nhận Xóa
+                </button>
+                <button class="btn" id="btn-fix-dates" onclick="fixCatalogDates()" style="background: #3b82f6; color: white;">
+                    <i class="fa-solid fa-calendar-check"></i> Sửa lỗi ngày tháng bài cũ
+                </button>
+            </div>
+        </div>
+
+        <!-- BƯỚC 3: DUYỆT BÀI & SEO -->
+        <div id="step-3" class="glass-card hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin: 0;"><i class="fa-solid fa-clipboard-check"></i> 2. Duyệt bài & Monitor SEO</h2>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" id="btn-publish" onclick="publishToGithub()">
+                        <i class="fa-brands fa-github"></i> Duyệt & Push lên GitHub Live
+                    </button>
+                    <button class="btn" id="btn-recall" onclick="recallArticle()" style="background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #f87171;">
+                        <i class="fa-solid fa-rotate-left"></i> Thu hồi bài mới đăng
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <!-- Bên trái: Preview / Code -->
+                <div>
+                    <div class="form-group">
+                        <label>Đường dẫn File (Slug/URL)</label>
+                        <input type="text" id="review-slug" placeholder="bai-viet-moi-nhat" />
+                    </div>
+                    <div class="tab-bar">
+                        <div class="tab-btn active" onclick="switchPreviewTab('preview')"><i class="fa-solid fa-eye"></i> Xem trước</div>
+                        <div class="tab-btn" onclick="switchPreviewTab('code')"><i class="fa-solid fa-code"></i> Mã HTML</div>
+                    </div>
+                    <div id="preview-pane">
+                        <iframe id="preview-iframe" class="preview-frame"></iframe>
+                    </div>
+                    <div id="code-pane" style="display: none;">
+                        <textarea id="review-html" style="height: 500px; font-size: 13px; border-radius: 0 0 12px 12px;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Bên phải: SEO Panel -->
+                <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 15px; font-size: 1.1rem; color: #cbd5e1;"><i class="fa-solid fa-chart-simple"></i> Bảng điểm SEO</h3>
+                    
+                    <div class="form-group">
+                        <label>Thẻ Title <span style="color:var(--text-muted)">(<span id="title-count">0</span> ký tự, chuẩn: 30–60)</span></label>
+                        <input type="text" id="review-title" oninput="updateSeoScores()"/>
+                        <div class="seo-bar" id="title-bar"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px;">
+                            <div class="seo-label" id="title-status"></div>
+                            <div class="seo-label" id="title-keyword-status" style="font-size: 0.8rem;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Meta Description <span style="color:var(--text-muted)">(<span id="desc-count">0</span> ký tự, chuẩn: 120–160)</span></label>
+                        <textarea id="review-desc" style="min-height: 80px;" oninput="updateSeoScores()"></textarea>
+                        <div class="seo-bar" id="desc-bar"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px;">
+                            <div class="seo-label" id="desc-status"></div>
+                            <div class="seo-label" id="desc-keyword-status" style="font-size: 0.8rem;"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn" id="btn-autofix" onclick="autoFixSeo()" style="width: 100%; justify-content: center; margin-top: 10px;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Tự động sửa chuẩn SEO
+                    </button>
+
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(99,102,241,0.1); border-radius: 10px; border: 1px solid rgba(99,102,241,0.2);">
+                        <h4 style="font-size: 0.9rem; color: #a5b4fc; margin-bottom: 8px;"><i class="fa-solid fa-circle-info"></i> Hướng dẫn SEO</h4>
+                        <ul style="font-size: 0.8rem; color: var(--text-muted); padding-left: 18px; line-height: 1.7;">
+                            <li><strong>Title 30–60 ký tự:</strong> Google cắt tiêu đề nếu >60</li>
+                            <li><strong>Desc 120–160 ký tự:</strong> Mô tả hiển thị trên Google</li>
+                            <li><strong>Màu xanh:</strong> Chuẩn • <strong>Vàng:</strong> Chưa đạt • <strong>Đỏ:</strong> Quá dài</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CẤU HÌNH MODAL -->
+    <div id="settings-modal">
+        <div class="glass-card modal-content" style="position: relative;">
+            <button class="btn" style="position: absolute; right: 10px; top: 10px; padding: 5px 10px;" onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Cấu hình Bảo mật API</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Thông tin lưu bảo mật trực tiếp trên trình duyệt của bạn (LocalStorage), không gửi đi đâu khác.</p>
+            
+            <div class="form-group">
+                <label>Google Gemini API Key</label>
+                <input type="password" id="cfg-gemini" placeholder="AI Studio Key..." />
+            </div>
+            <div class="form-group">
+                <label>GitHub Personal Access Token</label>
+                <input type="password" id="cfg-github" placeholder="ghp_xxx..." />
+            </div>
+            <div class="form-group">
+                <label>GitHub Repo Owner (Username của bạn)</label>
+                <input type="text" id="cfg-owner" placeholder="Ví dụ: thangvudeveloper" />
+            </div>
+            <div class="form-group">
+                <label>Tên Repository</label>
+                <input type="text" id="cfg-repo" value="daututaichinh-pro" />
+            </div>
+            <div class="form-group">
+                <label>Mô hình AI</label>
+                <select id="cfg-model">
+                    <option value="gemini-2.5-flash">⭐ Gemini 2.5 Flash (Miễn phí, Khuyên dùng)</option>
+                    <option value="gemini-flash-latest">Gemini Flash Latest (Tự động bản mới nhất)</option>
+                    <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (Siêu nhanh)</option>
+                    <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                    <option value="gemini-2.5-pro">Gemini 2.5 Pro (Trả phí)</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn btn-primary" onclick="saveSettings()" style="flex: 1; justify-content: center;">Lưu Cấu Hình</button>
+                <button class="btn" onclick="testApiConnection()" style="flex: 1; justify-content: center;"><i class="fa-solid fa-vial"></i> Test API</button>
+            </div>
+            <div id="test-result" style="margin-top: 10px; font-size: 13px; padding: 8px; border-radius: 8px; display: none;"></div>
+        </div>
+    </div>
+
+    <div id="debug-log" style="color:red; font-size:12px; margin-top:10px;"></div>
+
+    <script>
+        // BỘ NHỚ RAM DỰ PHÒNG
+        let memoryStorage = {};
+        
+        // KIỂM TRA STORAGE AN TOÀN TUYỆT ĐỐI
+        function checkStorage() {
+            try {
+                const s = window['localStorage'];
+                s.setItem('__test__', '1');
+                s.removeItem('__test__');
+                return true;
+            } catch(e) { return false; }
+        }
+        const hasStorage = checkStorage();
+
+        function getItemSafe(key) {
+            try { return hasStorage ? window.localStorage.getItem(key) : memoryStorage[key]; }
+            catch(e) { return memoryStorage[key]; }
+        }
+
+        function setItemSafe(key, val) {
+            try { if(hasStorage) window.localStorage.setItem(key, val); } catch(e) {}
+            memoryStorage[key] = val;
+        }
+
+        function logError(msg) {
+            const el = document.getElementById('debug-log');
+            if(el) el.innerText += msg + "\n";
+            console.log(msg);
+        }
+
+        // BINDINGS
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                loadSettings();
+                updateConnectionStatus();
+            } catch(e) { logError("Init error: " + e.message); }
+        });
+
+        function switchTab(tab) {
+            // placeholder for UI scale logic
+        }
+
+        // CHUYỂN CHẾ ĐỘ AI / TỰ VIẾT
+        function switchMode(mode) {
+            const btns = document.querySelectorAll('.mode-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            if(mode === 'ai') {
+                btns[0].classList.add('active');
+                document.getElementById('mode-ai').style.display = 'block';
+                document.getElementById('mode-manual').style.display = 'none';
+            } else {
+                btns[1].classList.add('active');
+                document.getElementById('mode-ai').style.display = 'none';
+                document.getElementById('mode-manual').style.display = 'block';
+            }
+        }
+
+        // CHẾ ĐỘ TỰ VIẾT: AI chỉ tối ưu SEO
+        async function manualSeoOptimize() {
+            const key = getItemSafe('gemini_key');
+            const content = document.getElementById('manual-content').value.trim();
+            const keyword = document.getElementById('manual-keyword').value.trim();
+            const category = document.getElementById('manual-category').value;
+
+            if(!key) return alert('Vui lòng cấu hình Gemini API Key!');
+            if(!content) return alert('Vui lòng nhập nội dung bài viết!');
+
+            const btn = document.getElementById('btn-manual-seo');
+            btn.innerHTML = '<div class="loader"></div> AI đang phân tích SEO...';
+            btn.disabled = true;
+
+            try {
+                // Xử lý nội dung: nếu không phải HTML thì bọc trong <p>
+                let htmlBody = content;
+                if(!content.includes('<p>') && !content.includes('<h2>') && !content.includes('<div>')) {
+                    htmlBody = content.split('\n').filter(l => l.trim()).map(l => '<p>' + l.trim() + '</p>').join('\n');
+                }
+
+                const secManualKw = document.getElementById('manual-secondary-keywords').value.trim();
+
+                const today = new Date().toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
+                const year = new Date().getFullYear();
+                const lsiContext = secManualKw ? ` và bộ từ khóa phụ: "${secManualKw}"` : '';
+                const seoPrompt = 'Hôm nay là ngày ' + today + ', năm ' + year + '. Tôi đã viết xong 1 bài viết về tài chính/chứng khoán Việt Nam' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. Bạn là Chuyên gia SEO RankMath. Hãy phân tích nội dung, TÌM CÁCH CHÈN Từ khóa chính vào Tiêu đề và Mô tả một cách tự nhiên nhất, đồng thời tạo SEO metadata. Trả về JSON: {"title":"Chứa từ khóa chính. 30-55 ký tự chuẩn SEO","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. 120-150 ký tự","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa","tags":["tag1","tag2","tag3"],"hashtags":["#hash1","#hash2"]} CHỈ JSON, KHÔNG giải thích. Nội dung bài viết: ' + htmlBody.substring(0, 2000);
+
+                const resp = await callGemini(key, seoPrompt);
+                let cleaned = resp.replace(/```json/g, '').replace(/```/g, '').trim();
+                cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ' ' : '');
+                const seo = JSON.parse(cleaned);
+
+                // Điền vào review panel
+                document.getElementById('review-title').value = seo.title || '';
+                document.getElementById('review-slug').value = seo.slug || '';
+                document.getElementById('review-desc').value = seo.metaDescription || '';
+
+                // Đồng bộ category
+                document.getElementById('input-category').value = category;
+
+                // Build template với nội dung của người dùng
+                const fullHtml = buildTemplate(seo.title, seo.metaDescription, category, htmlBody, seo.imagePrompt, seo.tags, seo.hashtags);
+                document.getElementById('review-html').value = fullHtml;
+
+                updateSeoScores();
+                document.getElementById('step-3').classList.remove('hidden');
+                refreshPreview();
+                document.getElementById('step-3').scrollIntoView({ behavior: 'smooth' });
+
+            } catch(e) {
+                alert('Lỗi phân tích SEO: ' + e.message);
+            } finally {
+                btn.innerHTML = '<span><i class="fa-solid fa-magnifying-glass-chart"></i> AI Tối ưu SEO & Chuẩn bị đăng</span>';
+                btn.disabled = false;
+            }
+        }
+
+        function loadSettings() {
+            document.getElementById('cfg-gemini').value = getItemSafe('gemini_key') || '';
+            document.getElementById('cfg-github').value = getItemSafe('github_token') || '';
+            document.getElementById('cfg-owner').value = getItemSafe('github_owner') || '';
+            document.getElementById('cfg-repo').value = getItemSafe('github_repo') || 'daututaichinh-pro';
+            document.getElementById('cfg-model').value = getItemSafe('gemini_model') || 'gemini-2.5-flash';
+        }
+
+        function saveSettings() {
+            try {
+                // 1. Tắt modal ngay lập tức để không bị kẹt giao diện
+                closeSettings();
+
+                // 2. Lấy giá trị
+                const vGem = document.getElementById('cfg-gemini').value || '';
+                const vGit = document.getElementById('cfg-github').value || '';
+                const vOwn = document.getElementById('cfg-owner').value || '';
+                const vRep = document.getElementById('cfg-repo').value || '';
+                const vMod = document.getElementById('cfg-model').value || 'gemini-2.5-flash';
+
+                // 3. Lưu vào Storage an toàn
+                setItemSafe('gemini_key', vGem);
+                setItemSafe('github_token', vGit);
+                setItemSafe('github_owner', vOwn);
+                setItemSafe('github_repo', vRep);
+                setItemSafe('gemini_model', vMod);
+
+                // 4. Cập nhật Badge
+                updateConnectionStatus();
+
+                // 5. Hiển thị thông báo (bằng nút trên sidebar)
+                const ctaBtn = document.querySelector('.nav-item.active');
+                if(ctaBtn) {
+                    const oldHtml = ctaBtn.innerHTML;
+                    ctaBtn.innerHTML = '<i class="fa-solid fa-check"></i> Đã Lưu Cấu Hình';
+                    ctaBtn.style.color = '#4ade80';
+                    setTimeout(() => { ctaBtn.innerHTML = oldHtml; ctaBtn.style.color = ''; }, 2500);
+                }
+
+            } catch(e) {
+                logError("Save error: " + e.message);
+                alert("Đã xảy ra lỗi khi lưu: " + e.message); // fallback
+            }
+        }
+
+        function closeSettings() {
+            const mod = document.getElementById('settings-modal');
+            if(mod) {
+                mod.classList.remove('active');
+                mod.style.display = 'none'; // Force hide
+            }
+        }
+
+        function openSettings() {
+            const mod = document.getElementById('settings-modal');
+            if(mod) {
+                mod.classList.add('active');
+                mod.style.display = 'flex'; // Force show
+            }
+            // Reset test result khi mở lại
+            const tr = document.getElementById('test-result');
+            if(tr) tr.style.display = 'none';
+        }
+
+        // TEST API CONNECTION - Liệt kê models có sẵn
+        async function testApiConnection() {
+            const apiKey = document.getElementById('cfg-gemini').value;
+            const resultEl = document.getElementById('test-result');
+            if(!apiKey) {
+                resultEl.style.display = 'block';
+                resultEl.style.background = 'rgba(239, 68, 68, 0.2)';
+                resultEl.style.color = '#f87171';
+                resultEl.innerText = '❌ Vui lòng nhập API Key trước!';
+                return;
+            }
+            resultEl.style.display = 'block';
+            resultEl.style.background = 'rgba(99, 102, 241, 0.2)';
+            resultEl.style.color = '#a5b4fc';
+            resultEl.innerText = '⏳ Đang kiểm tra kết nối...';
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                const data = await res.json();
+                if(!res.ok) throw new Error(data.error?.message || 'Lỗi API');
+                const models = data.models || [];
+                const generateModels = models.filter(m => 
+                    m.supportedGenerationMethods && 
+                    m.supportedGenerationMethods.includes('generateContent')
+                ).map(m => m.name.replace('models/', ''));
+                
+                resultEl.style.background = 'rgba(34, 197, 94, 0.2)';
+                resultEl.style.color = '#4ade80';
+                resultEl.innerHTML = '✅ API Key hợp lệ!<br><strong>Models khả dụng:</strong><br>' + 
+                    generateModels.map(m => '• ' + m).join('<br>');
+            } catch(e) {
+                resultEl.style.background = 'rgba(239, 68, 68, 0.2)';
+                resultEl.style.color = '#f87171';
+                resultEl.innerText = '❌ Lỗi: ' + e.message;
+            }
+        }
+
+        function updateConnectionStatus() {
+            const hasGemini = getItemSafe('gemini_key');
+            const hasGithub = getItemSafe('github_token');
+            const badge = document.getElementById('connection-status');
+            
+            if(hasGemini && hasGithub) {
+                badge.className = 'status-badge status-good';
+                badge.innerHTML = '<i class="fa-solid fa-link"></i> API Đã Kết Nối';
+            } else {
+                badge.className = 'status-badge status-warn';
+                badge.innerHTML = '<i class="fa-solid fa-link-slash"></i> Chưa Cấu Hình Đủ API';
+            }
+        }
+
+        // TÍNH NĂNG GỢI Ý CHỦ ĐỀ
+        async function suggestViralTopic() {
+            const key = getItemSafe('gemini_key');
+            if(!key) return alert("Vui lòng cấu hình Gemini API Key trước!");
+            
+            const btn = document.getElementById('btn-suggest');
+            btn.innerHTML = '<div class="loader"></div> Đang quét tin tức...';
+            
+            try {
+                const today = new Date().toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
+                const year = new Date().getFullYear();
+                const userKeyword = document.getElementById('input-topic').value.trim();
+                const category = document.getElementById('input-category').value;
+                const catLabel = category === 'market' ? 'tin tức thị trường, nhận định cổ phiếu' : 'phân tích chuyên sâu, chiến lược đầu tư';
+                
+                let prompt;
+                if(userKeyword) {
+                    prompt = 'Hôm nay là ngày ' + today + ', năm ' + year + '. Tôi muốn viết bài về chủ đề: "' + userKeyword + '" (chuyên mục: ' + catLabel + '). Hãy gợi ý 3 góc nhìn/tiêu đề bài viết CỤ THỂ xoay quanh chủ đề này, hấp dẫn và chuẩn SEO. Trả về JSON: [{"title":"...","reason":"...lý do hay..."}] CHỈ JSON, KHÔNG giải thích.';
+                } else {
+                    prompt = 'Hôm nay là ngày ' + today + ', năm ' + year + '. Tìm 3 chủ đề NÓNG NHẤT về ' + catLabel + ' tại Việt Nam HIỆN TẠI. Viết 3 tiêu đề hấp dẫn chuẩn SEO. Trả về JSON: [{"title":"...","reason":"...lý do nóng..."}] CHỈ JSON, KHÔNG giải thích.';
+                }
+                const text = await callGemini(key, prompt);
+                
+                let cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                let suggestions = [];
+                try { suggestions = JSON.parse(cleaned); } catch(e) {
+                    // Fallback: tách theo dòng
+                    suggestions = cleaned.split('\n').filter(l => l.trim()).slice(0, 3).map((l, i) => ({title: l.replace(/^\d+\.\s*/, ''), reason: ''}));
+                }
+                
+                const panel = document.getElementById('suggest-panel');
+                const list = document.getElementById('suggest-list');
+                list.innerHTML = '';
+                suggestions.slice(0, 3).forEach((s, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'suggest-card';
+                    card.innerHTML = `<div class="num">${i+1}</div><div><div style="font-weight:600; color:white; margin-bottom:3px;">${s.title}</div>${s.reason ? '<div style="font-size:0.8rem; color:var(--text-muted);">' + s.reason + '</div>' : ''}</div>`;
+                    card.onclick = () => {
+                        document.getElementById('input-topic').value = s.title;
+                        panel.style.display = 'none';
+                    };
+                    list.appendChild(card);
+                });
+                panel.style.display = 'block';
+            } catch (e) {
+                alert("Lỗi: " + e.message);
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-fire"></i> Gợi ý Chủ đề Trending';
+            }
+        }
+
+        // CHUYỂN TAB XEM TRƯỚC / MÃ HTML
+        function switchPreviewTab(tab) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            if(tab === 'preview') {
+                tabs[0].classList.add('active');
+                document.getElementById('preview-pane').style.display = 'block';
+                document.getElementById('code-pane').style.display = 'none';
+                refreshPreview();
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('preview-pane').style.display = 'none';
+                document.getElementById('code-pane').style.display = 'block';
+            }
+        }
+
+        function refreshPreview() {
+            const iframe = document.getElementById('preview-iframe');
+            let html = document.getElementById('review-html').value;
+            if(iframe && html) {
+                // Chèn tag <base> để tải đúng CSS từ website cho phần preview iframe
+                if(!html.includes('<base ')) {
+                    html = html.replace('<head>', '<head>\n  <base href="https://daututaichinh.pro/">');
+                }
+                iframe.srcdoc = html;
+            }
+        }
+
+        async function generateDraft() {
+            const topic = document.getElementById('input-topic').value;
+            const secKeywords = document.getElementById('input-secondary-keywords').value;
+            const category = document.getElementById('input-category').value;
+            const key = getItemSafe('gemini_key');
+            if(!topic || !key) return alert("Vui lòng nhập Từ khóa chính (Focus Keyword) và cấu hình API Key.");
+            const btn = document.getElementById('btn-generate');
+            btn.innerHTML = '<div class="loader"></div> AI Đang Viết Bài (Vui lòng đợi ~20s)...';
+            btn.disabled = true;
+            const today = new Date().toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
+            const currentYear = new Date().getFullYear();
+            
+            let lsiPrompt = secKeywords ? `Sử dụng các từ khóa phụ này để rải tự nhiên vào bài: ${secKeywords}` : `TỰ ĐỘNG chọn thêm các từ khóa phụ (LSI) sát nghĩa để rải vào bài.`;
+
+            const systemPrompt = `Hôm nay là ngày ${today}, năm ${currentYear}. Bạn là Chuyên gia tạo nội dung SEO chuẩn RankMath mảng Tài chính Chứng khoán. KHÔNG BAO GIỜ dùng 2024 hay 2025. 
+            
+NHIỆM VỤ SEO BẮT BUỘC (Hybrid):
+1. TỪ KHÓA CHÍNH (Focus Keyword): "${topic}".
+2. BẮT BUỘC chèn TỪ KHÓA CHÍNH một cách cực kỳ tự nhiên vào đầu của Tiêu đề (Title) và Mô tả (Meta Description).
+3. Trong đoạn mở bài (Sapo), phải lặp lại Từ khóa chính 1 lần. ${lsiPrompt}
+4. Tuyệt đối giữ văn phong sắc sảo, tự nhiên, không nhồi nhét từ khóa (keyword stuffing).
+5. ĐỊNH DẠNG BÁO CHÍ (Tùy chọn): Nếu bài viết có trích dẫn lời phát biểu của chuyên gia, tổ chức uy tín, BẮT BUỘC dùng thẻ <blockquote> để bọc câu nói đó lại nhằm tăng độ uy tín. KHÔNG bịa ra trích dẫn giả mạo nếu ngữ cảnh không có thật.
+
+Trả về 1 chuỗi JSON duy nhất:
+{"title":"Chứa từ khóa chính. BẮT BUỘC 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. BẮT BUỘC 120-150 ký tự","htmlContent":"Nội dung HTML dùng h2 p ul li. CHÈN 1-2 Outbound link. (CHÚ Ý: LƯU Ý TỐI QUAN TRỌNG: Mọi dấu ngoặc kép bên trong HTML hoặc Blockquote phải được thay bằng dấu nháy đơn (') hoặc escape (\\\") để KHÔNG LÀM VỠ định dạng JSON)","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa","tags":["Chứng khoán","Cổ phiếu"],"hashtags":["#chungkhoan","#dautu"]}
+
+KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse error). LƯU Ý LUÔN KIỂM TRA JSON QUOTES. Viết xuất sắc nhất có thể. Khởi chạy với Từ khóa chính: ${topic}`;
+
+            try {
+                const responseText = await callGemini(key, systemPrompt);
+                
+                // Parse JSON from Gemini (clean up control chars + markdown)
+                let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+                // Xóa ký tự điều khiển (newline, tab) BÊN TRONG chuỗi JSON để tránh lỗi parse
+                cleanedText = cleanedText.replace(/[\x00-\x1F\x7F]/g, (ch) => {
+                    if(ch === '\n' || ch === '\r' || ch === '\t') return ' ';
+                    return '';
+                });
+                const data = JSON.parse(cleanedText);
+
+                // Populate Review Panel
+                document.getElementById('review-title').value = data.title;
+                document.getElementById('review-slug').value = data.slug;
+                document.getElementById('review-desc').value = data.metaDescription;
+                
+                // Build the full HTML template wrapped around the AI article body
+                const fullHtml = buildTemplate(data.title, data.metaDescription, category, data.htmlContent, data.imagePrompt, data.tags, data.hashtags);
+                document.getElementById('review-html').value = fullHtml;
+
+                updateSeoScores();
+
+                // Show step 3 + auto-render preview
+                document.getElementById('step-3').classList.remove('hidden');
+                refreshPreview();
+                document.getElementById('step-3').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch(e) {
+                alert("Lỗi tạo bài (hoặc JSON format lỗi): " + e.message);
+            } finally {
+                btn.innerHTML = '<span><i class="fa-solid fa-microchip"></i> Bắt đầu viết Bản nháp (~15s)</span>';
+                btn.disabled = false;
+            }
+        }
+
+        // TÍNH NĂNG PUSH CODE LÊN GITHUB
+        async function publishToGithub() {
+            const token = getItemSafe('github_token');
+            const owner = getItemSafe('github_owner');
+            const repo = getItemSafe('github_repo');
+            if(!token || !owner || !repo) return alert("Vui lòng cấu hình thông tin GitHub!");
+
+            const slug = document.getElementById('review-slug').value;
+            const content = document.getElementById('review-html').value;
+            const category = document.getElementById('input-category').value;
+            const title = document.getElementById('review-title').value;
+            const desc = document.getElementById('review-desc').value;
+            
+            if(!slug || !content) return alert("Thiếu slug hoặc nội dung bài viết!");
+
+            const path = `${category}/${slug}.html`;
+            
+            const btn = document.getElementById('btn-publish');
+            btn.innerHTML = '<div class="loader"></div> Bước 1/3: Đang Push bài viết...';
+            btn.disabled = true;
+
+            try {
+                // BƯỚC 1: Upload file bài viết
+                await uploadFileToGithub(owner, repo, path, content, `AI Draft: Thêm bài ${slug}`, token);
+                
+                // BƯỚC 2: Cập nhật catalog + trang danh sách
+                btn.innerHTML = '<div class="loader"></div> Bước 2/3: Đang cập nhật danh mục...';
+                await updateCatalog(owner, repo, token, category, slug, title, desc);
+                
+                // BƯỚC 3: Cập nhật trang chủ
+                btn.innerHTML = '<div class="loader"></div> Bước 3/3: Đang cập nhật trang chủ...';
+                await updateHomepage(owner, repo, token);
+                
+                alert("🎉 Xuất bản thành công!\n✅ Bài viết đã push\n✅ Cả 2 danh mục đã đồng bộ\n✅ Trang chủ đã cập nhật với số thứ tự");
+            } catch(e) {
+                alert("Lỗi: " + e.message);
+            } finally {
+                btn.innerHTML = '<i class="fa-brands fa-github"></i> Duyệt & Push lên GitHub Live';
+                btn.disabled = false;
+            }
+        }
+
+        // CẬP NHẬT CATALOG + TẠO TRANG DANH SÁCH
+        async function updateCatalog(owner, repo, token, category, slug, title, desc) {
+            const catalogPath = `${category}/_catalog.json`;
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${catalogPath}`;
+            
+            // 1. Đọc catalog hiện tại (hoặc tạo mới)
+            let catalog = [];
+            let catalogSha = null;
+            try {
+                const getRes = await fetch(apiUrl, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if(getRes.ok) {
+                    const getData = await getRes.json();
+                    catalogSha = getData.sha;
+                    catalog = JSON.parse(decodeURIComponent(escape(atob(getData.content.replace(/\n/g, '')))));
+                }
+            } catch(e) { catalog = []; }
+            
+            // 2. Thêm bài mới vào đầu (bỏ bài trùng slug nếu có)
+            catalog = catalog.filter(a => a.slug !== slug);
+            catalog.unshift({
+                title: title,
+                slug: slug,
+                desc: desc,
+                date: new Date().toISOString().split('T')[0],
+                category: category
+            });
+            
+            // 3. Quét thư mục GitHub - backfill bài viết chưa có trong catalog
+            catalog = await backfillCatalog(owner, repo, token, category, catalog);
+            
+            // 4. Push catalog
+            const catalogB64 = btoa(unescape(encodeURIComponent(JSON.stringify(catalog, null, 2))));
+            const putBody = { message: `Auto: Cập nhật catalog ${category}`, content: catalogB64 };
+            if(catalogSha) putBody.sha = catalogSha;
+            await fetch(apiUrl, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify(putBody)
+            });
+            
+            // 5. Tạo trang danh sách cho category hiện tại
+            await generateListingFromCatalog(owner, repo, token, category, catalog);
+            
+            // 6. Đồng bộ + tạo trang danh sách cho category còn lại
+            const otherCat = category === 'market' ? 'blog' : 'market';
+            try {
+                let otherCatalog = [];
+                let otherSha = null;
+                const otherCatalogRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${otherCat}/_catalog.json`, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if(otherCatalogRes.ok) {
+                    const otherData = await otherCatalogRes.json();
+                    otherSha = otherData.sha;
+                    otherCatalog = JSON.parse(decodeURIComponent(escape(atob(otherData.content.replace(/\n/g, '')))));
+                }
+                // Backfill cho category kia
+                const syncedOther = await backfillCatalog(owner, repo, token, otherCat, otherCatalog);
+                if(syncedOther.length !== otherCatalog.length) {
+                    // Có bài mới → push catalog
+                    const ob64 = btoa(unescape(encodeURIComponent(JSON.stringify(syncedOther, null, 2))));
+                    const oPut = { message: `Auto: Sync catalog ${otherCat}`, content: ob64 };
+                    if(otherSha) oPut.sha = otherSha;
+                    await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${otherCat}/_catalog.json`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify(oPut)
+                    });
+                }
+                await generateListingFromCatalog(owner, repo, token, otherCat, syncedOther);
+            } catch(e) { /* Bỏ qua lỗi */ }
+        }
+        
+        // BACKFILL: Quét directory GitHub, thêm bài chưa có trong catalog
+        async function backfillCatalog(owner, repo, token, category, catalog) {
+            try {
+                const dirRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${category}`, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if(!dirRes.ok) return catalog;
+                const files = await dirRes.json();
+                const htmlFiles = files.filter(f => f.name.endsWith('.html') && f.name !== 'index.html');
+                
+                const catalogSlugs = catalog.map(a => a.slug);
+                
+                for(const file of htmlFiles) {
+                    const fileSlug = file.name.replace('.html', '');
+                    if(catalogSlugs.includes(fileSlug)) continue;
+                    
+                    // Bài chưa có trong catalog → fetch để lấy title
+                    let realTitle = fileSlug.replace(/-/g, ' ');
+                    realTitle = realTitle.charAt(0).toUpperCase() + realTitle.slice(1);
+                    try {
+                        const fileRes = await fetch(file.url, {
+                            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                        });
+                        if(fileRes.ok) {
+                            const fileData = await fileRes.json();
+                            const content = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
+                            // Lấy <title>
+                            const titleMatch = content.match(/<title>([^<|]+)/i);
+                            if(titleMatch) realTitle = titleMatch[1].trim();
+                            // Lấy <h1>
+                            const h1Match = content.match(/<h1>([^<]+)/i);
+                            if(h1Match) realTitle = h1Match[1].trim();
+                            // Lấy meta description
+                            const descMatch = content.match(/meta\s+name=["']description["']\s+content=["']([^"']+)/i);
+                            var extractedDesc = descMatch ? descMatch[1] : '';
+                        }
+                    } catch(e) {}
+                    
+                    catalog.push({
+                        title: realTitle,
+                        slug: fileSlug,
+                        desc: extractedDesc || '',
+                        date: '',
+                        category: category
+                    });
+                }
+            } catch(e) {}
+            return catalog;
+        }
+        
+        // TẠO TRANG DANH SÁCH TỪ CATALOG
+        async function generateListingFromCatalog(owner, repo, token, category, catalog) {
+            const catTitle = category === 'market' ? 'Thị trường chứng khoán' : 'Bài viết & Phân tích';
+            const catDesc = category === 'market' 
+                ? 'Tổng hợp nhận định thị trường, phân tích kỹ thuật và tin tức chứng khoán Việt Nam.'
+                : 'Tổng hợp bài viết phân tích chuyên sâu về cổ phiếu, chiến lược đầu tư và tài chính cá nhân.';
+            
+            // Sắp xếp: bài có ngày → mới nhất trước, bài không ngày → cuối cùng
+            const sorted = [...catalog].sort((a, b) => {
+                if(!a.date && !b.date) return 0;
+                if(!a.date) return 1;
+                if(!b.date) return -1;
+                return b.date.localeCompare(a.date);
+            });
+            
+            const cardsList = sorted.map((a, i) => {
+                const num = i + 1;
+                const dateStr = a.date || '';
+                return `      <article class="market-card" style="margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">${num}</span>
+          <span style="font-size:0.8rem;color:#94a3b8;">${dateStr}</span>
+        </div>
+        <h3>${a.title}</h3>
+        ${a.desc ? '<p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">' + a.desc + '</p>' : ''}
+        <a href="${a.slug}.html" class="link-inline">Đọc bài viết →</a>
+      </article>`;
+            }).join('\n');
+            
+            const emptyMsg = sorted.length === 0 ? '<p style="color:#94a3b8;">Chưa có bài viết nào trong chuyên mục này.</p>' : '';
+            
+            const listingHtml = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${catTitle} | daututaichinh.pro</title>
+  <meta name="description" content="${catDesc}">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../lead-form.css">
+  <link rel="stylesheet" href="../chatbot.css">
+</head>
+<body data-lead-popup>
+<header class="top-bar">
+  <div class="container nav">
+    <a href="/" class="brand">
+      <img src="../logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
+      <div class="brand-text">
+        <span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
+        <span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="/">Trang chủ</a>
+      <a href="/market/">Thị trường</a>
+      <a href="/blog/">Bài viết</a>
+      <a href="/#tai-lieu">Tài liệu</a>
+      <a href="/#contact">Liên hệ</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <section class="section" style="padding-top: 40px;">
+    <div class="container">
+      <h1 style="font-size: 1.8rem; margin-bottom: 10px;">${catTitle}</h1>
+      <p class="section-desc" style="margin-bottom: 30px;">${catDesc}</p>
+      <p style="color:#64748b;font-size:0.85rem;margin-bottom:20px;">Tổng cộng: ${sorted.length} bài viết</p>
+${cardsList}
+${emptyMsg}
+      <a href="/" class="link-inline" style="margin-top: 30px; display: inline-block;">← Về trang chủ</a>
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="container"><p>© <span>${new Date().getFullYear()}</span> daututaichinh.pro</p></div>
+</footer>
+<script src="../lead-form.js"><\/script>
+<script src="../chatbot.js"><\/script>
+</body>
+</html>`;
+            
+            // Push listing page
+            const indexPath = `${category}/index.html`;
+            let existSha = null;
+            try {
+                const existRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${indexPath}`, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if(existRes.ok) {
+                    const existData = await existRes.json();
+                    existSha = existData.sha;
+                }
+            } catch(e) {}
+            
+            const b64 = btoa(unescape(encodeURIComponent(listingHtml)));
+            const body = { message: `Auto: Cập nhật danh sách ${category}`, content: b64 };
+            if(existSha) body.sha = existSha;
+            await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${indexPath}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+        }
+
+        // CẬP NHẬT TRANG CHỦ index.html TRÊN GITHUB TỬ CATALOG (ĐÁNH SỐ BÀI)
+        async function updateHomepage(owner, repo, token) {
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/index.html`;
+            
+            // 1. Fetch 2 catalog
+            const getCat = async (cat) => {
+                try {
+                    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cat}/_catalog.json`, {
+                        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                    });
+                    if(res.ok) {
+                        const data = await res.json();
+                        return JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+                    }
+                } catch(e) {}
+                return [];
+            };
+            const marketCat = await getCat('market');
+            const blogCat = await getCat('blog');
+
+            // 2. Lấy HTML trang chủ hiện tại
+            const getRes = await fetch(apiUrl, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+            });
+            const getData = await getRes.json();
+            if(!getRes.ok) return;
+            const sha = getData.sha;
+            let content = decodeURIComponent(escape(atob(getData.content.replace(/\n/g, ''))));
+
+            // 3. Render 2 bài Market mới nhất
+            const sortedMarket = [...marketCat].sort((a,b)=> (b.date||'').localeCompare(a.date||'')).slice(0, 2);
+            let marketHtml = '<div class="market-grid">\n';
+            sortedMarket.forEach((a, i) => {
+                const tag = i === 0 ? 'Mới nhất' : 'Bài trước';
+                const cls = i === 0 ? 'market-card featured' : 'market-card';
+                marketHtml += `      <article class="${cls}">\n        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">\n          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">${i+1}</span>\n          <span class="market-tag">${tag}</span>\n          <span style="font-size:0.8rem;color:#64748b;">${a.date||''}</span>\n        </div>\n        <h3>${a.title}</h3>\n        <p>${a.desc}</p>\n        <a href="/market/${a.slug}.html" class="link-inline">Đọc báo cáo chi tiết →</a>\n      </article>\n`;
+            });
+            marketHtml += '    </div>';
+
+            // 4. Render 3 bài Blog mới nhất
+            const sortedBlog = [...blogCat].sort((a,b)=> (b.date||'').localeCompare(a.date||'')).slice(0, 3);
+            let blogHtml = '';
+            sortedBlog.forEach((a, i) => {
+                const cls = i === 0 ? 'market-card featured' : 'market-card';
+                blogHtml += `    <article class="${cls}" style="margin-top:20px">\n        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">\n          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">${i+1}</span>\n          <span class="market-tag">Tâm điểm</span>\n          <span style="font-size:0.8rem;color:#64748b;">${a.date||''}</span>\n        </div>\n      <h3>${a.title}</h3>\n      <p>${a.desc}</p>\n      <a href="/blog/${a.slug}.html" class="link-inline">Đọc bài viết →</a>\n    </article>\n`;
+            });
+
+            // 5. Replace vào content
+            // Thay thế Market block
+            let mStart = content.indexOf('<!-- DYNAMIC_MARKET_START -->');
+            let mEnd = content.indexOf('<!-- DYNAMIC_MARKET_END -->');
+            if(mStart === -1) {
+                const startIdx = content.indexOf('<div class="market-grid">');
+                const endIdx = content.indexOf('</section>', startIdx);
+                if(startIdx !== -1 && endIdx !== -1) {
+                    content = content.slice(0, startIdx) + '<!-- DYNAMIC_MARKET_START -->\n' + marketHtml + '\n    <!-- DYNAMIC_MARKET_END -->\n  </div>\n' + content.slice(endIdx);
+                }
+            } else {
+                content = content.slice(0, mStart) + '<!-- DYNAMIC_MARKET_START -->\n    ' + marketHtml + '\n    <!-- DYNAMIC_MARKET_END -->' + content.slice(mEnd + 27);
+            }
+
+            // Thay thế Blog block
+            let bStart = content.indexOf('<!-- DYNAMIC_BLOG_START -->');
+            let bEnd = content.indexOf('<!-- DYNAMIC_BLOG_END -->');
+            if(bStart === -1) {
+                const blogMarkerStart = '<p class="section-desc">';
+                const blogSec = content.indexOf('id="blog"');
+                const pEndIdx = content.indexOf('</p>', content.indexOf(blogMarkerStart, blogSec)) + 4;
+                const linkIdx = content.indexOf('<a href="/blog/"', pEndIdx);
+                if(pEndIdx > 4 && linkIdx !== -1) {
+                    content = content.slice(0, pEndIdx) + '\n    <!-- DYNAMIC_BLOG_START -->\n' + blogHtml + '\n    <!-- DYNAMIC_BLOG_END -->\n    ' + content.slice(linkIdx);
+                }
+            } else {
+                content = content.slice(0, bStart) + '<!-- DYNAMIC_BLOG_START -->\n' + blogHtml + '\n    <!-- DYNAMIC_BLOG_END -->' + content.slice(bEnd + 25);
+            }
+
+            // [FIX] Đồng bộ lại Menu Điều hướng trên trang chủ thành link tuyệt đối chuyên mục (không dùng anchor)
+            content = content.replace(/<a href="#thi-truong">Thị trường<\/a>/g, '<a href="/market/">Thị trường</a>');
+            content = content.replace(/<a href="#blog">Bài viết<\/a>/g, '<a href="/blog/">Bài viết</a>');
+            content = content.replace(/<li><a href="#thi-truong">Thị trường<\/a><\/li>/g, '<li><a href="/market/">Thị trường</a></li>');
+            content = content.replace(/<li><a href="#blog">Bài viết<\/a><\/li>/g, '<li><a href="/blog/">Bài viết</a></li>');
+
+            // 6. Push lại
+            const b64 = btoa(unescape(encodeURIComponent(content)));
+            await fetch(apiUrl, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: `Auto: Cập nhật mới trang chủ từ catalog`, content: b64, sha: sha })
+            });
+        }
+
+        // THU HỒI BÀI ĐĂNG
+        async function recallArticle() {
+            const token = getItemSafe('github_token');
+            const owner = getItemSafe('github_owner');
+            const repo = getItemSafe('github_repo');
+            if(!token || !owner || !repo) return alert('Vui lòng cấu hình GitHub!');
+
+            const slug = document.getElementById('review-slug').value;
+            const category = document.getElementById('input-category').value;
+            if(!slug) return alert('Không có slug bài viết để thu hồi!');
+
+            const path = `${category}/${slug}.html`;
+            if(!confirm(`⚠️ Bạn có chắc muốn THU HỒI bài viết?\n\n📄 File: ${path}\n\nHành động này sẽ:\n• Xóa file bài viết khỏi GitHub\n• Gỡ bài khỏi trang chủ`)) return;
+
+            const btn = document.getElementById('btn-recall');
+            btn.innerHTML = '<div class="loader"></div> Đang thu hồi...';
+            btn.disabled = true;
+
+            try {
+                // BƯỚC 1: Xóa file bài viết
+                await deleteFileFromGithub(owner, repo, path, `Thu hồi: Xóa bài ${slug}`, token);
+                
+                // BƯỚC 2: Gỡ bài khỏi trang chủ
+                btn.innerHTML = '<div class="loader"></div> Đang cập nhật trang chủ...';
+                await removeFromHomepage(owner, repo, token, slug);
+                
+                alert('✅ Thu hồi thành công!\n• File bài viết đã bị xóa\n• Trang chủ đã được cập nhật');
+            } catch(e) {
+                alert('Lỗi thu hồi: ' + e.message);
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> Thu hồi bài đăng';
+                btn.disabled = false;
+            }
+        }
+
+        // TẠM THỜI: HÀM QUÉT VÀ DỌN DẸP 3 BÀI LỖI
+        async function cleanupOldArticles() {
+            const token = getItemSafe('github_token');
+            const owner = getItemSafe('github_owner');
+            const repo = getItemSafe('github_repo');
+            if(!token || !owner || !repo) return alert('Vui lòng cấu hình GitHub!');
+
+            if(!confirm(`⚠️ CHÚ Ý: Hành động này sẽ TỰ ĐỘNG XÓA 3 bài viết có chứa từ khóa: ESG, Nâng hạng khỏi trang web.\n\nBạn có chắc chắn muốn bỏ đi các bài lỗi này không?`)) return;
+
+            const btn = document.getElementById('btn-cleanup');
+            btn.innerHTML = '<div class="loader"></div> Đang quét & xóa...';
+            btn.disabled = true;
+
+            try {
+                // Đọc catalog blog hiện tại
+                const catUrl = `https://api.github.com/repos/${owner}/${repo}/contents/blog/_catalog.json`;
+                const catRes = await fetch(catUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                if(!catRes.ok) throw new Error("Không thể định vị catalog");
+                
+                const catData = await catRes.json();
+                const oldCat = JSON.parse(decodeURIComponent(escape(atob(catData.content.replace(/\n/g, '')))));
+                
+                // Lọc ra các bài cần xóa và giữ lại các bài chuẩn
+                const toDelete = oldCat.filter(a => a.title.includes('ESG') || a.title.includes('Nâng Hạng') || a.title.includes('Nâng hạng') || a.title.includes('Xanh') || a.title.includes('Carbon'));
+                const newCat = oldCat.filter(a => !toDelete.includes(a));
+                
+                if (toDelete.length === 0) {
+                    alert("✅ Không tìm thấy bài lỗi nào trong hệ thống! Chắc là đã xóa xong rồi.");
+                    btn.style.display = 'none';
+                    return;
+                }
+
+                // Chạy vòng lặp xóa file HTML
+                for(const article of toDelete) {
+                    const articlePath = `blog/${article.slug}.html`;
+                    try {
+                        const fileRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${articlePath}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if(fileRes.ok) {
+                            const fileData = await fileRes.json();
+                            await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${articlePath}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${token}` },
+                                body: JSON.stringify({ message: `Auto: Dọn dẹp bài viết lỗi ${article.slug}`, sha: fileData.sha })
+                            });
+                        }
+                    } catch(e) { console.log("Lỗi khi xóa html file", article.slug); }
+                }
+
+                // Cập nhật lại _catalog.json (đã loại bỏ bài lỗi)
+                const catB64 = btoa(unescape(encodeURIComponent(JSON.stringify(newCat, null, 2))));
+                await fetch(catUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ message: `Auto: Cập nhật catalog (Dọn dẹp article)`, content: catB64, sha: catData.sha })
+                });
+
+                // Cập nhật lại view index.html và trang chủ từ newCat
+                btn.innerHTML = '<div class="loader"></div> Đang cập nhật trang chủ...';
+                await generateListingFromCatalog(owner, repo, token, 'blog', newCat); // cập nhật trang blog listing
+                await updateHomepage(owner, repo, token); // chạy hàm updateHomepage mới cập nhật (tự load catalog)
+
+                alert(`🎉 DỌN DẸP HOÀN TẤT!\nĐã xóa thành công ${toDelete.length} bài viết lỗi.\n\nTrang chủ và danh mục cũng đã được phân loại lại số thứ tự. Vui lòng Ctrl+F5 web daututaichinh.pro nhé!`);
+                btn.style.display = 'none';
+
+            } catch(e) {
+                alert('Lỗi khi dọn dẹp: ' + e.message);
+                btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Thử lại';
+                btn.disabled = false;
+            }
+        }
+
+        // TÍNH NĂNG XÓA BÀI VIẾT TỪ URL BẤT KỲ
+        async function deleteAnyArticle() {
+            const token = getItemSafe('github_token');
+            const owner = getItemSafe('github_owner');
+            const repo = getItemSafe('github_repo');
+            if(!token || !owner || !repo) return alert('Vui lòng cấu hình GitHub!');
+
+            const inputVal = document.getElementById('delete-url-input').value.trim();
+            if(!inputVal) return alert('Vui lòng dán Link hoặc Slug vào ô!');
+
+            let slug = '';
+            let category = 'blog'; // Mặc định là blog, nếu URL là market thì đổi
+
+            // Trích xuất thông minh từ URL hoặc Slug thuần
+            if(inputVal.includes('/market/')) { category = 'market'; }
+            else if(inputVal.includes('/blog/')) { category = 'blog'; }
+
+            const match = inputVal.match(/([^\/]+)(?:\.html)?\/?$/);
+            if(match) slug = match[1].replace('.html', '');
+            else slug = inputVal.replace('.html', '');
+
+            if(!slug) return alert('Chưa phát hiện được Slug hợp lệ!');
+
+            if(!confirm(`⚠️ Bạn đang chuẩn bị xóa hoàn toàn bài viết:\n\n👉 "${slug}"\n📁 Nằm trong mục: /${category}/\n\nHành động này không thể hoàn tác. Chấp nhận XÓA?`)) return;
+
+            const btn = document.getElementById('btn-delete-any');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<div class="loader"></div> Đang xóa...';
+            btn.disabled = true;
+
+            try {
+                // 1. Lấy SHA của file bài viết để xóa file cứng
+                const articlePath = `${category}/${slug}.html`;
+                let articleDeleted = false;
+                try {
+                    const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${articlePath}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if(getRes.ok) {
+                        const fileData = await getRes.json();
+                        await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${articlePath}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ message: `Auto: Thu hồi/Xóa bài viết ${slug}`, sha: fileData.sha })
+                        });
+                        articleDeleted = true;
+                    }
+                } catch(e) {}
+
+                // 2. Chỉnh Catalog để xóa bài
+                const catUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${category}/_catalog.json`;
+                const catRes = await fetch(catUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                let newCat = [];
+                if(catRes.ok) {
+                    const catData = await catRes.json();
+                    const oldCat = JSON.parse(decodeURIComponent(escape(atob(catData.content.replace(/\n/g, '')))));
+                    newCat = oldCat.filter(a => a.slug !== slug);
+                    
+                    if(newCat.length !== oldCat.length) {
+                        const catB64 = btoa(unescape(encodeURIComponent(JSON.stringify(newCat, null, 2))));
+                        await fetch(catUrl, {
+                            method: 'PUT',
+                            headers: { 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ message: `Auto: Xóa ${slug} khỏi catalog`, content: catB64, sha: catData.sha })
+                        });
+                    }
+                }
+
+                // 3. Render lại trang danh sách & trang chủ
+                btn.innerHTML = '<div class="loader"></div> Đang làm mới Trang chủ...';
+                await generateListingFromCatalog(owner, repo, token, category, newCat);
+                await updateHomepage(owner, repo, token);
+
+                document.getElementById('delete-url-input').value = '';
+                alert(`✅ Xóa thành công bài viết: ${slug}\n- File vật lý đã bị dọn.\n- Đã tự động cập nhật lại trang chủ và số thứ tự.`);
+            } catch(e) {
+                alert('Phát sinh lỗi khi xóa: ' + e.message);
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        // CHUẨN HÓA NGÀY THÁNG CATALOG (SỬA LỖI BÀI CŨ KHÔNG CÓ NGÀY)
+        async function fixCatalogDates() {
+            const token = getItemSafe('github_token');
+            const owner = getItemSafe('github_owner');
+            const repo = getItemSafe('github_repo');
+            if(!token) return alert('Vui lòng cấu hình GitHub!');
+
+            const btn = document.getElementById('btn-fix-dates');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<div class="loader"></div> Đang sửa lỗi...';
+            btn.disabled = true;
+
+            try {
+                let fixedCount = 0;
+                for(const category of ['market', 'blog']) {
+                    const catUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${category}/_catalog.json`;
+                    const res = await fetch(catUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if(!res.ok) continue;
+
+                    const data = await res.json();
+                    let catalog = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+                    let changed = false;
+
+                    catalog = catalog.map(item => {
+                        if (!item.date || item.date === '') {
+                            // Cố gắng tìm chuỗi dd-mm-yyyy hoặc mm-yyyy trong slug
+                            let newDate = '2026-01-01'; // Default xa xưa
+                            
+                            // Ví dụ: nhan-dinh-thi-truong-23-03-27-03-2026 -> lấy 27-03-2026
+                            const matchFull = item.slug.match(/(\d{2})-(\d{2})-(\d{4})/);
+                            if(matchFull) {
+                                newDate = `${matchFull[3]}-${matchFull[2]}-${matchFull[1]}`;
+                            } else if (item.slug.includes('quy-1-2026') || item.title.includes('Quý 1')) {
+                                newDate = '2026-03-31';
+                            } else if (item.slug.includes('pvs')) {
+                                newDate = '2026-03-01'; // Bài đầu tiên
+                            } else if (item.slug.includes('nang-hang')) {
+                                newDate = '2026-04-01';
+                            }
+                            
+                            item.date = newDate;
+                            changed = true;
+                            fixedCount++;
+                        }
+                        return item;
+                    });
+
+                    if(changed) {
+                        const catB64 = btoa(unescape(encodeURIComponent(JSON.stringify(catalog, null, 2))));
+                        await fetch(catUrl, {
+                            method: 'PUT',
+                            headers: { 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ message: `Auto: Fix missing dates in ${category}`, content: catB64, sha: data.sha })
+                        });
+                        await generateListingFromCatalog(owner, repo, token, category, catalog);
+                    }
+                }
+
+                // Update homepage to reflect new sorting & apply menu patch
+                await updateHomepage(owner, repo, token);
+                if (fixedCount > 0) {
+                    alert(`✅ Chữa cháy thành công!\nĐã tìm và khôi phục ngày tháng cho ${fixedCount} bài viết cũ.\n\nThứ tự trên trang chủ và chuyên mục đã được sắp xếp lại chuẩn thời gian. Bạn chờ xíu rồi Ctrl+F5 web nhé.`);
+                } else {
+                    alert('✅ Đã chạy cập nhật! Không phát hiện bài nào bị thiếu ngày, nhưng đã chải lại Trang Chủ để Fix lỗi Menu điều hướng.');
+                }
+
+            } catch(e) {
+                alert('Lỗi: ' + e.message);
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        // XÓA FILE TRÊN GITHUB
+        async function deleteFileFromGithub(owner, repo, path, message, token) {
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+            // Lấy sha trước
+            const getRes = await fetch(apiUrl, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+            });
+            const getData = await getRes.json();
+            if(!getRes.ok) throw new Error('Không tìm thấy file: ' + path);
+            
+            const delRes = await fetch(apiUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message, sha: getData.sha })
+            });
+            if(!delRes.ok) {
+                const err = await delRes.json();
+                throw new Error(err.message || 'Xóa file thất bại');
+            }
+        }
+
+        // GỠ BÀI KHỎI TRANG CHỦ
+        async function removeFromHomepage(owner, repo, token, slug) {
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/index.html`;
+            const getRes = await fetch(apiUrl, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+            });
+            const getData = await getRes.json();
+            if(!getRes.ok) return; // Bỏ qua nếu không đọc được
+            
+            const sha = getData.sha;
+            const currentContent = decodeURIComponent(escape(atob(getData.content.replace(/\n/g, ''))));
+            
+            // Tìm và xóa article card chứa slug
+            const regex = new RegExp('<article class="market-card[^"]*">[\\s\\S]*?href="[^"]*' + slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\.html"[\\s\\S]*?<\\/article>', 'g');
+            const updatedContent = currentContent.replace(regex, '');
+            
+            if(updatedContent === currentContent) return; // Không tìm thấy, bỏ qua
+            
+            const b64 = btoa(unescape(encodeURIComponent(updatedContent)));
+            await fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Auto: Thu hồi bài "${slug}" khỏi trang chủ`,
+                    content: b64,
+                    sha: sha
+                })
+            });
+        }
+
+        // Danh sách model dự phòng (thử lần lượt khi quota hết)
+        const FALLBACK_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+
+        // HELPER: Gọi Gemini API (có auto-retry + fallback model)
+        async function callGemini(apiKey, prompt, modelOverride = null) {
+            const modelName = modelOverride || getItemSafe('gemini_model') || 'gemini-2.5-flash';
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+            const debugEl = document.getElementById('debug-log');
+            
+            if(modelOverride) {
+                debugEl.innerText = `🔄 Đang thử model dự phòng: ${modelName}...`;
+                debugEl.style.color = '#60a5fa';
+            }
+            
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{text: prompt}] }]
+                })
+            });
+            const data = await res.json();
+            
+            // Xử lý lỗi Quota (429) - chuyển sang model dự phòng
+            if(res.status === 429) {
+                const mainModel = getItemSafe('gemini_model') || 'gemini-2.5-flash';
+                
+                // Tìm model dự phòng chưa thử
+                const triedModels = modelOverride ? [mainModel, modelOverride] : [mainModel];
+                const nextModel = FALLBACK_MODELS.find(m => !triedModels.includes(m));
+                
+                if(nextModel) {
+                    debugEl.innerText = `⚠️ Model ${modelName} hết quota. Chuyển sang ${nextModel}...`;
+                    debugEl.style.color = '#facc15';
+                    await new Promise(r => setTimeout(r, 2000));
+                    
+                    const result = await callGemini(apiKey, prompt, nextModel);
+                    debugEl.innerText = `✅ Đã dùng model dự phòng: ${nextModel}`;
+                    debugEl.style.color = '#4ade80';
+                    setTimeout(() => { debugEl.innerText = ''; }, 5000);
+                    return result;
+                }
+                
+                // Hết model dự phòng → đợi rồi thử lại model chính
+                const errMsg = data.error?.message || '';
+                let waitSec = 60;
+                const retryMatch = errMsg.match(/retry in (\d+\.?\d*)/i);
+                if(retryMatch) waitSec = Math.ceil(parseFloat(retryMatch[1]));
+                waitSec = Math.min(waitSec, 90);
+                
+                for(let i = waitSec; i > 0; i--) {
+                    debugEl.innerText = `⏳ Tất cả model đều hết quota. Đợi ${i}s rồi thử lại...`;
+                    debugEl.style.color = '#facc15';
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+                debugEl.innerText = '';
+                
+                // Thử lại lần cuối với model chính
+                const retryRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mainModel}:generateContent?key=${apiKey}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{text: prompt}] }] })
+                });
+                const retryData = await retryRes.json();
+                if(!retryRes.ok) throw new Error('Hết quota tất cả model. Vui lòng đợi vài phút rồi thử lại.');
+                return retryData.candidates[0].content.parts[0].text;
+            }
+            
+            if(!res.ok) throw new Error(data.error?.message || "Lỗi API");
+            debugEl.innerText = '';
+            return data.candidates[0].content.parts[0].text;
+        }
+
+        // HELPER: Upload file Github REST API
+        async function uploadFileToGithub(owner, repo, path, content, message, token) {
+            // Encode Base64 (UTF-8 safe)
+            const b64Content = btoa(unescape(encodeURIComponent(content)));
+            
+            const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: message,
+                    content: b64Content
+                })
+            });
+            const data = await res.json();
+            if(!res.ok) throw new Error(data.message);
+            return data;
+        }
+
+        // SEO SCORES - cập nhật điểm và thanh màu (RankMath style)
+        function updateSeoScores() {
+            const titleEl = document.getElementById('review-title');
+            const descEl = document.getElementById('review-desc');
+            
+            // Lấy từ khóa đích tùy theo Đang mở chế độ AI hay chế độ Cầm tay
+            const isManualMode = document.getElementById('mode-manual').style.display !== 'none';
+            const focusKwInput = isManualMode ? document.getElementById('manual-keyword') : document.getElementById('input-topic'); 
+            
+            const tTextVal = titleEl.value;
+            const dTextVal = descEl.value;
+            const focusKeyword = focusKwInput ? focusKwInput.value.trim().toLowerCase() : '';
+
+            const tLen = tTextVal.length;
+            const dLen = dTextVal.length;
+            document.getElementById('title-count').innerText = tLen;
+            document.getElementById('desc-count').innerText = dLen;
+
+            // 1. Length Check
+            let tColor, tText, tBarW;
+            if(tLen === 0) { tColor = '#64748b'; tText = 'Chưa nhập'; tBarW = 0; }
+            else if(tLen < 30) { tColor = '#facc15'; tText = '⚠️ Hơi ngắn (thêm ' + (30 - tLen) + ' ký tự)'; tBarW = (tLen/60)*100; }
+            else if(tLen <= 60) { tColor = '#4ade80'; tText = '✅ Chuẩn SEO - Tiêu đề hoàn hảo!'; tBarW = (tLen/60)*100; }
+            else { tColor = '#f87171'; tText = '❌ Quá dài! Google sẽ cắt mất ' + (tLen - 60) + ' ký tự'; tBarW = 100; }
+
+            let dColor, dText, dBarW;
+            if(dLen === 0) { dColor = '#64748b'; dText = 'Chưa nhập'; dBarW = 0; }
+            else if(dLen < 120) { dColor = '#facc15'; dText = '⚠️ Hơi ngắn (thêm ' + (120 - dLen) + ' ký tự)'; dBarW = (dLen/160)*100; }
+            else if(dLen <= 160) { dColor = '#4ade80'; dText = '✅ Chuẩn SEO - Mô tả hoàn hảo!'; dBarW = (dLen/160)*100; }
+            else { dColor = '#f87171'; dText = '❌ Quá dài! Google sẽ cắt mất ' + (dLen - 160) + ' ký tự'; dBarW = 100; }
+
+            const tEl = document.getElementById('title-status');
+            const dEl = document.getElementById('desc-status');
+            const tBar = document.getElementById('title-bar');
+            const dBar = document.getElementById('desc-bar');
+
+            tEl.innerText = tText; tEl.style.color = tColor;
+            dEl.innerText = dText; dEl.style.color = dColor;
+            tBar.style.width = tBarW + '%'; tBar.style.background = tColor;
+            dBar.style.width = dBarW + '%'; dBar.style.background = dColor;
+
+            // 2. Keyword Check (RankMath Style)
+            const kwTitleEl = document.getElementById('title-keyword-status');
+            const kwDescEl = document.getElementById('desc-keyword-status');
+
+            if (!focusKeyword) {
+                kwTitleEl.innerHTML = '';
+                kwDescEl.innerHTML = '';
+            } else {
+                // Check Title
+                if (tTextVal.toLowerCase().includes(focusKeyword)) {
+                    kwTitleEl.innerHTML = '<span style="color: #4ade80;"><i class="fa-solid fa-check-double"></i> Chứa Focus Keyword</span>';
+                } else {
+                    kwTitleEl.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-xmark"></i> Thiếu Focus Keyword</span>';
+                }
+
+                // Check Meta Desc
+                if (dTextVal.toLowerCase().includes(focusKeyword)) {
+                    kwDescEl.innerHTML = '<span style="color: #4ade80;"><i class="fa-solid fa-check-double"></i> Chứa Focus Keyword</span>';
+                } else {
+                    kwDescEl.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-xmark"></i> Thiếu Focus Keyword</span>';
+                }
+            }
+        }
+
+        // AUTO-FIX SEO: Gọi AI viết lại title/desc cho đạt chuẩn
+        async function autoFixSeo() {
+            const key = getItemSafe('gemini_key');
+            if(!key) return alert('Vui lòng cấu hình API Key trước!');
+
+            const curTitle = document.getElementById('review-title').value;
+            const curDesc = document.getElementById('review-desc').value;
+            const tLen = curTitle.length;
+            const dLen = curDesc.length;
+
+            // Chỉ fix nếu thực sự cần
+            const needFixTitle = tLen < 30 || tLen > 60;
+            const needFixDesc = dLen < 120 || dLen > 160;
+            if(!needFixTitle && !needFixDesc) {
+                alert('✅ Title và Description đã chuẩn SEO rồi!');
+                return;
+            }
+
+            const btn = document.getElementById('btn-autofix');
+            btn.innerHTML = '<div class="loader"></div> AI đang sửa...';
+            btn.disabled = true;
+
+            try {
+                let fixPrompt = 'Viết lại cho tôi. Trả về JSON: {"title":"...", "desc":"..."}. KHÔNG giải thích, CHỈ JSON. KHÔNG dùng ký tự xuống dòng trong giá trị.\n';
+                if(needFixTitle) fixPrompt += `Title hiện tại: "${curTitle}" (${tLen} ký tự). Viết lại TIÊU ĐỀ này sao cho CHÍNH XÁC 40-55 ký tự, giữ nguyên ý nghĩa, hấp dẫn SEO.\n`;
+                else fixPrompt += `Title: "${curTitle}" (đã chuẩn, giữ nguyên).\n`;
+                if(needFixDesc) fixPrompt += `Description hiện tại: "${curDesc}" (${dLen} ký tự). Viết lại MÔ TẢ này sao cho CHÍNH XÁC 130-150 ký tự, giữ nguyên ý nghĩa, hấp dẫn.\n`;
+                else fixPrompt += `Description: "${curDesc}" (đã chuẩn, giữ nguyên).\n`;
+
+                const resp = await callGemini(key, fixPrompt);
+                let cleaned = resp.replace(/```json/g, '').replace(/```/g, '').trim();
+                cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ' ' : '');
+                const fix = JSON.parse(cleaned);
+
+                if(fix.title && needFixTitle) document.getElementById('review-title').value = fix.title;
+                if(fix.desc && needFixDesc) document.getElementById('review-desc').value = fix.desc;
+                updateSeoScores();
+            } catch(e) {
+                alert('Lỗi Auto-fix: ' + e.message);
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI Tự động sửa chuẩn SEO';
+                btn.disabled = false;
+            }
+        }
+
+        function buildTemplate(title, desc, category, body, imagePrompt, tags, hashtags) {
+            const depth = category === 'market' ? '../' : '../'; 
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt || 'finance stock market graph')}?width=800&height=400&nologo=true`;
+            
+            const tagsHtml = (tags || []).map(t => `<span style="display:inline-block; padding:4px 12px; background:rgba(99,102,241,0.2); color:#a5b4fc; border-radius:15px; font-size:12px; margin-right:5px;">${t}</span>`).join('');
+            const hashHtml = (hashtags || []).map(t => `<a href="#" style="color:#60a5fa; text-decoration:none; margin-right:8px;">${t}</a>`).join('');
+
+            return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${title} | daututaichinh.pro</title>
+  <meta name="description" content="${desc}">
+  <meta name="keywords" content="${(tags || []).join(', ')}">
+  <link rel="stylesheet" href="${depth}style.css" />
+  <link rel="stylesheet" href="${depth}lead-form.css" />
+  <link rel="stylesheet" href="${depth}chatbot.css" />
+  <style>
+    /* Dark theme inline cho Preview */
+    body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; line-height: 1.8; }
+    h1 { color: #f8fafc; font-size: 1.6rem; margin-bottom: 20px; }
+    h2 { color: #cbd5e1; font-size: 1.25rem; margin: 25px 0 12px; }
+    h3 { color: #94a3b8; }
+    p { color: #cbd5e1; margin-bottom: 15px; }
+    a { color: #60a5fa; }
+    ul, ol { color: #cbd5e1; padding-left: 20px; margin-bottom: 15px; }
+    li { margin-bottom: 6px; }
+    img { max-width: 100%; border-radius: 12px; }
+    strong { color: #f1f5f9; }
+  </style>
+</head>
+<body data-lead-popup>
+
+<header class="top-bar">
+  <div class="container nav">
+    <a href="/" class="brand">
+      <img src="${depth}logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
+      <div class="brand-text">
+        <span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
+        <span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="/">Trang chủ</a>
+      <a href="/market/">Thị trường</a>
+      <a href="/blog/">Bài viết</a>
+      <a href="/#tai-lieu">Tài liệu</a>
+      <a href="/#contact">Liên hệ</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <article class="blog-article">
+    <h1>${title}</h1>
+    
+    <div style="margin-bottom: 25px;">
+        <img src="${imageUrl}" alt="Cover image for ${title}" onerror="this.src='https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80'" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
+    </div>
+    
+    ${body}
+
+    <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <div style="margin-bottom: 10px;"><strong>Tags: </strong> ${tagsHtml}</div>
+        <div>${hashHtml}</div>
+    </div>
+
+    <div style="margin-top: 40px; padding: 25px; border-radius: 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
+      <h3 style="color: #60a5fa; margin-top: 0; margin-bottom: 15px;">👉 Bạn chọn làm "người cầm lái" hay hành khách?</h3>
+      <p style="margin-bottom: 20px;">Đăng ký nhận báo cáo phân tích mới nhất để đi trước thị trường 1 bước.</p>
+      <a href="#" id="cta-open-popup-blog" style="display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; border-radius: 8px; font-weight: 600; text-decoration: none;">📥 Đăng ký nhận tài liệu</a>
+    </div>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="container"><p>© <span>${new Date().getFullYear()}</span> daututaichinh.pro</p></div>
+</footer>
+<script src="${depth}lead-form.js"><\/script>
+<script src="${depth}chatbot.js"><\/script>
+</body>
+</html>`;
+        }
+    </script>
+</body>
+</html>
