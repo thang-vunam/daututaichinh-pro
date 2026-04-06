@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -394,6 +398,8 @@ main {
   color: #e6edf5;
 
   text-align: justify;       /* Canh đều trái / phải */
+  overflow-wrap: break-word; /* Xử lý link, hashtag dài không bẻ dòng */
+  word-break: break-word;
 }
 
 /* Heading */
