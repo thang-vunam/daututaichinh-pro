@@ -59,9 +59,31 @@ function initTableOfContents() {
         articleBody.prepend(tocCard);
     }
 
+    // Gắn click handler cho từng link TOC để cuộn trang chính xác (tránh bị thanh menu che)
+    tocCard.querySelectorAll('.toc-list a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                const headerOffset = 100; // Chiều cao thanh menu cố định + padding an toàn
+                const elementPosition = targetEl.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
     // Tiêm CSS động cho Mục Lục
     const style = document.createElement('style');
     style.innerHTML = `
+        /* Global fixes cho việc Menu che khuất tiêu đề */
+        html { scroll-behavior: smooth; }
+        h1, h2, h3, h4, h5, h6 { scroll-margin-top: 110px; }
+
         .seo-toc-container {
             background: rgba(30, 41, 59, 0.5);
             border: 1px solid rgba(255,255,255,0.1);
