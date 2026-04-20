@@ -332,6 +332,9 @@ Bạn có thể viết:
                 <button class="btn" id="btn-fix-dates" onclick="fixCatalogDates()" style="background: #3b82f6; color: white;">
                     <i class="fa-solid fa-calendar-check"></i> Sửa lỗi ngày tháng bài cũ
                 </button>
+                <button class="btn" id="btn-sync-seo" onclick="syncSeoToGithub()" style="background: #10b981; color: white;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> 🚀 Push đồng loạt SEO bài cũ lên Github
+                </button>
             </div>
         </div>
 
@@ -438,7 +441,7 @@ Bạn có thể viết:
                     <option value="gemini-2.5-flash">⭐ Gemini 2.5 Flash (Miễn phí, Khuyên dùng)</option>
                     <option value="gemini-flash-latest">Gemini Flash Latest (Tự động bản mới nhất)</option>
                     <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (Siêu nhanh)</option>
-                    <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                    <!-- gemini-2.0-flash-lite đã ngừng -->
                     <option value="gemini-2.5-pro">Gemini 2.5 Pro (Trả phí)</option>
                 </select>
             </div>
@@ -525,23 +528,32 @@ Bạn có thể viết:
             btn.disabled = true;
 
             try {
-                // Xử lý nội dung: nếu không phải HTML thì bọc trong <p>
-                let htmlBody = content;
-                if(!content.includes('<p>') && !content.includes('<h2>') && !content.includes('<div>')) {
-                    htmlBody = content.split('\n').filter(l => l.trim()).map(l => '<p>' + l.trim() + '</p>').join('\n');
-                }
-
                 const secManualKw = document.getElementById('manual-secondary-keywords').value.trim();
-
                 const today = new Date().toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
                 const year = new Date().getFullYear();
                 const lsiContext = secManualKw ? ` và bộ từ khóa phụ: "${secManualKw}"` : '';
-                const seoPrompt = 'Hôm nay là ngày ' + today + ', năm ' + year + '. Tôi đã viết xong 1 bài viết về tài chính/chứng khoán Việt Nam' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. Bạn là Chuyên gia SEO RankMath. Hãy phân tích nội dung, TÌM CÁCH CHÈN Từ khóa chính vào Tiêu đề và Mô tả một cách tự nhiên nhất, đồng thời tạo SEO metadata. Trả về JSON: {"title":"Chứa từ khóa chính. 30-55 ký tự chuẩn SEO","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. 120-150 ký tự","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa","tags":["tag1","tag2","tag3"],"hashtags":["#hash1","#hash2"]} CHỈ JSON, KHÔNG giải thích. Nội dung bài viết: ' + htmlBody.substring(0, 2000);
+                
+                const isRawText = !content.includes('<p>') && !content.includes('<h2>') && !content.includes('<div>');
+                let seoPrompt = '';
+                
+                if (isRawText) {
+                    btn.innerHTML = '<div class="loader"></div> AI đang định dạng lại nội dung & Tối ưu SEO...';
+                    seoPrompt = 'Hôm nay là ' + today + '. Bạn là Biên tập viên báo tài chính. Tôi có một văn bản thô bên dưới' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. NHIỆM VỤ CỦA BẠN: 1. ĐỊNH DẠNG LẠI nội dung thô này thành mã HTML mạch lạc, đẹp mắt: tự động chia đoạn nhỏ bằng thẻ <p>, siêu bôi đậm bằng <strong> cho các số liệu, tên riêng hoặc ý chính quan trọng, dùng <h2> hoặc <h3> cho các tiêu đề phụ, dùng thẻ danh sách <ul><li> nếu nội dung có tính chất liệt kê. (CHỈ DÙNG HTML cơ bản. KHÔNG tự ý sáng tác hay phịa thêm nội dung, phải bám sát 100% nguyên tác). 2. Phân tích nội dung để tạo SEO metadata. Trả về ĐÚNG MỘT khối JSON có định dạng sau: {"title":"Có chứa từ khóa chính, 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Mô tả ngắn gọn, 120-150 ký tự","imagePrompt":"10 từ tiếng Anh mô tả ảnh làm cover","tags":["tag1","tag2"],"hashtags":["#hash1","#hash2"], "htmlContent": "Toàn bộ mã HTML của bài viết đã được làm đẹp"}. KHÔNG GIẢI THÍCH GÌ THÊM. Nội dung thô: ' + content;
+                } else {
+                    seoPrompt = 'Hôm nay là ngày ' + today + '. Tôi đã viết xong 1 bài viết' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. Bạn là Chuyên gia SEO RankMath. Hãy phân tích nội dung, chèn từ khóa chính vào Tiêu đề và Mô tả tự nhiên. Trả về JSON: {"title":"30-55 ký tự chuẩn SEO","slug":"url-url","metaDescription":"120-150 ký tự","imagePrompt":"10 eng words","tags":["tag1","tag2"],"hashtags":["#hash1"]} CHỈ JSON. Nội dung bài: ' + content.substring(0, 2000);
+                }
 
                 const resp = await callGemini(key, seoPrompt);
-                let cleaned = resp.replace(/```json/g, '').replace(/```/g, '').trim();
+                let cleaned = resp.replace(/```json/g, '').replace(/```html/g, '').replace(/```/g, '').trim();
                 cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ' ' : '');
                 const seo = JSON.parse(cleaned);
+                
+                let htmlBody = content;
+                if(isRawText && seo.htmlContent) {
+                    htmlBody = seo.htmlContent;
+                } else if(isRawText) {
+                    htmlBody = content.split('\n').filter(l => l.trim()).map(l => '<p>' + l.trim() + '</p>').join('\n');
+                }
 
                 // Điền vào review panel
                 document.getElementById('review-title').value = seo.title || '';
@@ -1027,14 +1039,14 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
 <html lang="vi">
 <head>
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"><\/script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
     gtag('config', 'G-RJZJX69KDM');
-  </script>
+  <\/script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${catTitle} | daututaichinh.pro</title>
@@ -1457,6 +1469,125 @@ ${emptyMsg}
             }
         }
 
+        // ĐỒNG BỘ MÃ SEO & MỤC LỤC LÊN GITHUB CHO CÁC BÀI XƯA CŨ
+        async function syncSeoToGithub() {
+            const token = getItemSafe('github_token');
+            const owner = getItemSafe('github_owner');
+            const repo = getItemSafe('github_repo');
+            if(!token || !owner || !repo) return alert('Vui lòng cấu hình GitHub!');
+
+            if(!confirm("⚠️ KÍCH HOẠT QUY TRÌNH NÂNG CẤP SEO TOÀN QUỐC\n\nHành động này sẽ tải về toàn bộ bài viết cũ từ Github, nhúng mã nguồn Mục Lục & Youtube siêu tốc vào và Push ngược lại lên sever.\n\nSẽ mất khoảng 1-2 phút tùy số lượng bài viết. Bạn đã sẵn sàng?")) return;
+
+            const btn = document.getElementById('btn-sync-seo');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<div class="loader"></div> Đang nâng cấp Server...';
+            btn.disabled = true;
+
+            try {
+                // 1. Tải seo-optimize.js lên Github
+                const seoScriptRaw = "/**\n * G\u00d3I T\u1ed0I \u01afU H\u00d3A SEO C\u1ea4P T\u1ed0C: M\u1ee4C L\u1ee4C & T\u1ed0C \u0110\u1ed8 (Lite Youtube)\n * Code t\u1ef1 \u0111\u1ed9ng ch\u1ea1y sau khi trang load xong.\n */\ndocument.addEventListener('DOMContentLoaded', function() {\n    initTableOfContents();\n    optimizeYoutubeEmbeds();\n});\n\nfunction initTableOfContents() {\n    // Ch\u1ec9 l\u1ea5y H2, H3 trong ph\u1ea7n b\u00e0i vi\u1ebft ch\u00ednh \u0111\u1ec3 tr\u00e1nh l\u1ea5y nh\u1ea7m Header/Footer\n    const articleBody = document.querySelector('.blog-article') || document.querySelector('article') || document.body;\n    const headings = articleBody.querySelectorAll('h2, h3');\n    \n    // N\u1ebfu b\u00e0i vi\u1ebft c\u00f3 \u00edt h\u01a1n 2 ti\u00eau \u0111\u1ec1, kh\u00f4ng \u0111\u00e1ng \u0111\u1ec3 v\u1ebd M\u1ee5c l\u1ee5c\n    if (headings.length < 2) return;\n\n    const tocCard = document.createElement('div');\n    tocCard.className = 'seo-toc-container';\n    \n    let tocHTML = `\n        <div class=\"toc-header\">\n            <span class=\"toc-title\"><i class=\"fa-solid fa-list-ul\"></i> N\u1ed9i dung ch\u00ednh</span>\n            <button class=\"toc-toggle\" onclick=\"this.parentElement.parentElement.classList.toggle('collapsed')\"><i class=\"fa-solid fa-chevron-up\"></i></button>\n        </div>\n        <ul class=\"toc-list\">\n    `;\n\n    headings.forEach((heading, index) => {\n        // T\u1ea1o ID m\u1ecf neo n\u1ebfu th\u1ebb ch\u01b0a c\u00f3 ID\n        if (!heading.id) {\n            heading.id = 'heading-' + index;\n        }\n        \n        const text = heading.innerText;\n        const level = heading.tagName.toLowerCase() === 'h2' ? 'toc-h2' : 'toc-h3';\n        const anchor = '#' + heading.id;\n        \n        tocHTML += `<li class=\"${level}\"><a href=\"${anchor}\">${text}</a></li>`;\n    });\n\n    tocHTML += `</ul>`;\n    tocCard.innerHTML = tocHTML;\n\n    // T\u00ecm v\u1ecb tr\u00ed ch\u00e8n: Sau \u0111o\u1ea1n Sapo (\u0111o\u1ea1n th\u1ebb p \u0111\u1ea7u ti\u00ean sau th\u1ebb H1)\n    const h1 = articleBody.querySelector('h1');\n    if (h1 && h1.nextElementSibling) {\n        // N\u1ebfu th\u1ebb ti\u1ebfp theo l\u00e0 \u1ea3nh t\u1ea3i b\u00eca, th\u00ec ch\u00e8n sau \u1ea3nh\n        let insertNode = h1.nextElementSibling;\n        if (insertNode.tagName.toLowerCase() === 'div' && insertNode.querySelector('img')) {\n            insertNode = insertNode.nextElementSibling;\n        }\n        if (insertNode) {\n            articleBody.insertBefore(tocCard, insertNode.nextSibling);\n        } else {\n            articleBody.insertBefore(tocCard, h1.nextSibling);\n        }\n    } else {\n        articleBody.prepend(tocCard);\n    }\n\n    // G\u1eafn click handler cho t\u1eebng link TOC \u0111\u1ec3 cu\u1ed9n trang ch\u00ednh x\u00e1c (tr\u00e1nh b\u1ecb thanh menu che)\n    tocCard.querySelectorAll('.toc-list a').forEach(link => {\n        link.addEventListener('click', function(e) {\n            e.preventDefault();\n            const targetId = this.getAttribute('href').substring(1);\n            const targetEl = document.getElementById(targetId);\n            if (targetEl) {\n                const headerOffset = 100; // Chi\u1ec1u cao thanh menu c\u1ed1 \u0111\u1ecbnh + padding an to\u00e0n\n                const elementPosition = targetEl.getBoundingClientRect().top;\n                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;\n                window.scrollTo({\n                    top: offsetPosition,\n                    behavior: 'smooth'\n                });\n            }\n        });\n    });\n\n    // Ti\u00eam CSS \u0111\u1ed9ng cho M\u1ee5c L\u1ee5c\n    const style = document.createElement('style');\n    style.innerHTML = `\n        /* Global fixes cho vi\u1ec7c Menu che khu\u1ea5t ti\u00eau \u0111\u1ec1 */\n        html { scroll-behavior: smooth; }\n        h1, h2, h3, h4, h5, h6 { scroll-margin-top: 110px; }\n\n        .seo-toc-container {\n            background: rgba(30, 41, 59, 0.5);\n            border: 1px solid rgba(255,255,255,0.1);\n            border-radius: 12px;\n            padding: 18px 24px;\n            margin: 25px 0;\n            backdrop-filter: blur(8px);\n            transition: all 0.3s ease;\n        }\n        .toc-header {\n            display: flex; justify-content: space-between; align-items: center;\n            margin-bottom: 12px;\n        }\n        .toc-title { font-weight: 600; font-size: 1.1rem; color: #f8fafc; }\n        .toc-toggle { background: transparent; border: none; color: #cbd5e1; cursor: pointer; padding: 5px; transition: 0.3s; }\n        .toc-list { list-style: none; padding: 0 !important; margin: 0 !important; }\n        .toc-list li { margin-bottom: 8px; line-height: 1.4; }\n        .toc-h2 { margin-top: 12px; font-weight: 600; }\n        .toc-h3 { padding-left: 20px; font-size: 0.95em; color: #94a3b8; }\n        .toc-list a { text-decoration: none; color: #60a5fa; transition: color 0.2s; display: block; }\n        .toc-list a:hover { color: #93c5fd; text-decoration: underline; }\n        \n        /* Ch\u1ebf \u0111\u1ed9 thu g\u1ecdn */\n        .seo-toc-container.collapsed .toc-list { display: none; }\n        .seo-toc-container.collapsed .toc-toggle { transform: rotate(180deg); }\n        \n        /* Reponsive Mobile (Tr\u00ean \u0111i\u1ec7n tho\u1ea1i m\u00e0n h\u00ecnh nh\u1ecf thu g\u1ecdn font, padding l\u1ea1i 1 ch\u00fat) */\n        @media screen and (max-width: 768px) {\n            .seo-toc-container { padding: 15px; margin: 20px 0; }\n            .toc-title { font-size: 1rem; }\n            .toc-h3 { padding-left: 15px; font-size: 0.9em; }\n        }\n    `;\n    document.head.appendChild(style);\n}\n\nfunction optimizeYoutubeEmbeds() {\n    const iframes = document.querySelectorAll('iframe[src*=\"youtube.com/embed\"]');\n    \n    iframes.forEach(iframe => {\n        const src = iframe.src;\n        // Tr\u00edch xu\u1ea5t ID youtube \u1ea9n sau embed/ (B\u1ecf qua query params n\u1ebfu c\u00f3)\n        const match = src.match(/embed\\/([^?]+)/);\n        if(!match) return;\n        \n        const videoId = match[1];\n        const wrapperEl = document.createElement('div');\n        wrapperEl.className = 'lite-youtu-facade';\n        // Hi\u1ec3n th\u1ecb \u1ea3nh b\u00eca ch\u1ea5t l\u01b0\u1ee3ng hqdefault\n        wrapperEl.style.backgroundImage = `url(https://i.ytimg.com/vi/${videoId}/hqdefault.jpg)`;\n        \n        // N\u00fat Play Youtube gi\u1ea3 l\u1eadp\n        wrapperEl.innerHTML = `<div class=\"lite-play-btn\"></div>`;\n        \n        // Khi ng\u01b0\u1eddi d\u00f9ng b\u1ea5m v\u00e0o -> M\u1edbi sinh Iframe th\u1eadt (Gi\u00fap Core Web Vitals Xanh M\u01b0\u1ee3t do t\u1ea3i JS Youtube ch\u1eadm l\u1ea1i)\n        wrapperEl.addEventListener('click', function() {\n            // Re-create the iframe with autoplay\n            const activeIframe = document.createElement('iframe');\n            activeIframe.setAttribute('frameborder', '0');\n            activeIframe.setAttribute('allowfullscreen', '1');\n            activeIframe.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');\n            activeIframe.style.width = '100%';\n            activeIframe.style.height = '100%';\n            // Ch\u00e8n autoplay params\n            const newSrc = src.includes('?') ? src + '&autoplay=1' : src + '?autoplay=1';\n            activeIframe.setAttribute('src', newSrc);\n            \n            this.innerHTML = '';\n            this.appendChild(activeIframe);\n        });\n\n        // H\u1ee7y b\u1ecf class .video-wrapper c\u0169 v\u00ec n\u00f3 g\u00e2y ra l\u1ed7i double-padding kho\u1ea3ng tr\u1eafng\n        if (iframe.parentNode.classList.contains('video-wrapper')) {\n            iframe.parentNode.parentNode.replaceChild(wrapperEl, iframe.parentNode);\n        } else {\n            // Thay th\u1ebf iframe th\u00f4ng th\u01b0\u1eddng\n            iframe.parentNode.replaceChild(wrapperEl, iframe);\n        }\n    });\n\n    // C\u1ea5y CSS c\u1ee7a facade\n    if(iframes.length > 0 && !document.getElementById('lite-yt-css')) {\n        const css = document.createElement('style');\n        css.id = 'lite-yt-css';\n        css.innerHTML = `\n            .lite-youtu-facade {\n                background-color: #000;\n                position: relative;\n                display: block;\n                background-position: center;\n                background-size: cover;\n                cursor: pointer;\n                border-radius: 12px;\n                overflow: hidden;\n                width: 100%;\n                /* T\u1ec9 l\u1ec7 chu\u1ea9n 16:9 */\n                aspect-ratio: 16 / 9;\n                box-shadow: 0 4px 15px rgba(0,0,0,0.3);\n                margin: 20px 0;\n            }\n            .lite-play-btn {\n                width: 68px; height: 48px; position: absolute;\n                background-color: rgba(33, 33, 33, 0.8);\n                border-radius: 15%; border: none;\n                top: 50%; left: 50%; transform: translate(-50%, -50%);\n                transition: background-color 0.2s cubic-bezier(0.0,0.0,0.2,1);\n            }\n            .lite-youtu-facade:hover .lite-play-btn {\n                background-color: #f00; /* M\u00e0u \u0111\u1ecf c\u1edd Youtube khi hover */\n            }\n            .lite-play-btn:before {\n                content: \"\"; border-style: solid; border-width: 11px 0 11px 21px;\n                border-color: transparent transparent transparent #fff;\n                position: absolute; top: 13px; left: 26px;\n            }\n        `;\n        document.head.appendChild(css);\n    }\n}\n";
+                try {
+                    await uploadFileToGithub(owner, repo, "seo-optimize.js", seoScriptRaw, "Auto: Cập nhật thư viện SEO & TOC", token);
+                } catch(e) { /* Co the da ton tai, k sao */ }
+
+                btn.innerHTML = '<div class="loader"></div> Đang duyệt Bài viết cũ...';
+                let successCount = 0;
+
+                // 2. Vòng lặp quét Market và Blog
+                for(const category of ['market', 'blog']) {
+                    const catUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${category}/_catalog.json`;
+                    const res = await fetch(catUrl, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if(!res.ok) continue;
+
+                    const data = await res.json();
+                    let catalog = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\\n/g, '')))));
+                    
+                    for (const article of catalog) {
+                        try {
+                            const articlePath = `${category}/${article.slug}.html`;
+                            const fileRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${articlePath}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                            if(fileRes.ok) {
+                                const fileData = await fileRes.json();
+                                let htmlBody = decodeURIComponent(escape(atob(fileData.content.replace(/\\n/g, ''))));
+                                
+                                // Nếu bài cũ chưa có seo-optimize.js thì ta cấy vào
+                                if (!htmlBody.includes('seo-optimize.js')) {
+                                    // Bóc tách title và desc để làm schema
+                                    let title = article.title.replace(/"/g, '\\\\\"');
+                                    let descMatch = htmlBody.match(/<meta name="description" content="(.*?)">/);
+                                    let desc = descMatch ? descMatch[1].replace(/"/g, '\\\\\"') : title;
+                                    
+                                    const schemaStr = `<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "${title}",
+    "description": "${desc}",
+    "datePublished": "${new Date().toISOString()}",
+    "author": {
+      "@type": "Organization",
+      "name": "Đầu tư Tài chính Pro",
+      "url": "https://daututaichinh.pro/"
+    }
+  }
+  <\/script>
+  <style>`;
+                                    htmlBody = htmlBody.replace('<style>', schemaStr);
+                                    htmlBody = htmlBody.replace('</body>', '<script src="../seo-optimize.js"><' + '/script>\\n</body>');
+                                    
+                                    // Đẩy file đã nâng cấp lên đè file trên Github
+                                    const b64 = btoa(unescape(encodeURIComponent(htmlBody)));
+                                    await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${articlePath}`, {
+                                        method: 'PUT',
+                                        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ message: `Auto SEO Upgrade: ${article.slug}`, content: b64, sha: fileData.sha })
+                                    });
+                                    successCount++;
+                                }
+                            }
+                        } catch(innerE) { console.log(innerE); }
+                    }
+                }
+
+                // 3. Update index.html to have seo-optimize.js and Organization Schema
+                btn.innerHTML = '<div class="loader"></div> Đang chót trang chủ...';
+                try {
+                    const idxRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/index.html`, { headers: { 'Authorization': `Bearer ${token}` } });
+                    if(idxRes.ok) {
+                        const idxData = await idxRes.json();
+                        let idxHtml = decodeURIComponent(escape(atob(idxData.content.replace(/\\n/g, ''))));
+                        if (!idxHtml.includes('seo-optimize.js')) {
+                            const orgSchema = `<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Đầu tư & Tài chính chuyên sâu",
+    "url": "https://daututaichinh.pro/",
+    "logo": "https://daututaichinh.pro/logo.png"
+  }
+  <\/script>
+</head>`;
+                            idxHtml = idxHtml.replace('</head>', orgSchema);
+                            idxHtml = idxHtml.replace('</body>', '<script src="seo-optimize.js"><' + '/script>\\n</body>');
+                            const b64Idx = btoa(unescape(encodeURIComponent(idxHtml)));
+                            await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/index.html`, {
+                                method: 'PUT',
+                                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ message: `Auto: Nhúng Schema & Video TOC lên Trang Chủ`, content: b64Idx, sha: idxData.sha })
+                            });
+                        }
+                    }
+                } catch(e) {}
+
+                alert(`🎉 THÀNH CÔNG RỰC RỠ!\\n\\nĐã nâng cấp chuẩn SEO (Schema JSON, Lite-Youtube, TOC) cho ${successCount} bài viết cũ trên hệ thống Github.\\nGiờ bạn lên daututaichinh.pro là mọi bài cũ đều đã xịn đét!`);
+            } catch(e) {
+                alert("Lỗi Đồng bộ: " + e.message);
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
         // XÓA FILE TRÊN GITHUB
         async function deleteFileFromGithub(owner, repo, path, message, token) {
             const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
@@ -1517,10 +1648,10 @@ ${emptyMsg}
         }
 
         // Danh sách model dự phòng (thử lần lượt khi quota hết)
-        const FALLBACK_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+        const FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash'];
 
-        // HELPER: Gọi Gemini API (có auto-retry + fallback model)
-        async function callGemini(apiKey, prompt, modelOverride = null) {
+        // HELPER: Gọi Gemini API (có auto-retry + fallback model + timeout)
+        async function callGemini(apiKey, prompt, modelOverride = null, timeoutMs = 45000) {
             const modelName = modelOverride || getItemSafe('gemini_model') || 'gemini-2.5-flash';
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
             const debugEl = document.getElementById('debug-log');
@@ -1530,14 +1661,30 @@ ${emptyMsg}
                 debugEl.style.color = '#60a5fa';
             }
             
-            const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{text: prompt}] }]
-                })
-            });
-            const data = await res.json();
+            // Timeout controller để tránh treo vô hạn
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            
+            let res, data;
+            try {
+                res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{text: prompt}] }]
+                    }),
+                    signal: controller.signal
+                });
+                data = await res.json();
+            } catch(e) {
+                clearTimeout(timeoutId);
+                if(e.name === 'AbortError') {
+                    throw new Error(`Model ${modelName} phản hồi quá lâu (>${Math.round(timeoutMs/1000)}s). Vui lòng thử lại.`);
+                }
+                throw e;
+            } finally {
+                clearTimeout(timeoutId);
+            }
             
             // Xử lý lỗi Quota (429) - chuyển sang model dự phòng
             if(res.status === 429) {
@@ -1552,7 +1699,7 @@ ${emptyMsg}
                     debugEl.style.color = '#facc15';
                     await new Promise(r => setTimeout(r, 2000));
                     
-                    const result = await callGemini(apiKey, prompt, nextModel);
+                    const result = await callGemini(apiKey, prompt, nextModel, timeoutMs);
                     debugEl.innerText = `✅ Đã dùng model dự phòng: ${nextModel}`;
                     debugEl.style.color = '#4ade80';
                     setTimeout(() => { debugEl.innerText = ''; }, 5000);
@@ -1573,15 +1720,26 @@ ${emptyMsg}
                 }
                 debugEl.innerText = '';
                 
-                // Thử lại lần cuối với model chính
-                const retryRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mainModel}:generateContent?key=${apiKey}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{text: prompt}] }] })
-                });
-                const retryData = await retryRes.json();
-                if(!retryRes.ok) throw new Error('Hết quota tất cả model. Vui lòng đợi vài phút rồi thử lại.');
-                return retryData.candidates[0].content.parts[0].text;
+                // Thử lại lần cuối với model chính (cũng có timeout)
+                const retryController = new AbortController();
+                const retryTimeoutId = setTimeout(() => retryController.abort(), timeoutMs);
+                try {
+                    const retryRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mainModel}:generateContent?key=${apiKey}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: [{ parts: [{text: prompt}] }] }),
+                        signal: retryController.signal
+                    });
+                    const retryData = await retryRes.json();
+                    if(!retryRes.ok) throw new Error('Hết quota tất cả model. Vui lòng đợi vài phút rồi thử lại.');
+                    return retryData.candidates[0].content.parts[0].text;
+                } catch(e) {
+                    clearTimeout(retryTimeoutId);
+                    if(e.name === 'AbortError') throw new Error('Timeout sau khi chờ quota. Vui lòng thử lại sau.');
+                    throw e;
+                } finally {
+                    clearTimeout(retryTimeoutId);
+                }
             }
             
             if(!res.ok) throw new Error(data.error?.message || "Lỗi API");
@@ -1589,12 +1747,31 @@ ${emptyMsg}
             return data.candidates[0].content.parts[0].text;
         }
 
-        // HELPER: Upload file Github REST API
+        // HELPER: Upload file Github REST API (tự động lấy SHA nếu file đã tồn tại)
         async function uploadFileToGithub(owner, repo, path, content, message, token) {
             // Encode Base64 (UTF-8 safe)
             const b64Content = btoa(unescape(encodeURIComponent(content)));
             
             const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+            
+            // Lấy SHA của file cũ nếu đã tồn tại (bắt buộc để GitHub cho phép ghi đè)
+            let existingSha = null;
+            try {
+                const getRes = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (getRes.ok) {
+                    const getData = await getRes.json();
+                    existingSha = getData.sha;
+                }
+            } catch(e) { /* File chưa tồn tại - tạo mới */ }
+            
+            const body = {
+                message: message,
+                content: b64Content
+            };
+            if (existingSha) body.sha = existingSha;
+            
             const res = await fetch(url, {
                 method: 'PUT',
                 headers: {
@@ -1602,10 +1779,7 @@ ${emptyMsg}
                     'Accept': 'application/vnd.github.v3+json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    message: message,
-                    content: b64Content
-                })
+                body: JSON.stringify(body)
             });
             const data = await res.json();
             if(!res.ok) throw new Error(data.message);
@@ -1653,7 +1827,7 @@ ${emptyMsg}
             tBar.style.width = tBarW + '%'; tBar.style.background = tColor;
             dBar.style.width = dBarW + '%'; dBar.style.background = dColor;
 
-            // 2. Keyword Check (RankMath Style)
+            // 2. Keyword Check (RankMath Style - Smart Match)
             const kwTitleEl = document.getElementById('title-keyword-status');
             const kwDescEl = document.getElementById('desc-keyword-status');
 
@@ -1662,14 +1836,14 @@ ${emptyMsg}
                 kwDescEl.innerHTML = '';
             } else {
                 // Check Title
-                if (tTextVal.toLowerCase().includes(focusKeyword)) {
+                if (smartKeywordMatch(tTextVal, focusKeyword)) {
                     kwTitleEl.innerHTML = '<span style="color: #4ade80;"><i class="fa-solid fa-check-double"></i> Chứa Focus Keyword</span>';
                 } else {
                     kwTitleEl.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-xmark"></i> Thiếu Focus Keyword</span>';
                 }
 
                 // Check Meta Desc
-                if (dTextVal.toLowerCase().includes(focusKeyword)) {
+                if (smartKeywordMatch(dTextVal, focusKeyword)) {
                     kwDescEl.innerHTML = '<span style="color: #4ade80;"><i class="fa-solid fa-check-double"></i> Chứa Focus Keyword</span>';
                 } else {
                     kwDescEl.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-xmark"></i> Thiếu Focus Keyword</span>';
@@ -1677,7 +1851,34 @@ ${emptyMsg}
             }
         }
 
+        /**
+         * SMART KEYWORD MATCH (Giống RankMath)
+         * Thay vì yêu cầu exact substring, kiểm tra thông minh:
+         * 1. Nếu keyword <= 2 từ: yêu cầu exact match (ví dụ: "giá vàng")
+         * 2. Nếu keyword >= 3 từ: tách thành từ riêng, yêu cầu TẤT CẢ từ quan trọng (>=2 ký tự) đều xuất hiện
+         *    → cho phép khác thứ tự, có dấu câu xen giữa
+         * Ví dụ: keyword "Cổ phiếu PVS" → title "PVS: Triển vọng cổ phiếu" → ✅ (cả 3 từ đều có)
+         */
+        function smartKeywordMatch(text, keyword) {
+            const textLower = text.toLowerCase();
+            const kwLower = keyword.toLowerCase();
+            
+            // Bước 1: Exact match (ưu tiên cao nhất)
+            if (textLower.includes(kwLower)) return true;
+            
+            // Bước 2: Tách keyword thành các từ có nghĩa (>= 2 ký tự)
+            const kwWords = kwLower.split(/[\s,;:]+/).filter(w => w.length >= 2);
+            
+            // Nếu keyword chỉ có 1-2 từ ngắn → yêu cầu exact match (đã check ở trên → false)
+            if (kwWords.length <= 2) return false;
+            
+            // Bước 3: Keyword >= 3 từ → check TẤT CẢ từ quan trọng đều xuất hiện trong text
+            const matchedCount = kwWords.filter(w => textLower.includes(w)).length;
+            return matchedCount === kwWords.length;
+        }
+
         // AUTO-FIX SEO: Gọi AI viết lại title/desc cho đạt chuẩn
+        // Dùng model lite (nhanh ~3-5s) + auto-retry nếu lần 1 vẫn chưa đạt
         async function autoFixSeo() {
             const key = getItemSafe('gemini_key');
             if(!key) return alert('Vui lòng cấu hình API Key trước!');
@@ -1687,33 +1888,94 @@ ${emptyMsg}
             const tLen = curTitle.length;
             const dLen = curDesc.length;
 
+            const isManualMode = document.getElementById('mode-manual').style.display !== 'none';
+            const focusKwInput = isManualMode ? document.getElementById('manual-keyword') : document.getElementById('input-topic'); 
+            const focusKeyword = focusKwInput ? focusKwInput.value.trim() : '';
+
+            const missTitleKw = focusKeyword && !smartKeywordMatch(curTitle, focusKeyword);
+            const missDescKw = focusKeyword && !smartKeywordMatch(curDesc, focusKeyword);
+
             // Chỉ fix nếu thực sự cần
-            const needFixTitle = tLen < 30 || tLen > 60;
-            const needFixDesc = dLen < 120 || dLen > 160;
+            const needFixTitle = tLen < 30 || tLen > 60 || missTitleKw;
+            const needFixDesc = dLen < 120 || dLen > 160 || missDescKw;
+            
             if(!needFixTitle && !needFixDesc) {
                 alert('✅ Title và Description đã chuẩn SEO rồi!');
                 return;
             }
 
             const btn = document.getElementById('btn-autofix');
-            btn.innerHTML = '<div class="loader"></div> AI đang sửa...';
+            const issues = [];
+            if(needFixTitle && missTitleKw) issues.push('Chèn keyword vào Title');
+            else if(needFixTitle) issues.push('Sửa độ dài Title');
+            if(needFixDesc && missDescKw) issues.push('Chèn keyword vào Desc');
+            else if(needFixDesc) issues.push('Sửa độ dài Desc');
+            btn.innerHTML = `<div class="loader"></div> Đang sửa: ${issues.join(' + ')}...`;
             btn.disabled = true;
 
-            try {
-                let fixPrompt = 'Viết lại cho tôi. Trả về JSON: {"title":"...", "desc":"..."}. KHÔNG giải thích, CHỈ JSON. KHÔNG dùng ký tự xuống dòng trong giá trị.\n';
-                if(needFixTitle) fixPrompt += `Title hiện tại: "${curTitle}" (${tLen} ký tự). Viết lại TIÊU ĐỀ này sao cho CHÍNH XÁC 40-55 ký tự, giữ nguyên ý nghĩa, hấp dẫn SEO.\n`;
-                else fixPrompt += `Title: "${curTitle}" (đã chuẩn, giữ nguyên).\n`;
-                if(needFixDesc) fixPrompt += `Description hiện tại: "${curDesc}" (${dLen} ký tự). Viết lại MÔ TẢ này sao cho CHÍNH XÁC 130-150 ký tự, giữ nguyên ý nghĩa, hấp dẫn.\n`;
-                else fixPrompt += `Description: "${curDesc}" (đã chuẩn, giữ nguyên).\n`;
+            // Hàm nội bộ: build prompt cho AI
+            function buildFixPrompt(title, desc, titleLen, descLen, fixTitle, fixDesc, kw, attempt) {
+                let p = 'Viết lại cho tôi. Trả về JSON: {"title":"...", "desc":"..."}. KHÔNG giải thích, CHỈ JSON. KHÔNG dùng ký tự xuống dòng trong giá trị.\n';
+                const strictNote = attempt > 1 ? ' (LẦN THỬ TRƯỚC CHƯA ĐẠT - LẦN NÀY BẮT BUỘC PHẢI ĐẠT CẢ HAI TIÊU CHÍ: ĐỘ DÀI VÀ TỪ KHÓA)' : '';
+                
+                if(fixTitle) {
+                    p += `Title hiện tại: "${title}" (${titleLen} ký tự). Viết lại TIÊU ĐỀ này sao cho CHÍNH XÁC 40-55 ký tự, giữ nguyên ý nghĩa, hấp dẫn SEO`;
+                    if(kw) p += `, và BẮT BUỘC chứa cụm từ khóa "${kw}" nguyên vẹn trong tiêu đề${strictNote}`;
+                    p += '.\n';
+                } else {
+                    p += `Title: "${title}" (đã chuẩn, giữ nguyên CHÍNH XÁC, KHÔNG đổi).\n`;
+                }
+                if(fixDesc) {
+                    p += `Description hiện tại: "${desc}" (${descLen} ký tự). Viết lại MÔ TẢ này sao cho CHÍNH XÁC 130-150 ký tự, giữ nguyên ý nghĩa, hấp dẫn`;
+                    if(kw) p += `, và BẮT BUỘC chứa cụm từ khóa "${kw}" nguyên vẹn${strictNote}`;
+                    p += '.\n';
+                } else {
+                    p += `Description: "${desc}" (đã chuẩn, giữ nguyên CHÍNH XÁC, KHÔNG đổi).\n`;
+                }
+                return p;
+            }
 
-                const resp = await callGemini(key, fixPrompt);
+            try {
+                // === LẦN 1 ===
+                let fixPrompt = buildFixPrompt(curTitle, curDesc, tLen, dLen, needFixTitle, needFixDesc, focusKeyword, 1);
+                let resp = await callGemini(key, fixPrompt, 'gemini-2.5-flash-lite', 30000);
                 let cleaned = resp.replace(/```json/g, '').replace(/```/g, '').trim();
                 cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ' ' : '');
-                const fix = JSON.parse(cleaned);
+                let fix = JSON.parse(cleaned);
 
-                if(fix.title && needFixTitle) document.getElementById('review-title').value = fix.title;
-                if(fix.desc && needFixDesc) document.getElementById('review-desc').value = fix.desc;
+                let newTitle = (fix.title && needFixTitle) ? fix.title : curTitle;
+                let newDesc = (fix.desc && needFixDesc) ? fix.desc : curDesc;
+
+                // === VALIDATE kết quả lần 1 ===
+                const stillBadTitle = (newTitle.length < 30 || newTitle.length > 60) || (focusKeyword && !smartKeywordMatch(newTitle, focusKeyword));
+                const stillBadDesc = (newDesc.length < 120 || newDesc.length > 160) || (focusKeyword && !smartKeywordMatch(newDesc, focusKeyword));
+
+                // === LẦN 2 (retry) nếu vẫn chưa đạt ===
+                if (stillBadTitle || stillBadDesc) {
+                    btn.innerHTML = '<div class="loader"></div> Lần 1 chưa đạt, đang thử lại...';
+                    
+                    let retryPrompt = buildFixPrompt(newTitle, newDesc, newTitle.length, newDesc.length, stillBadTitle, stillBadDesc, focusKeyword, 2);
+                    let resp2 = await callGemini(key, retryPrompt, 'gemini-2.5-flash-lite', 30000);
+                    let cleaned2 = resp2.replace(/```json/g, '').replace(/```/g, '').trim();
+                    cleaned2 = cleaned2.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ' ' : '');
+                    let fix2 = JSON.parse(cleaned2);
+
+                    if(fix2.title && stillBadTitle) newTitle = fix2.title;
+                    if(fix2.desc && stillBadDesc) newDesc = fix2.desc;
+                }
+
+                // === Cập nhật UI ===
+                document.getElementById('review-title').value = newTitle;
+                document.getElementById('review-desc').value = newDesc;
                 updateSeoScores();
+
+                // Thông báo kết quả nhanh
+                btn.innerHTML = '<i class="fa-solid fa-check" style="color:#4ade80;"></i> Đã sửa xong!';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI Tự động sửa chuẩn SEO';
+                    btn.disabled = false;
+                }, 1500);
+                return; // Thoát sớm, không chạy finally reset
             } catch(e) {
                 alert('Lỗi Auto-fix: ' + e.message);
             } finally {
@@ -1733,14 +1995,14 @@ ${emptyMsg}
 <html lang="vi">
 <head>
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"><\/script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
     gtag('config', 'G-RJZJX69KDM');
-  </script>
+  <\/script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${title} | daututaichinh.pro</title>
@@ -1749,6 +2011,21 @@ ${emptyMsg}
   <link rel="stylesheet" href="${depth}style.css" />
   <link rel="stylesheet" href="${depth}lead-form.css" />
   <link rel="stylesheet" href="${depth}chatbot.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "${title.replace(/"/g, '\\"')}",
+    "description": "${desc.replace(/"/g, '\\"')}",
+    "image": "${imageUrl}",
+    "datePublished": "${new Date().toISOString()}",
+    "author": {
+      "@type": "Organization",
+      "name": "Đầu tư Tài chính Pro",
+      "url": "https://daututaichinh.pro/"
+    }
+  }
+  <\/script>
   <style>
     /* Dark theme inline cho Preview */
     body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; line-height: 1.8; }
@@ -1812,6 +2089,7 @@ ${emptyMsg}
 </footer>
 <script src="${depth}lead-form.js"><\/script>
 <script src="${depth}chatbot.js"><\/script>
+<script src="${depth}seo-optimize.js"><\/script>
 </body>
 </html>`;
         }
