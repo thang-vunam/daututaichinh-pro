@@ -4,6 +4,11 @@
 
 html, body {
   overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  scroll-margin-top: 110px;
 }
 
 body {
@@ -101,20 +106,34 @@ main {
   max-width: 420px;   /* 🔒 VIDEO KHÔNG PHÌNH */
 }
 
-.video-wrapper {
+/* Hardcoded Facade CSS for Hero Video */
+.lite-youtu-facade {
+  background-color: #000;
   position: relative;
-  width: 100%;
-  padding-top: 56.25%;
+  display: block;
+  background-position: center;
+  background-size: cover;
+  cursor: pointer;
   border-radius: 12px;
   overflow: hidden;
-}
-
-.video-wrapper iframe {
-  position: absolute;
-  inset: 0;
   width: 100%;
-  height: 100%;
-  border: none;
+  aspect-ratio: 16 / 9;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.lite-play-btn {
+  width: 68px; height: 48px; position: absolute;
+  background-color: rgba(33, 33, 33, 0.8);
+  border-radius: 15%; border: none;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  transition: background-color 0.2s cubic-bezier(0.0,0.0,0.2,1);
+}
+.lite-youtu-facade:hover .lite-play-btn {
+  background-color: #f00;
+}
+.lite-play-btn:before {
+  content: ""; border-style: solid; border-width: 11px 0 11px 21px;
+  border-color: transparent transparent transparent #fff;
+  position: absolute; top: 13px; left: 26px;
 }
 
 .link-inline {
@@ -462,7 +481,7 @@ main {
 /* Mobile tối ưu */
 @media (max-width: 640px) {
   .blog-article {
-    font-size: 18px;
+    font-size: 16px;
     padding: 40px 18px 60px;
   }
 
