@@ -89,14 +89,19 @@
 
     <div class="hero-card">
       <h2>Video nổi bật</h2>
-      <div class="video-wrapper">
-        <iframe
-          data-src="https://www.youtube.com/embed/Tev2fPGVMas"
-          title="Video từ kênh Đầu tư & Tài chính chuyên sâu"
-          frameborder="0"
-          loading="lazy"
-          allowfullscreen>
-        </iframe>
+      <!-- 
+        ============================================================
+        [HƯỚNG DẪN THAY ĐỔI VIDEO NỔI BẬT]
+        Khi bạn muốn đổi video khác, chỉ cần tìm mã ID của video cũ (hiện tại là: Tev2fPGVMas) 
+        và thay bằng mã ID của video mới. 
+        Lưu ý: Bạn cần thay ở 3 chỗ:
+        1. Dòng <link rel="preload"> trên cùng của file (thẻ <head>)
+        2. Dòng background-image bên dưới
+        3. Dòng link iframe src bên dưới
+        ============================================================
+      -->
+      <div class="lite-youtu-facade" style="background-image: url('https://i.ytimg.com/vi/Tev2fPGVMas/hqdefault.jpg');" onclick="this.innerHTML='<iframe src=\'https://www.youtube.com/embed/Tev2fPGVMas?autoplay=1\' frameborder=\'0\' allow=\'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\' allowfullscreen style=\'width:100%;height:100%;\'></iframe>'">
+        <div class="lite-play-btn"></div>
       </div>
       <a class="link-inline" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
         Xem thêm video trên YouTube →
