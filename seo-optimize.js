@@ -121,10 +121,11 @@ function initTableOfContents() {
 }
 
 function optimizeYoutubeEmbeds() {
-    const iframes = document.querySelectorAll('iframe[src*="youtube.com/embed"]');
+    // Lấy cả iframe dùng src và data-src (lazy load)
+    const iframes = document.querySelectorAll('iframe[src*="youtube.com/embed"], iframe[data-src*="youtube.com/embed"]');
     
     iframes.forEach(iframe => {
-        const src = iframe.src;
+        const src = iframe.src || iframe.getAttribute('data-src');
         // Trích xuất ID youtube ẩn sau embed/ (Bỏ qua query params nếu có)
         const match = src.match(/embed\/([^?]+)/);
         if(!match) return;
