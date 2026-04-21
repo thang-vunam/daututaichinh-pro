@@ -21,6 +21,15 @@
               await OneSignal.Slidedown.promptPush();
           });
       }
+
+      // Tự động phát hiện iPhone/iPad để hiển thị hướng dẫn
+      document.addEventListener("DOMContentLoaded", function() {
+          var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+          // Safari trên Mac (hoặc iPad OS mới) đôi khi bị nhầm, check thêm MacTouch
+          if (isIOS || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+              document.getElementById('iosHint').style.display = 'block';
+          }
+      });
     </script>
     <style>
         :root {
@@ -118,6 +127,21 @@
             align-items: center;
             gap: 6px;
         }
+        .ios-hint {
+            margin-top: 24px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            line-height: 1.5;
+        }
+        .ios-hint span {
+            color: var(--text);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -136,6 +160,9 @@
         
         <button class="btn" onclick="requestPushPermission()">🔔 BẬT THÔNG BÁO NGAY</button>
         
+        <div class="ios-hint" id="iosHint" style="display: none;">
+            🍏 <span>Lưu ý riêng cho iPhone/iPad:</span> Apple yêu cầu bạn mở link này bằng Safari, sau đó bấm nút Chia sẻ (Share) ở cạnh dưới -> Chọn <span>"Thêm vào MH chính"</span>. Mở lại biểu tượng vừa thêm để nhận tín hiệu.
+        </div>
         <div class="features">
             <div class="feature">⚡ Cập nhật Real-time</div>
             <div class="feature">🔒 Riêng tư 100%</div>
