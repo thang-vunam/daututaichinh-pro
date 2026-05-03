@@ -85,32 +85,32 @@ function initTableOfContents() {
         h1, h2, h3, h4, h5, h6 { scroll-margin-top: 110px; }
 
         .seo-toc-container {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(155, 89, 240, 0.05);
+            border: 1px solid rgba(155, 89, 240, 0.2);
             border-radius: 12px;
-            padding: 18px 24px;
-            margin: 25px 0;
+            padding: 20px;
+            margin: 30px 0;
             backdrop-filter: blur(8px);
             transition: all 0.3s ease;
         }
         .toc-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
-        .toc-title { font-weight: 600; font-size: 1.1rem; color: #f8fafc; }
+        .toc-title { font-weight: 600; font-size: 1.1rem; color: #fff; }
         .toc-toggle { background: transparent; border: none; color: #cbd5e1; cursor: pointer; padding: 5px; transition: 0.3s; }
         .toc-list { list-style: none; padding: 0 !important; margin: 0 !important; }
-        .toc-list li { margin-bottom: 8px; line-height: 1.4; }
-        .toc-h2 { margin-top: 12px; font-weight: 600; }
-        .toc-h3 { padding-left: 20px; font-size: 0.95em; color: #94a3b8; }
-        .toc-list a { text-decoration: none; color: #60a5fa; transition: color 0.2s; display: block; }
-        .toc-list a:hover { color: #93c5fd; text-decoration: underline; }
+        .toc-list li { margin-bottom: 10px; line-height: 1.4; }
+        .toc-h2 { font-weight: 500; }
+        .toc-h3 { padding-left: 20px; font-size: 0.95em; }
+        .toc-list a { text-decoration: none; color: #cbd5e1; transition: color 0.2s; display: block; }
+        .toc-list a:hover { color: #00e5ff; }
         
         /* Chế độ thu gọn */
         .seo-toc-container.collapsed .toc-list { display: none; }
-        .seo-toc-container.collapsed .toc-toggle { transform: rotate(180deg); }
+        .seo-toc-container.collapsed .toc-toggle { transform: rotate(180deg); color: #00e5ff; }
         
-        /* Reponsive Mobile (Trên điện thoại màn hình nhỏ thu gọn font, padding lại 1 chút) */
+        /* Reponsive Mobile */
         @media screen and (max-width: 768px) {
             .seo-toc-container { padding: 15px; margin: 20px 0; }
             .toc-title { font-size: 1rem; }
