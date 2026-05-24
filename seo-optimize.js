@@ -204,3 +204,80 @@ function optimizeYoutubeEmbeds() {
         document.head.appendChild(css);
     }
 }
+
+// ========== LOAD RELATED ARTICLES IN SIDEBAR ==========
+document.addEventListener('DOMContentLoaded', () => {
+    const relatedListContainer = document.getElementById('related-articles-list');
+    if (!relatedListContainer) return;
+
+    // Determine current path and category
+    // Location can be like '/market/nhan-dinh-thi-truong.html' or '/blog/bai-viet.html'
+    const currentPath = window.location.pathname;
+    const pathParts = currentPath.split('/').filter(p => p);
+    
+    let currentCategory = '';
+    if (pathParts.length >= 2) {
+        currentCategory = pathParts[pathParts.length - 2];
+    } else if (pathParts.length === 1 && !currentPath.endsWith('.html')) {
+        currentCategory = pathParts[0];
+    }
+
+    if (!currentCategory) {
+        relatedListContainer.innerHTML = '<div class="sidebar-empty">Không có bài viết liên quan</div>';
+        return;
+    }
+
+    // Load _catalog.json from the current category directory
+    // Support both absolute path and local preview (file:// or relative fallback)
+    const catalogUrl = window.location.protocol === 'file:' 
+        ? '_catalog.json' 
+        : `/${currentCategory}/_catalog.json`;
+
+    fetch(catalogUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Không thể tải danh sách bài viết');
+            return response.json();
+        })
+        .then(articles => {
+            // Normalize URL comparison to avoid slashes mismatch
+            const cleanUrl = url => url.toLowerCase().replace(/^\/+/g, '').replace(/\.html$/, '').trim();
+            const currentCleanedUrl = cleanUrl(currentPath);
+
+            // Filter out current article
+            let related = articles.filter(art => {
+                const artSlug = art.slug;
+                const artCleanedUrl = cleanUrl(currentCategory + '/' + artSlug);
+                return artCleanedUrl !== currentCleanedUrl;
+            });
+
+            // Limit to max 4 articles
+            related = related.slice(0, 4);
+
+            if (related.length === 0) {
+                relatedListContainer.innerHTML = '<div class="sidebar-empty">Không có bài viết liên quan</div>';
+                return;
+            }
+
+            relatedListContainer.innerHTML = related.map(art => {
+                let linkUrl = window.location.protocol === 'file:' 
+                    ? `${art.slug}.html` 
+                    : `/${currentCategory}/${art.slug}.html`;
+
+                const formattedDate = art.date || '';
+
+                return `
+                    <a href="${linkUrl}" class="sidebar-item-card">
+                        <h4>${art.title}</h4>
+                        <div class="sidebar-item-meta">
+                            <span>📅 ${formattedDate}</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        })
+        .catch(error => {
+            console.error('Lỗi tải bài viết liên quan:', error);
+            relatedListContainer.innerHTML = '<div class="sidebar-empty">Không thể tải bài viết liên quan</div>';
+        });
+});
+

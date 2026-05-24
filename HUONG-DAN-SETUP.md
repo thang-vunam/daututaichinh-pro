@@ -126,3 +126,115 @@ Hoặc nếu bạn dùng **GitHub web**: upload các file sau lên repo:
 | Lỗi "Authorization" | Deploy lại với "Anyone" trong Who has access |
 
 Nếu vẫn gặp vấn đề, liên hệ để được hỗ trợ!
+
+---
+---
+
+# 🤖 Hướng dẫn thiết lập Chatbot AI (Gemini)
+
+Chatbot sử dụng **Cloudflare Workers** làm proxy để bảo mật Gemini API key (key không bao giờ lộ trên GitHub).
+
+> ⏱ Thời gian thực hiện: **10-15 phút**
+> 🔧 Yêu cầu: Tài khoản Google + Tài khoản Cloudflare (miễn phí)
+
+---
+
+## Bước 1: Lấy Gemini API Key
+
+1. Vào [Google AI Studio](https://aistudio.google.com/apikey)
+2. Nhấn **"Create API key"**
+3. Chọn hoặc tạo project mới (gợi ý tên: `daututaichinh-chatbot`)
+4. **Copy API key** (dạng: `AIzaSy...`)
+
+> 💡 **Tip**: Nên tạo key riêng cho chatbot, không dùng chung với các project khác.
+
+---
+
+## Bước 2: Tạo Cloudflare Worker
+
+1. Đăng ký/đăng nhập tại [dash.cloudflare.com](https://dash.cloudflare.com)
+2. Vào menu **Workers & Pages** → nhấn **Create**
+3. Chọn **"Create Worker"**
+4. Đặt tên worker: `chatbot-api` (hoặc tên khác bạn muốn)
+5. Nhấn **Deploy** (sẽ tạo worker mặc định "Hello World")
+6. Nhấn **"Edit code"** (hoặc **Quick Edit**)
+7. **Xóa hết code mặc định** → **Paste toàn bộ nội dung từ file `cloudflare-worker.js`**
+8. Nhấn **Save and Deploy**
+
+---
+
+## Bước 3: Thêm API Key vào Worker
+
+1. Quay lại trang Worker → vào tab **Settings**
+2. Tìm mục **Variables and Secrets**
+3. Nhấn **Add** → nhập:
+   - **Variable name:** `GEMINI_API_KEY`
+   - **Value:** Paste API key từ Bước 1
+   - **Chọn "Encrypt"** (để bảo mật)
+4. Nhấn **Save and Deploy**
+
+> ⚠️ **QUAN TRỌNG**: API key được mã hóa trên Cloudflare, không ai có thể đọc được sau khi lưu — kể cả bạn (chỉ có thể thay thế).
+
+---
+
+## Bước 4: Dán Worker URL vào code
+
+1. Trên trang Worker, copy URL (dạng: `https://chatbot-api.your-name.workers.dev`)
+2. Mở file **`chatbot.js`**
+3. Tìm dòng đầu tiên:
+
+```javascript
+const CHATBOT_WORKER_URL = 'YOUR_CLOUDFLARE_WORKER_URL_HERE';
+```
+
+4. Thay bằng URL Worker của bạn:
+
+```javascript
+const CHATBOT_WORKER_URL = 'https://chatbot-api.your-name.workers.dev';
+```
+
+5. Lưu file.
+
+---
+
+## Bước 5: Push lên GitHub
+
+```bash
+git add chatbot.css chatbot.js index.html
+git commit -m "Thêm AI chatbot Gemini"
+git push
+```
+
+> ⚠️ **KHÔNG push file `cloudflare-worker.js` lên GitHub** nếu bạn lo ngại (file này chỉ để tham khảo, code thực nằm trên Cloudflare).
+
+---
+
+## ✅ Kiểm tra Chatbot
+
+1. Vào website → đợi 2 giây → icon chat 💬 xuất hiện ở góc phải dưới
+2. Nhấn icon → cửa sổ chat mở ra
+3. Gửi câu hỏi: "Chứng khoán là gì?" → Bot trả lời bằng tiếng Việt
+4. Thử các nút gợi ý nhanh
+
+---
+
+## ❓ Gặp lỗi?
+
+| Vấn đề | Cách khắc phục |
+|---|---|
+| Icon chat không hiển thị | Kiểm tra đã thêm `chatbot.css` và `chatbot.js` vào `index.html` |
+| Bot báo "chưa cấu hình" | Kiểm tra `CHATBOT_WORKER_URL` trong `chatbot.js` |
+| Bot không trả lời | Kiểm tra `GEMINI_API_KEY` đã được thêm trong Cloudflare Worker Settings |
+| Lỗi CORS | Kiểm tra Worker đã deploy đúng code từ `cloudflare-worker.js` |
+
+---
+
+## 💡 Chi phí
+
+| Dịch vụ | Chi phí |
+|---|---|
+| **Cloudflare Workers** | Miễn phí (100,000 requests/ngày) |
+| **Gemini API** | Miễn phí (15 RPM cho Flash model) |
+| **GitHub Pages** | Miễn phí |
+
+→ Tổng chi phí: **$0** cho website cá nhân với traffic thông thường.

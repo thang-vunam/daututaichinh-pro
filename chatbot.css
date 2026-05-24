@@ -609,8 +609,6 @@
   .chatbot-input-area {
     padding: 10px 12px;
   }
-   .chatbot-input {
-    font-size: 16px;
 }
 
 @media (max-width: 640px) and (min-width: 481px) {

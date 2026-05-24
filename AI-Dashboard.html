@@ -207,6 +207,125 @@
         .mode-btn:last-child { border-radius: 0 10px 10px 0; }
         .mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .mode-btn i { margin-right: 6px; }
+
+        /* Link Builder */
+        .link-builder {
+            background: rgba(99, 102, 241, 0.06);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .link-builder-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #a5b4fc;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .link-builder-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+        .link-builder-row .form-group { margin-bottom: 0; }
+        .link-builder-row label { font-size: 0.8rem; margin-bottom: 5px; }
+        .link-type-toggle {
+            display: flex;
+            gap: 0;
+            margin-bottom: 12px;
+        }
+        .link-type-btn {
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .link-type-btn:first-child { border-radius: 6px 0 0 6px; }
+        .link-type-btn:last-child { border-radius: 0 6px 6px 0; }
+        .link-type-btn.active {
+            background: rgba(99, 102, 241, 0.3);
+            color: #c7d2fe;
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+        .link-list {
+            margin-top: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .link-list::-webkit-scrollbar { width: 4px; }
+        .link-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .link-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            animation: linkSlideIn 0.3s ease;
+        }
+        @keyframes linkSlideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .link-item:hover { background: rgba(0,0,0,0.3); }
+        .link-item-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1;
+        }
+        .link-item-badge {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .link-badge-internal { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .link-badge-external { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .link-item-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #e2e8f0;
+        }
+        .link-item-url {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #64748b;
+            font-size: 0.75rem;
+            max-width: 200px;
+        }
+        .link-item-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .link-item-actions button {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            font-size: 0.8rem;
+        }
+        .link-item-actions button:hover { color: #f87171; background: rgba(248,113,113,0.1); }
+        .link-item-actions button.link-insert-btn:hover { color: #4ade80; background: rgba(74,222,128,0.1); }
     </style>
 </head>
 <body>
@@ -265,9 +384,13 @@
                     <div id="suggest-list"></div>
                 </div>
 
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Ý tưởng bài viết / Tiêu đề gợi ý <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="input-idea" placeholder="Ví dụ: Cổ phiếu PVS: Hưởng lợi lớn từ dự án Lô B Ô Môn?" />
+                </div>
                 <div class="grid-2" style="margin-top: 15px;">
                     <div class="form-group">
-                        <label>Từ khóa chính (Focus Keyword) <span style="color: #ef4444;">*</span></label>
+                        <label>Từ khóa SEO chính (Focus Keyword) <span style="color: #ef4444;">*</span></label>
                         <input type="text" id="input-topic" placeholder="Ví dụ: Cổ phiếu PVS, Giá vàng hôm nay..." />
                     </div>
                     <div class="form-group">
@@ -309,6 +432,48 @@ Bạn có thể viết:
 • Văn bản thuần (sẽ được tự động bọc trong thẻ <p>)
 • HTML với các thẻ <h2>, <p>, <ul>, <a>...
 • Paste nội dung từ Word, Google Docs..."></textarea>
+                </div>
+
+                <!-- LINK BUILDER -->
+                <div class="link-builder">
+                    <div class="link-builder-title">
+                        <i class="fa-solid fa-link"></i> Chèn Link (Internal / External)
+                    </div>
+                    <div class="link-type-toggle">
+                        <div class="link-type-btn active" onclick="switchLinkType('internal')"><i class="fa-solid fa-house" style="margin-right:4px;"></i> Internal Link</div>
+                        <div class="link-type-btn" onclick="switchLinkType('external')"><i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i> External Link</div>
+                    </div>
+                    <div class="link-builder-row">
+                        <div class="form-group">
+                            <label>Nội dung hiển thị (Anchor Text)</label>
+                            <input type="text" id="link-anchor" placeholder="Ví dụ: phân tích cổ phiếu PVS" />
+                        </div>
+                        <div class="form-group">
+                            <label id="link-url-label">URL đích (Internal)</label>
+                            <input type="text" id="link-url" placeholder="Ví dụ: /blog/co-phieu-pvs.html" />
+                        </div>
+                        <button class="btn btn-primary" onclick="addLinkToList()" style="height: 44px; padding: 0 16px; white-space: nowrap;">
+                            <i class="fa-solid fa-plus"></i> Thêm
+                        </button>
+                    </div>
+                    <div class="link-list" id="link-list">
+                        <!-- Danh sách link đã thêm sẽ hiện tại đây -->
+                    </div>
+                    <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn" onclick="insertAllLinks()" style="font-size: 0.85rem;">
+                            <i class="fa-solid fa-paste"></i> Chèn tất cả link vào bài viết
+                        </button>
+                        <button class="btn" onclick="clearAllLinks()" style="font-size: 0.85rem; color: #f87171;">
+                            <i class="fa-solid fa-trash-can"></i> Xóa hết
+                        </button>
+                    </div>
+                    <div style="margin-top: 10px; padding: 10px 14px; background: rgba(99,102,241,0.08); border-radius: 8px; border: 1px solid rgba(99,102,241,0.15);">
+                        <p style="font-size: 0.78rem; color: #94a3b8; margin: 0; line-height: 1.6;">
+                            <i class="fa-solid fa-circle-info" style="color: #6366f1;"></i>
+                            <strong>Hướng dẫn:</strong> Chọn loại link → Nhập Anchor Text + URL → Bấm <strong>Thêm</strong>.
+                            Sau đó bấm <strong>Chèn tất cả</strong> để gắn vào cuối bài, hoặc bấm <strong style="color: #4ade80;">↵</strong> trên từng link để chèn tại vị trí con trỏ trong ô soạn thảo.
+                        </p>
+                    </div>
                 </div>
                 
                 <button class="btn btn-primary" id="btn-manual-seo" onclick="manualSeoOptimize()">
@@ -368,6 +533,45 @@ Bạn có thể viết:
                     </div>
                     <div id="code-pane" style="display: none;">
                         <textarea id="review-html" style="height: 500px; font-size: 13px; border-radius: 0 0 12px 12px;"></textarea>
+                    </div>
+
+                    <!-- LINK BUILDER (REVIEW MODE - dùng chung cho cả AI và Tự viết) -->
+                    <div class="link-builder" style="margin-top: 16px;">
+                        <div class="link-builder-title">
+                            <i class="fa-solid fa-link"></i> Chèn Link vào bài viết (Internal / External)
+                        </div>
+                        <div class="link-type-toggle" id="review-link-type-toggle">
+                            <div class="link-type-btn active" onclick="switchReviewLinkType('internal')"><i class="fa-solid fa-house" style="margin-right:4px;"></i> Internal Link</div>
+                            <div class="link-type-btn" onclick="switchReviewLinkType('external')"><i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i> External Link</div>
+                        </div>
+                        <div class="link-builder-row">
+                            <div class="form-group">
+                                <label>Nội dung hiển thị (Anchor Text)</label>
+                                <input type="text" id="review-link-anchor" placeholder="Ví dụ: phân tích cổ phiếu PVS" />
+                            </div>
+                            <div class="form-group">
+                                <label id="review-link-url-label">URL đích (Internal)</label>
+                                <input type="text" id="review-link-url" placeholder="Ví dụ: /blog/co-phieu-pvs.html" />
+                            </div>
+                            <button class="btn btn-primary" onclick="addReviewLink()" style="height: 44px; padding: 0 16px; white-space: nowrap;">
+                                <i class="fa-solid fa-plus"></i> Thêm
+                            </button>
+                        </div>
+                        <div class="link-list" id="review-link-list"></div>
+                        <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn" onclick="insertAllReviewLinks()" style="font-size: 0.85rem;">
+                                <i class="fa-solid fa-paste"></i> Chèn tất cả vào mã HTML
+                            </button>
+                            <button class="btn" onclick="clearAllReviewLinks()" style="font-size: 0.85rem; color: #f87171;">
+                                <i class="fa-solid fa-trash-can"></i> Xóa hết
+                            </button>
+                        </div>
+                        <div style="margin-top: 10px; padding: 10px 14px; background: rgba(99,102,241,0.08); border-radius: 8px; border: 1px solid rgba(99,102,241,0.15);">
+                            <p style="font-size: 0.78rem; color: #94a3b8; margin: 0; line-height: 1.6;">
+                                <i class="fa-solid fa-circle-info" style="color: #6366f1;"></i>
+                                <strong>Hướng dẫn:</strong> Thêm link → Bấm <strong>Chèn tất cả</strong> để gắn vào cuối mã HTML, hoặc bấm <strong style="color: #4ade80;">↵</strong> trên từng link để chèn tại vị trí con trỏ. Sau đó bấm <strong>Xem trước</strong> để kiểm tra kết quả.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -513,6 +717,209 @@ Bạn có thể viết:
             }
         }
 
+        // ============================================
+        // LINK BUILDER — Chèn Internal/External Link
+        // ============================================
+        let pendingLinks = [];
+        let currentLinkType = 'internal';
+
+        // === REVIEW PANEL Link Builder (dùng chung cho cả AI và Tự viết) ===
+        let reviewPendingLinks = [];
+        let reviewCurrentLinkType = 'internal';
+
+        function switchReviewLinkType(type) {
+            reviewCurrentLinkType = type;
+            const btns = document.querySelectorAll('#review-link-type-toggle .link-type-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            if(type === 'internal') {
+                btns[0].classList.add('active');
+                document.getElementById('review-link-url-label').innerText = 'URL đích (Internal)';
+                document.getElementById('review-link-url').placeholder = 'Ví dụ: /blog/co-phieu-pvs.html';
+            } else {
+                btns[1].classList.add('active');
+                document.getElementById('review-link-url-label').innerText = 'URL đích (External)';
+                document.getElementById('review-link-url').placeholder = 'Ví dụ: https://vietstock.vn/bai-viet...';
+            }
+        }
+
+        function addReviewLink() {
+            const anchor = document.getElementById('review-link-anchor').value.trim();
+            const url = document.getElementById('review-link-url').value.trim();
+            if(!anchor) return alert('Vui lòng nhập Anchor Text!');
+            if(!url) return alert('Vui lòng nhập URL đích!');
+
+            reviewPendingLinks.push({ anchor, url, type: reviewCurrentLinkType });
+            document.getElementById('review-link-anchor').value = '';
+            document.getElementById('review-link-url').value = '';
+            renderReviewLinkList();
+        }
+
+        function renderReviewLinkList() {
+            const list = document.getElementById('review-link-list');
+            if(reviewPendingLinks.length === 0) { list.innerHTML = ''; return; }
+            list.innerHTML = reviewPendingLinks.map((link, i) => {
+                const badgeCls = link.type === 'internal' ? 'link-badge-internal' : 'link-badge-external';
+                const badgeText = link.type === 'internal' ? 'Internal' : 'External';
+                return `<div class="link-item">
+                    <div class="link-item-info">
+                        <span class="link-item-badge ${badgeCls}">${badgeText}</span>
+                        <span class="link-item-text" title="${link.anchor}">${link.anchor}</span>
+                        <span class="link-item-url" title="${link.url}">→ ${link.url}</span>
+                    </div>
+                    <div class="link-item-actions">
+                        <button class="link-insert-btn" title="Chèn link này tại vị trí con trỏ" onclick="insertSingleReviewLink(${i})"><i class="fa-solid fa-arrow-turn-down"></i></button>
+                        <button title="Xóa link này" onclick="removeReviewLink(${i})"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function removeReviewLink(index) {
+            reviewPendingLinks.splice(index, 1);
+            renderReviewLinkList();
+        }
+
+        function clearAllReviewLinks() {
+            if(reviewPendingLinks.length === 0) return;
+            if(!confirm('Xóa toàn bộ ' + reviewPendingLinks.length + ' link?')) return;
+            reviewPendingLinks = [];
+            renderReviewLinkList();
+        }
+
+        function insertSingleReviewLink(index) {
+            const link = reviewPendingLinks[index];
+            if(!link) return;
+            // Chuyển sang tab Mã HTML nếu đang ở tab Preview
+            switchPreviewTab('code');
+            const textarea = document.getElementById('review-html');
+            const html = buildLinkHtml(link);
+            const insertTag = '<p>' + html + '</p>';
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const before = textarea.value.substring(0, start);
+            const after = textarea.value.substring(end);
+            textarea.value = before + insertTag + after;
+            textarea.selectionStart = textarea.selectionEnd = start + insertTag.length;
+            textarea.focus();
+        }
+
+        function insertAllReviewLinks() {
+            if(reviewPendingLinks.length === 0) return alert('Chưa có link nào!');
+            const textarea = document.getElementById('review-html');
+            const linksHtml = reviewPendingLinks.map(link => '<p>' + buildLinkHtml(link) + '</p>').join('\n');
+            // Chèn trước thẻ đóng </article> hoặc </main> để link nằm trong bài viết
+            let val = textarea.value;
+            const articleEnd = val.lastIndexOf('</article>');
+            if(articleEnd !== -1) {
+                // Tìm vị trí trước </article> nhưng sau nội dung chính (trước CTA box)
+                const ctaBox = val.lastIndexOf('<div style="margin-top: 40px;');
+                const insertPos = ctaBox !== -1 ? ctaBox : articleEnd;
+                val = val.substring(0, insertPos) + '\n<!-- Links chèn thủ công -->\n' + linksHtml + '\n\n' + val.substring(insertPos);
+            } else {
+                val += '\n<!-- Links chèn thủ công -->\n' + linksHtml;
+            }
+            textarea.value = val;
+            // Chuyển sang tab Code để thấy kết quả
+            switchPreviewTab('code');
+            alert('✅ Đã chèn ' + reviewPendingLinks.length + ' link vào bài viết! Bấm "Xem trước" để kiểm tra.');
+        }
+
+        function switchLinkType(type) {
+            currentLinkType = type;
+            const btns = document.querySelectorAll('#mode-manual .link-type-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            if(type === 'internal') {
+                btns[0].classList.add('active');
+                document.getElementById('link-url-label').innerText = 'URL đích (Internal)';
+                document.getElementById('link-url').placeholder = 'Ví dụ: /blog/co-phieu-pvs.html';
+            } else {
+                btns[1].classList.add('active');
+                document.getElementById('link-url-label').innerText = 'URL đích (External)';
+                document.getElementById('link-url').placeholder = 'Ví dụ: https://vietstock.vn/bai-viet...';
+            }
+        }
+
+        function addLinkToList() {
+            const anchor = document.getElementById('link-anchor').value.trim();
+            const url = document.getElementById('link-url').value.trim();
+            if(!anchor) return alert('Vui lòng nhập Anchor Text (nội dung hiển thị)!');
+            if(!url) return alert('Vui lòng nhập URL đích!');
+
+            pendingLinks.push({ anchor, url, type: currentLinkType });
+            document.getElementById('link-anchor').value = '';
+            document.getElementById('link-url').value = '';
+            renderLinkList();
+        }
+
+        function renderLinkList() {
+            const list = document.getElementById('link-list');
+            if(pendingLinks.length === 0) {
+                list.innerHTML = '';
+                return;
+            }
+            list.innerHTML = pendingLinks.map((link, i) => {
+                const badgeCls = link.type === 'internal' ? 'link-badge-internal' : 'link-badge-external';
+                const badgeText = link.type === 'internal' ? 'Internal' : 'External';
+                return `<div class="link-item">
+                    <div class="link-item-info">
+                        <span class="link-item-badge ${badgeCls}">${badgeText}</span>
+                        <span class="link-item-text" title="${link.anchor}">${link.anchor}</span>
+                        <span class="link-item-url" title="${link.url}">→ ${link.url}</span>
+                    </div>
+                    <div class="link-item-actions">
+                        <button class="link-insert-btn" title="Chèn link này tại vị trí con trỏ" onclick="insertSingleLink(${i})"><i class="fa-solid fa-arrow-turn-down"></i></button>
+                        <button title="Xóa link này" onclick="removeLinkFromList(${i})"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function removeLinkFromList(index) {
+            pendingLinks.splice(index, 1);
+            renderLinkList();
+        }
+
+        function clearAllLinks() {
+            if(pendingLinks.length === 0) return;
+            if(!confirm('Xóa toàn bộ ' + pendingLinks.length + ' link đã thêm?')) return;
+            pendingLinks = [];
+            renderLinkList();
+        }
+
+        function buildLinkHtml(link) {
+            if(link.type === 'external') {
+                return `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.anchor}</a>`;
+            } else {
+                return `<a href="${link.url}">${link.anchor}</a>`;
+            }
+        }
+
+        function insertSingleLink(index) {
+            const link = pendingLinks[index];
+            if(!link) return;
+            const textarea = document.getElementById('manual-content');
+            const html = buildLinkHtml(link);
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const before = textarea.value.substring(0, start);
+            const after = textarea.value.substring(end);
+            textarea.value = before + html + after;
+            // Đặt con trỏ sau link vừa chèn
+            textarea.selectionStart = textarea.selectionEnd = start + html.length;
+            textarea.focus();
+        }
+
+        function insertAllLinks() {
+            if(pendingLinks.length === 0) return alert('Chưa có link nào trong danh sách!');
+            const textarea = document.getElementById('manual-content');
+            const linksHtml = '\n\n<!-- Links chèn tự động -->\n' + pendingLinks.map(link => '<p>' + buildLinkHtml(link) + '</p>').join('\n');
+            textarea.value += linksHtml;
+            textarea.focus();
+            // Cuộn textarea xuống cuối
+            textarea.scrollTop = textarea.scrollHeight;
+            alert('✅ Đã chèn ' + pendingLinks.length + ' link vào cuối bài viết!');
+        }
+
         // CHẾ ĐỘ TỰ VIẾT: AI chỉ tối ưu SEO
         async function manualSeoOptimize() {
             const key = getItemSafe('gemini_key');
@@ -584,7 +991,7 @@ Bạn có thể viết:
             document.getElementById('cfg-gemini').value = getItemSafe('gemini_key') || '';
             document.getElementById('cfg-github').value = getItemSafe('github_token') || '';
             document.getElementById('cfg-owner').value = getItemSafe('github_owner') || '';
-            document.getElementById('cfg-repo').value = getItemSafe('github_repo') || 'daututaichinh-pro';
+            document.getElementById('cfg-repo').value = 'daututaichinh-pro';
             document.getElementById('cfg-model').value = getItemSafe('gemini_model') || 'gemini-2.5-flash';
         }
 
@@ -604,7 +1011,7 @@ Bạn có thể viết:
                 setItemSafe('gemini_key', vGem);
                 setItemSafe('github_token', vGit);
                 setItemSafe('github_owner', vOwn);
-                setItemSafe('github_repo', vRep);
+                // Không lưu github_repo vào LocalStorage để tránh ghi đè chéo giữa các project chạy file://
                 setItemSafe('gemini_model', vMod);
 
                 // 4. Cập nhật Badge
@@ -694,28 +1101,35 @@ Bạn có thể viết:
             }
         }
 
-        // TÍNH NĂNG GỢI Ý CHỦ ĐỀ
+        // TÍNH NĂNG GỢI Ý CHỦ ĐỀ (Nâng cấp: Google Search Grounding - Dữ liệu real-time)
         async function suggestViralTopic() {
             const key = getItemSafe('gemini_key');
             if(!key) return alert("Vui lòng cấu hình Gemini API Key trước!");
             
             const btn = document.getElementById('btn-suggest');
-            btn.innerHTML = '<div class="loader"></div> Đang quét tin tức...';
+            btn.innerHTML = '<div class="loader"></div> 🔍 Đang tìm kiếm Google & phân tích xu hướng...';
             
             try {
                 const today = new Date().toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
                 const year = new Date().getFullYear();
                 const userKeyword = document.getElementById('input-topic').value.trim();
                 const category = document.getElementById('input-category').value;
-                const catLabel = category === 'market' ? 'tin tức thị trường, nhận định cổ phiếu' : 'phân tích chuyên sâu, chiến lược đầu tư';
                 
                 let prompt;
                 if(userKeyword) {
-                    prompt = 'Hôm nay là ngày ' + today + ', năm ' + year + '. Tôi muốn viết bài về chủ đề: "' + userKeyword + '" (chuyên mục: ' + catLabel + '). Hãy gợi ý 3 góc nhìn/tiêu đề bài viết CỤ THỂ xoay quanh chủ đề này, hấp dẫn và chuẩn SEO. Trả về JSON: [{"title":"...","reason":"...lý do hay..."}] CHỈ JSON, KHÔNG giải thích.';
+                    // Có keyword → tìm góc nhìn mới nhất xoay quanh keyword
+                    const catContext = category === 'market' 
+                        ? 'cho chuyên mục tin tức thị trường chứng khoán Việt Nam' 
+                        : 'cho chuyên mục phân tích đầu tư & tài chính cá nhân Việt Nam';
+                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Hãy TÌM KIẾM trên Google các tin tức và bài viết MỚI NHẤT trong tuần này liên quan đến chủ đề: "${userKeyword}" ${catContext}. Dựa trên kết quả tìm kiếm THỰC TẾ, gợi ý 3 góc nhìn/tiêu đề bài viết CỤ THỂ, CẬP NHẬT, hấp dẫn và chuẩn SEO. Mỗi tiêu đề phải phản ánh sự kiện hoặc dữ liệu THỰC TẾ đang diễn ra. Trả về JSON: [{"title":"tiêu đề cụ thể có số liệu hoặc sự kiện thật","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, TUYỆT ĐỐI KHÔNG chứa dấu phẩy)","reason":"lý do nóng dựa trên tin tức thực tế tìm được"}] CHỈ JSON, KHÔNG giải thích.`;
+                } else if(category === 'market') {
+                    // Market: Tìm tin chứng khoán nóng nhất hôm nay
+                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Hãy TÌM KIẾM trên Google các tin tức NÓNG NHẤT về thị trường chứng khoán Việt Nam TRONG NGÀY HÔM NAY hoặc TUẦN NÀY. Tập trung vào: diễn biến VN-Index, cổ phiếu tăng/giảm mạnh, tin tức doanh nghiệp niêm yết, chính sách mới ảnh hưởng thị trường, dòng tiền ngoại. Dựa trên kết quả tìm kiếm THỰC TẾ, đề xuất 3 tiêu đề bài viết CỤ THỂ nhất có thể (có tên cổ phiếu, con số, sự kiện thật). Trả về JSON: [{"title":"tiêu đề cụ thể","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, TUYỆT ĐỐI KHÔNG chứa dấu phẩy)","reason":"lý do - trích nguồn tin thực tế"}] CHỈ JSON, KHÔNG giải thích.`;
                 } else {
-                    prompt = 'Hôm nay là ngày ' + today + ', năm ' + year + '. Tìm 3 chủ đề NÓNG NHẤT về ' + catLabel + ' tại Việt Nam HIỆN TẠI. Viết 3 tiêu đề hấp dẫn chuẩn SEO. Trả về JSON: [{"title":"...","reason":"...lý do nóng..."}] CHỈ JSON, KHÔNG giải thích.';
+                    // Blog: Tìm chủ đề đầu tư/tài chính đang hot
+                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Hãy TÌM KIẾM trên Google các chủ đề ĐANG ĐƯỢC QUAN TÂM NHẤT về đầu tư, tài chính cá nhân tại Việt Nam TRONG TUẦN NÀY. Tập trung vào: xu hướng đầu tư mới, lãi suất ngân hàng, vàng, bất động sản, crypto, chiến lược đầu tư đang hot trên cộng đồng. Dựa trên kết quả tìm kiếm THỰC TẾ, đề xuất 3 tiêu đề bài viết chuyên sâu, CỤ THỂ (có dữ liệu, xu hướng thật). Trả về JSON: [{"title":"tiêu đề cụ thể","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, TUYỆT ĐỐI KHÔNG chứa dấu phẩy)","reason":"lý do - trích nguồn tin thực tế"}] CHỈ JSON, KHÔNG giải thích.`;
                 }
-                const text = await callGemini(key, prompt);
+                const text = await callGeminiWithSearch(key, prompt);
                 
                 let cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
                 let suggestions = [];
@@ -726,13 +1140,14 @@ Bạn có thể viết:
                 
                 const panel = document.getElementById('suggest-panel');
                 const list = document.getElementById('suggest-list');
-                list.innerHTML = '';
+                list.innerHTML = '<div style="font-size:0.75rem; color:#60a5fa; margin-bottom:8px; display:flex; align-items:center; gap:5px;"><i class="fa-brands fa-google"></i> Dữ liệu từ Google Search real-time — ' + today + '</div>';
                 suggestions.slice(0, 3).forEach((s, i) => {
                     const card = document.createElement('div');
                     card.className = 'suggest-card';
                     card.innerHTML = `<div class="num">${i+1}</div><div><div style="font-weight:600; color:white; margin-bottom:3px;">${s.title}</div>${s.reason ? '<div style="font-size:0.8rem; color:var(--text-muted);">' + s.reason + '</div>' : ''}</div>`;
                     card.onclick = () => {
-                        document.getElementById('input-topic').value = s.title;
+                        document.getElementById('input-idea').value = s.title;
+                        document.getElementById('input-topic').value = s.keyword || s.title;
                         panel.style.display = 'none';
                     };
                     list.appendChild(card);
@@ -774,11 +1189,12 @@ Bạn có thể viết:
         }
 
         async function generateDraft() {
+            const idea = document.getElementById('input-idea').value;
             const topic = document.getElementById('input-topic').value;
             const secKeywords = document.getElementById('input-secondary-keywords').value;
             const category = document.getElementById('input-category').value;
             const key = getItemSafe('gemini_key');
-            if(!topic || !key) return alert("Vui lòng nhập Từ khóa chính (Focus Keyword) và cấu hình API Key.");
+            if(!idea || !topic || !key) return alert("Vui lòng nhập Ý tưởng, Từ khóa chính và cấu hình API Key.");
             const btn = document.getElementById('btn-generate');
             btn.innerHTML = '<div class="loader"></div> AI Đang Viết Bài (Vui lòng đợi ~20s)...';
             btn.disabled = true;
@@ -788,7 +1204,8 @@ Bạn có thể viết:
             let lsiPrompt = secKeywords ? `Sử dụng các từ khóa phụ này để rải tự nhiên vào bài: ${secKeywords}` : `TỰ ĐỘNG chọn thêm các từ khóa phụ (LSI) sát nghĩa để rải vào bài.`;
 
             const systemPrompt = `Hôm nay là ngày ${today}, năm ${currentYear}. Bạn là Chuyên gia tạo nội dung SEO chuẩn RankMath mảng Tài chính Chứng khoán. KHÔNG BAO GIỜ dùng 2024 hay 2025. 
-            
+CHỦ ĐỀ BÀI VIẾT: "${idea}"
+
 NHIỆM VỤ SEO BẮT BUỘC (Hybrid):
 1. TỪ KHÓA CHÍNH (Focus Keyword): "${topic}".
 2. BẮT BUỘC chèn TỪ KHÓA CHÍNH một cách cực kỳ tự nhiên vào đầu của Tiêu đề (Title) và Mô tả (Meta Description).
@@ -841,7 +1258,7 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
         async function publishToGithub() {
             const token = getItemSafe('github_token');
             const owner = getItemSafe('github_owner');
-            const repo = getItemSafe('github_repo');
+            const repo = 'daututaichinh-pro';
             if(!token || !owner || !repo) return alert("Vui lòng cấu hình thông tin GitHub!");
 
             const slug = document.getElementById('review-slug').value;
@@ -1747,6 +2164,54 @@ ${emptyMsg}
             return data.candidates[0].content.parts[0].text;
         }
 
+        // HELPER: Gọi Gemini API VỚI Google Search Grounding (cho tính năng Trending real-time)
+        // Tách riêng khỏi callGemini() để không ảnh hưởng các tính năng khác
+        async function callGeminiWithSearch(apiKey, prompt, timeoutMs = 60000) {
+            const modelName = getItemSafe('gemini_model') || 'gemini-2.5-flash';
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+            const debugEl = document.getElementById('debug-log');
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            
+            let res, data;
+            try {
+                res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{text: prompt}] }],
+                        tools: [{ google_search: {} }]
+                    }),
+                    signal: controller.signal
+                });
+                data = await res.json();
+            } catch(e) {
+                clearTimeout(timeoutId);
+                if(e.name === 'AbortError') {
+                    throw new Error(`Tìm kiếm trending quá lâu (>${Math.round(timeoutMs/1000)}s). Vui lòng thử lại.`);
+                }
+                throw e;
+            } finally {
+                clearTimeout(timeoutId);
+            }
+            
+            // Nếu model hiện tại không hỗ trợ google_search, fallback sang callGemini thường
+            if(!res.ok) {
+                const errMsg = data.error?.message || '';
+                if(errMsg.includes('not supported') || errMsg.includes('google_search') || errMsg.includes('tool')) {
+                    debugEl.innerText = '⚠️ Model không hỗ trợ Search Grounding, dùng chế độ thường...';
+                    debugEl.style.color = '#facc15';
+                    setTimeout(() => { debugEl.innerText = ''; }, 5000);
+                    return await callGemini(apiKey, prompt);
+                }
+                throw new Error(errMsg || "Lỗi API");
+            }
+            
+            debugEl.innerText = '';
+            return data.candidates[0].content.parts[0].text;
+        }
+
         // HELPER: Upload file Github REST API (tự động lấy SHA nếu file đã tồn tại)
         async function uploadFileToGithub(owner, repo, path, content, message, token) {
             // Encode Base64 (UTF-8 safe)
@@ -1860,20 +2325,21 @@ ${emptyMsg}
          * Ví dụ: keyword "Cổ phiếu PVS" → title "PVS: Triển vọng cổ phiếu" → ✅ (cả 3 từ đều có)
          */
         function smartKeywordMatch(text, keyword) {
-            const textLower = text.toLowerCase();
-            const kwLower = keyword.toLowerCase();
+            const normalize = (str) => {
+                return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
+            };
+            const textNorm = normalize(text);
+            const kwNorm = normalize(keyword);
             
-            // Bước 1: Exact match (ưu tiên cao nhất)
-            if (textLower.includes(kwLower)) return true;
+            // Bước 1: Exact match chuỗi chuẩn hóa (ưu tiên cao nhất)
+            if (textNorm.includes(kwNorm)) return true;
             
             // Bước 2: Tách keyword thành các từ có nghĩa (>= 2 ký tự)
-            const kwWords = kwLower.split(/[\s,;:]+/).filter(w => w.length >= 2);
-            
-            // Nếu keyword chỉ có 1-2 từ ngắn → yêu cầu exact match (đã check ở trên → false)
+            const kwWords = kwNorm.split(/[\s,;:]+/).filter(w => w.length >= 2);
             if (kwWords.length <= 2) return false;
             
             // Bước 3: Keyword >= 3 từ → check TẤT CẢ từ quan trọng đều xuất hiện trong text
-            const matchedCount = kwWords.filter(w => textLower.includes(w)).length;
+            const matchedCount = kwWords.filter(w => textNorm.includes(w)).length;
             return matchedCount === kwWords.length;
         }
 
@@ -1920,14 +2386,14 @@ ${emptyMsg}
                 
                 if(fixTitle) {
                     p += `Title hiện tại: "${title}" (${titleLen} ký tự). Viết lại TIÊU ĐỀ này sao cho CHÍNH XÁC 40-55 ký tự, giữ nguyên ý nghĩa, hấp dẫn SEO`;
-                    if(kw) p += `, và BẮT BUỘC chứa cụm từ khóa "${kw}" nguyên vẹn trong tiêu đề${strictNote}`;
+                    if(kw) p += `, và BẮT BUỘC chứa cụm từ khóa "${kw}" Y XÌ ĐÚC, LIỀN MẠCH. Ưu tiên cắt bớt chữ khác để giữ từ khóa nếu tiêu đề quá dài${strictNote}`;
                     p += '.\n';
                 } else {
                     p += `Title: "${title}" (đã chuẩn, giữ nguyên CHÍNH XÁC, KHÔNG đổi).\n`;
                 }
                 if(fixDesc) {
                     p += `Description hiện tại: "${desc}" (${descLen} ký tự). Viết lại MÔ TẢ này sao cho CHÍNH XÁC 130-150 ký tự, giữ nguyên ý nghĩa, hấp dẫn`;
-                    if(kw) p += `, và BẮT BUỘC chứa cụm từ khóa "${kw}" nguyên vẹn${strictNote}`;
+                    if(kw) p += `, và BẮT BUỘC chứa cụm từ khóa "${kw}" Y XÌ ĐÚC, LIỀN MẠCH${strictNote}`;
                     p += '.\n';
                 } else {
                     p += `Description: "${desc}" (đã chuẩn, giữ nguyên CHÍNH XÁC, KHÔNG đổi).\n`;
@@ -1984,12 +2450,21 @@ ${emptyMsg}
             }
         }
 
-        function buildTemplate(title, desc, category, body, imagePrompt, tags, hashtags) {
+        function buildTemplate(title, desc, category, body, imagePrompt, tags, hashtags, dateString) {
             const depth = category === 'market' ? '../' : '../'; 
             const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt || 'finance stock market graph')}?width=800&height=400&nologo=true`;
             
             const tagsHtml = (tags || []).map(t => `<span style="display:inline-block; padding:4px 12px; background:rgba(99,102,241,0.2); color:#a5b4fc; border-radius:15px; font-size:12px; margin-right:5px;">${t}</span>`).join('');
             const hashHtml = (hashtags || []).map(t => `<a href="#" style="color:#60a5fa; text-decoration:none; margin-right:8px;">${t}</a>`).join('');
+
+            // Format date correctly
+            let formattedDate = dateString;
+            if (!formattedDate) {
+                const d = new Date();
+                formattedDate = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+            }
+
+            const categoryName = category === 'market' ? 'Thị trường' : 'Bài viết';
 
             return `<!DOCTYPE html>
 <html lang="vi">
@@ -2061,27 +2536,43 @@ ${emptyMsg}
   </div>
 </header>
 
-<main>
-  <article class="blog-article">
-    <h1>${title}</h1>
-    
-    <div style="margin-bottom: 25px;">
-        <img src="${imageUrl}" alt="Cover image for ${title}" onerror="this.src='https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80'" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
-    </div>
-    
-    ${body}
+<main class="article-container">
+  <div class="article-layout">
+    <article class="blog-article article-main" style="padding-top: 0; padding-bottom: 0; margin: 0;">
+      <h1>${title}</h1>
+      
+      <div class="article-meta">
+        <span class="meta-item">📅 Đăng ngày: ${formattedDate}</span>
+        <span class="meta-item">📁 Chuyên mục: <a href="/${category}/">${categoryName}</a></span>
+      </div>
+      
+      <div style="margin-bottom: 25px;">
+          <img src="${imageUrl}" alt="Cover image for ${title}" onerror="this.src='https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80'" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
+      </div>
+      
+      ${body}
 
-    <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-        <div style="margin-bottom: 10px;"><strong>Tags: </strong> ${tagsHtml}</div>
-        <div>${hashHtml}</div>
-    </div>
+      <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+          <div style="margin-bottom: 10px;"><strong>Tags: </strong> ${tagsHtml}</div>
+          <div>${hashHtml}</div>
+      </div>
 
-    <div style="margin-top: 40px; padding: 25px; border-radius: 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
-      <h3 style="color: #60a5fa; margin-top: 0; margin-bottom: 15px;">👉 Bạn chọn làm "người cầm lái" hay hành khách?</h3>
-      <p style="margin-bottom: 20px;">Đăng ký nhận báo cáo phân tích mới nhất để đi trước thị trường 1 bước.</p>
-      <a href="#" id="cta-open-popup-blog" style="display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; border-radius: 8px; font-weight: 600; text-decoration: none;">📥 Đăng ký nhận tài liệu</a>
-    </div>
-  </article>
+      <div style="margin-top: 40px; padding: 25px; border-radius: 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
+        <h3 style="color: #60a5fa; margin-top: 0; margin-bottom: 15px;">👉 Bạn chọn làm "người cầm lái" hay hành khách?</h3>
+        <p style="margin-bottom: 20px;">Đăng ký nhận báo cáo phân tích mới nhất để đi trước thị trường 1 bước.</p>
+        <a href="#" id="cta-open-popup-blog" style="display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; border-radius: 8px; font-weight: 600; text-decoration: none;">📥 Đăng ký nhận tài liệu</a>
+      </div>
+    </article>
+
+    <aside class="article-sidebar">
+      <div class="sidebar-widget">
+        <h3 class="widget-title">Bài viết cùng chủ đề</h3>
+        <div id="related-articles-list" class="sidebar-list">
+          <div class="sidebar-loading">Đang tải bài viết liên quan...</div>
+        </div>
+      </div>
+    </aside>
+  </div>
 </main>
 
 <footer class="footer">
