@@ -987,12 +987,72 @@ Bạn có thể viết:
             }
         }
 
+        // DỰNG DROP DOWN MODEL ĐỘNG TỪ GOOGLE
+        async function updateModelDropdown() {
+            const apiKey = getItemSafe('gemini_key') || document.getElementById('cfg-gemini').value;
+            if(!apiKey) return;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                if(!res.ok) return;
+                const data = await res.json();
+                const models = data.models || [];
+                const generateModels = models.filter(m => 
+                    m.supportedGenerationMethods && 
+                    m.supportedGenerationMethods.includes('generateContent')
+                ).map(m => m.name.replace('models/', ''));
+
+                if(generateModels.length > 0) {
+                    const select = document.getElementById('cfg-model');
+                    const savedValue = getItemSafe('gemini_model') || select.value || 'gemini-2.5-flash';
+                    
+                    // Clear static options
+                    select.innerHTML = '';
+                    
+                    generateModels.forEach(modelName => {
+                        const option = document.createElement('option');
+                        option.value = modelName;
+                        
+                        let displayName = modelName;
+                        if(modelName === 'gemini-2.5-flash') displayName = '⭐ Gemini 2.5 Flash (Khuyên dùng)';
+                        else if(modelName === 'gemini-2.5-pro') displayName = 'Gemini 2.5 Pro (Nâng cao)';
+                        else if(modelName === 'gemini-2.5-flash-lite') displayName = 'Gemini 2.5 Flash Lite (Siêu nhanh)';
+                        else if(modelName === 'gemini-1.5-flash') displayName = 'Gemini 1.5 Flash (Cũ)';
+                        else if(modelName === 'gemini-1.5-pro') displayName = 'Gemini 1.5 Pro (Cũ)';
+                        else if(modelName.includes('3.5')) displayName = `🔥 ${modelName} (Mới nhất)`;
+                        else if(modelName.includes('3.0')) displayName = `🔥 ${modelName} (Mới nhất)`;
+                        else if(modelName.includes('pro')) displayName = `${modelName} (Pro)`;
+                        else if(modelName.includes('flash')) displayName = `${modelName} (Flash)`;
+                        
+                        option.textContent = displayName;
+                        select.appendChild(option);
+                    });
+                    
+                    // Khôi phục giá trị đã chọn
+                    if(generateModels.includes(savedValue)) {
+                        select.value = savedValue;
+                    } else if(generateModels.includes('gemini-2.5-flash')) {
+                        select.value = 'gemini-2.5-flash';
+                    } else {
+                        select.value = generateModels[0];
+                    }
+                }
+            } catch(e) {
+                console.log("Error loading dynamic models:", e);
+            }
+        }
+
         function loadSettings() {
             document.getElementById('cfg-gemini').value = getItemSafe('gemini_key') || '';
             document.getElementById('cfg-github').value = getItemSafe('github_token') || '';
             document.getElementById('cfg-owner').value = getItemSafe('github_owner') || '';
             document.getElementById('cfg-repo').value = 'daututaichinh-pro';
-            document.getElementById('cfg-model').value = getItemSafe('gemini_model') || 'gemini-2.5-flash';
+            
+            // Lấy model đã lưu trước
+            const savedModel = getItemSafe('gemini_model') || 'gemini-2.5-flash';
+            document.getElementById('cfg-model').value = savedModel;
+            
+            // Gọi cập nhật model dropdown động dựa trên API key hiện tại
+            updateModelDropdown();
         }
 
         function saveSettings() {
@@ -1021,10 +1081,13 @@ Bạn có thể viết:
                 const ctaBtn = document.querySelector('.nav-item.active');
                 if(ctaBtn) {
                     const oldHtml = ctaBtn.innerHTML;
-                    ctaBtn.innerHTML = '<i class="fa-solid fa-check"></i> Đã Lưu Cấu Hình';
+                    ctaBtn.innerHTML = '<i class="fa-solid fa-check"></i> Đã Lưu Cấu HÌnh';
                     ctaBtn.style.color = '#4ade80';
                     setTimeout(() => { ctaBtn.innerHTML = oldHtml; ctaBtn.style.color = ''; }, 2500);
                 }
+
+                // Cập nhật lại dropdown model khi lưu
+                updateModelDropdown();
 
             } catch(e) {
                 logError("Save error: " + e.message);
@@ -1075,6 +1138,38 @@ Bạn có thể viết:
                     m.supportedGenerationMethods && 
                     m.supportedGenerationMethods.includes('generateContent')
                 ).map(m => m.name.replace('models/', ''));
+                
+                // Đồng bộ danh sách model vào select dropdown ngay khi kết nối thành công
+                if(generateModels.length > 0) {
+                    const select = document.getElementById('cfg-model');
+                    const currentValue = select.value;
+                    
+                    select.innerHTML = '';
+                    generateModels.forEach(modelName => {
+                        const option = document.createElement('option');
+                        option.value = modelName;
+                        
+                        let displayName = modelName;
+                        if(modelName === 'gemini-2.5-flash') displayName = '⭐ Gemini 2.5 Flash (Khuyên dùng)';
+                        else if(modelName === 'gemini-2.5-pro') displayName = 'Gemini 2.5 Pro (Nâng cao)';
+                        else if(modelName === 'gemini-2.5-flash-lite') displayName = 'Gemini 2.5 Flash Lite (Siêu nhanh)';
+                        else if(modelName === 'gemini-1.5-flash') displayName = 'Gemini 1.5 Flash (Cũ)';
+                        else if(modelName === 'gemini-1.5-pro') displayName = 'Gemini 1.5 Pro (Cũ)';
+                        else if(modelName.includes('3.5')) displayName = `🔥 ${modelName} (Mới nhất)`;
+                        else if(modelName.includes('3.0')) displayName = `🔥 ${modelName} (Mới nhất)`;
+                        else if(modelName.includes('pro')) displayName = `${modelName} (Pro)`;
+                        else if(modelName.includes('flash')) displayName = `${modelName} (Flash)`;
+                        
+                        option.textContent = displayName;
+                        select.appendChild(option);
+                    });
+                    
+                    if(generateModels.includes(currentValue)) {
+                        select.value = currentValue;
+                    } else if(generateModels.includes('gemini-2.5-flash')) {
+                        select.value = 'gemini-2.5-flash';
+                    }
+                }
                 
                 resultEl.style.background = 'rgba(34, 197, 94, 0.2)';
                 resultEl.style.color = '#4ade80';
