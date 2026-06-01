@@ -535,6 +535,17 @@ Bạn có thể viết:
                         <textarea id="review-html" style="height: 500px; font-size: 13px; border-radius: 0 0 12px 12px;"></textarea>
                     </div>
 
+                    <!-- CHAT ADJUSTMENT WITH AI -->
+                    <div class="form-group" style="margin-top: 16px; background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;">
+                        <label style="font-weight: 600; color: #f8fafc; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-comments" style="color: #60a5fa;"></i> Yêu cầu AI điều chỉnh bài viết (Chat)
+                        </label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="review-chat-instruction" placeholder="Ví dụ: viết lại dạng bảng so sánh thay vì gạch đầu dòng..." style="flex: 1; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; padding: 8px 12px; border-radius: 8px;" onkeydown="if(event.key==='Enter') chatEditDraft()" />
+                            <button class="btn btn-primary" id="btn-chat-edit" onclick="chatEditDraft()" style="display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-paper-plane"></i> Gửi</button>
+                        </div>
+                    </div>
+
                     <!-- LINK BUILDER (REVIEW MODE - dùng chung cho cả AI và Tự viết) -->
                     <div class="link-builder" style="margin-top: 16px;">
                         <div class="link-builder-title">
@@ -722,6 +733,18 @@ Bạn có thể viết:
         // ============================================
         let pendingLinks = [];
         let currentLinkType = 'internal';
+
+        // Trạng thái bài viết hiện tại để tối ưu và chat chỉnh sửa bằng AI
+        let currentArticleData = {
+            title: '',
+            metaDescription: '',
+            category: 'blog',
+            htmlContent: '',
+            imagePrompt: '',
+            tags: [],
+            hashtags: [],
+            dateString: null
+        };
 
         // === REVIEW PANEL Link Builder (dùng chung cho cả AI và Tự viết) ===
         let reviewPendingLinks = [];
@@ -969,6 +992,18 @@ Bạn có thể viết:
 
                 // Đồng bộ category
                 document.getElementById('input-category').value = category;
+
+                // Update global state
+                currentArticleData = {
+                    title: seo.title || '',
+                    metaDescription: seo.metaDescription || '',
+                    category: category,
+                    htmlContent: htmlBody,
+                    imagePrompt: seo.imagePrompt || '',
+                    tags: seo.tags || [],
+                    hashtags: seo.hashtags || [],
+                    dateString: null
+                };
 
                 // Build template với nội dung của người dùng
                 const fullHtml = buildTemplate(seo.title, seo.metaDescription, category, htmlBody, seo.imagePrompt, seo.tags, seo.hashtags);
@@ -1334,6 +1369,18 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
                 document.getElementById('review-title').value = data.title;
                 document.getElementById('review-slug').value = data.slug;
                 document.getElementById('review-desc').value = data.metaDescription;
+
+                // Update global state
+                currentArticleData = {
+                    title: data.title,
+                    metaDescription: data.metaDescription,
+                    category: category,
+                    htmlContent: data.htmlContent,
+                    imagePrompt: data.imagePrompt,
+                    tags: data.tags,
+                    hashtags: data.hashtags,
+                    dateString: null
+                };
                 
                 // Build the full HTML template wrapped around the AI article body
                 const fullHtml = buildTemplate(data.title, data.metaDescription, category, data.htmlContent, data.imagePrompt, data.tags, data.hashtags);
@@ -2546,6 +2593,107 @@ ${emptyMsg}
                 alert('Lỗi Auto-fix: ' + e.message);
             } finally {
                 btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI Tự động sửa chuẩn SEO';
+                btn.disabled = false;
+            }
+        }
+
+        function extractArticleBody(html) {
+            const startMarker = 'box-shadow: 0 4px 15px rgba(0,0,0,0.4);">';
+            const endMarker = '<div style="margin-top: 30px; padding-top: 15px;';
+            
+            let startIndex = html.indexOf(startMarker);
+            if (startIndex === -1) return null;
+            
+            startIndex = html.indexOf('</div>', startIndex);
+            if (startIndex === -1) return null;
+            startIndex += 6; // Move past </div>
+            
+            const endIndex = html.indexOf(endMarker, startIndex);
+            if (endIndex === -1) return null;
+            
+            return html.substring(startIndex, endIndex).trim();
+        }
+
+        async function chatEditDraft() {
+            const key = getItemSafe('gemini_key');
+            if (!key) return alert("Vui lòng cấu hình API Key trong phần thiết lập.");
+            
+            const instruction = document.getElementById('review-chat-instruction').value.trim();
+            if (!instruction) return alert("Vui lòng nhập yêu cầu chỉnh sửa.");
+            
+            const btn = document.getElementById('btn-chat-edit');
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+            btn.disabled = true;
+            
+            const currentTitle = document.getElementById('review-title').value;
+            const currentDesc = document.getElementById('review-desc').value;
+            const currentHtml = document.getElementById('review-html').value;
+            
+            const extractedBody = extractArticleBody(currentHtml) || currentArticleData.htmlContent || "";
+            
+            const today = new Date().toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
+            const currentYear = new Date().getFullYear();
+
+            const systemPrompt = `Hôm nay là ngày ${today}, năm ${currentYear}. Bạn là Chuyên gia chỉnh sửa bài viết Tài chính Chứng khoán chuẩn SEO.
+Dưới đây là phần nội dung bài viết hiện tại (dạng HTML):
+---
+${extractedBody}
+---
+
+Yêu cầu điều chỉnh của người dùng:
+"${instruction}"
+
+Nhiệm vụ:
+1. Hãy điều chỉnh nội dung HTML trên dựa theo yêu cầu của người dùng (ví dụ: chuyển đổi đoạn văn/danh sách thành bảng so sánh đẹp mắt, định dạng lại bảng biểu, thay đổi văn phong, chỉnh sửa chi tiết số liệu, v.v.).
+2. Kết quả chỉnh sửa phải trả về dưới dạng mã HTML chuẩn (chỉ phần body của bài viết, dùng h2, h3, p, strong, ul, li, table, th, td...). Không chèn thêm thẻ <html>, <head>, <body> hoặc các CSS styles/inline styles phức tạp vào table/th/td vì hệ thống đã tự động cấu hình giao diện tối ưu cho Dark Mode.
+3. Tuyệt đối giữ lại các liên kết (thẻ a) hiện có trong nội dung để đảm bảo tối ưu SEO, không được tự ý gỡ bỏ hoặc sửa đổi liên kết trừ khi người dùng yêu cầu rõ ràng.
+4. Trả về kết quả dưới dạng một chuỗi JSON duy nhất có cấu trúc sau:
+{"htmlContent":"Mã HTML bài viết đã được chỉnh sửa (chú ý escape dấu nháy kép bên trong thẻ HTML để không làm vỡ JSON)","title":"Tiêu đề mới của bài viết (mặc định giữ nguyên: ${currentTitle})","metaDescription":"Mô tả SEO mới của bài viết (mặc định giữ nguyên: ${currentDesc})"}
+
+KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
+
+            try {
+                const responseText = await callGeminiWithSearch(key, systemPrompt);
+                let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+                cleanedText = cleanedText.replace(/[\x00-\x1F\x7F]/g, (ch) => {
+                    if(ch === '\n' || ch === '\r' || ch === '\t') return ' ';
+                    return '';
+                });
+                
+                const data = JSON.parse(cleanedText);
+                
+                // Update global state
+                currentArticleData.title = data.title || currentTitle;
+                currentArticleData.metaDescription = data.metaDescription || currentDesc;
+                currentArticleData.htmlContent = data.htmlContent;
+                
+                // Update input fields
+                document.getElementById('review-title').value = currentArticleData.title;
+                document.getElementById('review-desc').value = currentArticleData.metaDescription;
+                
+                // Rebuild full HTML and update review-html textarea
+                const fullHtml = buildTemplate(
+                    currentArticleData.title,
+                    currentArticleData.metaDescription,
+                    currentArticleData.category,
+                    currentArticleData.htmlContent,
+                    currentArticleData.imagePrompt,
+                    currentArticleData.tags,
+                    currentArticleData.hashtags,
+                    currentArticleData.dateString
+                );
+                document.getElementById('review-html').value = fullHtml;
+                
+                // Clear chat instruction input and refresh preview
+                document.getElementById('review-chat-instruction').value = '';
+                refreshPreview();
+                updateSeoScores();
+                alert("Đã cập nhật chỉnh sửa từ AI thành công!");
+            } catch(e) {
+                alert("Lỗi khi gửi yêu cầu chỉnh sửa AI: " + e.message);
+            } finally {
+                btn.innerHTML = originalBtnHtml;
                 btn.disabled = false;
             }
         }
