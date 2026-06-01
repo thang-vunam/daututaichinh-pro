@@ -1301,6 +1301,11 @@ Bạn có thể viết:
             const systemPrompt = `Hôm nay là ngày ${today}, năm ${currentYear}. Bạn là Chuyên gia tạo nội dung SEO chuẩn RankMath mảng Tài chính Chứng khoán. KHÔNG BAO GIỜ dùng 2024 hay 2025. 
 CHỦ ĐỀ BÀI VIẾT: "${idea}"
 
+QUY TẮC SỐ LIỆU REAL-TIME (QUAN TRỌNG NHẤT):
+• BẮT BUỘC sử dụng kết quả Google Search để lấy SỐ LIỆU THỊ TRƯỜNG MỚI NHẤT (VN-Index, giá cổ phiếu, lãi suất, tỷ giá, giá vàng, giá dầu...) tính đến NGÀY HÔM NAY ${today}.
+• TUYỆT ĐỐI KHÔNG bịa số liệu từ trí nhớ cũ. Nếu không tìm được dữ liệu mới nhất, hãy ghi rõ "tại thời điểm viết bài" thay vì đưa ra con số sai.
+• Mọi con số, chỉ số, % tăng trưởng PHẢI phản ánh đúng thực tế hiện tại ${currentYear}, KHÔNG ĐƯỢC dùng dữ liệu cũ.
+
 NHIỆM VỤ SEO BẮT BUỘC (Hybrid):
 1. TỪ KHÓA CHÍNH (Focus Keyword): "${topic}".
 2. BẮT BUỘC chèn TỪ KHÓA CHÍNH một cách cực kỳ tự nhiên vào đầu của Tiêu đề (Title) và Mô tả (Meta Description).
@@ -1314,7 +1319,7 @@ Trả về 1 chuỗi JSON duy nhất:
 KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse error). LƯU Ý LUÔN KIỂM TRA JSON QUOTES. Viết xuất sắc nhất có thể. Khởi chạy với Từ khóa chính: ${topic}`;
 
             try {
-                const responseText = await callGemini(key, systemPrompt);
+                const responseText = await callGeminiWithSearch(key, systemPrompt);
                 
                 // Parse JSON from Gemini (clean up control chars + markdown)
                 let cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
