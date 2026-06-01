@@ -708,5 +708,35 @@ main {
   }
 }
 
+/* ================= TABLE STYLING ================= */
+.blog-article table {
+  width: 100% !important;
+  margin: 25px 0 !important;
+  border-collapse: collapse !important;
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
 
+.blog-article th {
+  background: #1e293b !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 12px 14px !important;
+}
 
+.blog-article td {
+  padding: 12px 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  background: transparent !important;
+}
+
+.blog-article tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.blog-article tr:hover td {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
