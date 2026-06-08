@@ -740,3 +740,36 @@ main {
 .blog-article tr:hover td {
   background: rgba(255, 255, 255, 0.04) !important;
 }
+
+/* ================= ARTICLE COVER IMAGE (FIGURE & CAPTION) ================= */
+.article-cover-figure {
+  margin: 0 0 30px 0;
+  width: 100%;
+}
+
+.article-cover-figure img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  display: block;
+}
+
+.article-cover-caption {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  text-align: center;
+  font-style: italic;
+}
+
+.article-cover-caption a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.article-cover-caption a:hover {
+  text-decoration: underline;
+}

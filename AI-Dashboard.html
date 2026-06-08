@@ -741,6 +741,9 @@ Bạn có thể viết:
             category: 'blog',
             htmlContent: '',
             imagePrompt: '',
+            imageUrl: '',
+            authorName: '',
+            authorLink: '',
             tags: [],
             hashtags: [],
             dateString: null
@@ -1000,13 +1003,33 @@ Bạn có thể viết:
                     category: category,
                     htmlContent: htmlBody,
                     imagePrompt: seo.imagePrompt || '',
+                    imageUrl: '',
+                    authorName: '',
+                    authorLink: '',
                     tags: seo.tags || [],
                     hashtags: seo.hashtags || [],
                     dateString: null
                 };
 
+                // Resolve Unsplash cover image
+                const resolvedImage = await resolveUnsplashImage(seo.imagePrompt, seo.title, category);
+                currentArticleData.imageUrl = resolvedImage.url;
+                currentArticleData.authorName = resolvedImage.authorName;
+                currentArticleData.authorLink = resolvedImage.authorLink;
+
                 // Build template với nội dung của người dùng
-                const fullHtml = buildTemplate(seo.title, seo.metaDescription, category, htmlBody, seo.imagePrompt, seo.tags, seo.hashtags);
+                const fullHtml = buildTemplate(
+                    seo.title,
+                    seo.metaDescription,
+                    category,
+                    htmlBody,
+                    resolvedImage.url,
+                    seo.tags,
+                    seo.hashtags,
+                    null,
+                    resolvedImage.authorName,
+                    resolvedImage.authorLink
+                );
                 document.getElementById('review-html').value = fullHtml;
 
                 updateSeoScores();
@@ -1377,13 +1400,33 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
                     category: category,
                     htmlContent: data.htmlContent,
                     imagePrompt: data.imagePrompt,
+                    imageUrl: '',
+                    authorName: '',
+                    authorLink: '',
                     tags: data.tags,
                     hashtags: data.hashtags,
                     dateString: null
                 };
                 
+                // Resolve Unsplash cover image
+                const resolvedImage = await resolveUnsplashImage(data.imagePrompt, data.title, category);
+                currentArticleData.imageUrl = resolvedImage.url;
+                currentArticleData.authorName = resolvedImage.authorName;
+                currentArticleData.authorLink = resolvedImage.authorLink;
+
                 // Build the full HTML template wrapped around the AI article body
-                const fullHtml = buildTemplate(data.title, data.metaDescription, category, data.htmlContent, data.imagePrompt, data.tags, data.hashtags);
+                const fullHtml = buildTemplate(
+                    data.title,
+                    data.metaDescription,
+                    category,
+                    data.htmlContent,
+                    resolvedImage.url,
+                    data.tags,
+                    data.hashtags,
+                    null,
+                    resolvedImage.authorName,
+                    resolvedImage.authorLink
+                );
                 document.getElementById('review-html').value = fullHtml;
 
                 updateSeoScores();
@@ -2673,15 +2716,24 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                 document.getElementById('review-desc').value = currentArticleData.metaDescription;
                 
                 // Rebuild full HTML and update review-html textarea
+                if (!currentArticleData.imageUrl) {
+                    const resolvedImage = await resolveUnsplashImage(currentArticleData.imagePrompt, currentArticleData.title, currentArticleData.category);
+                    currentArticleData.imageUrl = resolvedImage.url;
+                    currentArticleData.authorName = resolvedImage.authorName;
+                    currentArticleData.authorLink = resolvedImage.authorLink;
+                }
+
                 const fullHtml = buildTemplate(
                     currentArticleData.title,
                     currentArticleData.metaDescription,
                     currentArticleData.category,
                     currentArticleData.htmlContent,
-                    currentArticleData.imagePrompt,
+                    currentArticleData.imageUrl,
                     currentArticleData.tags,
                     currentArticleData.hashtags,
-                    currentArticleData.dateString
+                    currentArticleData.dateString,
+                    currentArticleData.authorName,
+                    currentArticleData.authorLink
                 );
                 document.getElementById('review-html').value = fullHtml;
                 
@@ -2698,9 +2750,120 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             }
         }
 
-        function buildTemplate(title, desc, category, body, imagePrompt, tags, hashtags, dateString) {
+        const UNSPLASH_ACCESS_KEY = '7snc_S7w7abqdy0HA7HUO6RvxSFvJr_TzHH5ex2ifbs';
+
+        const UNSPLASH_FALLBACKS = {
+            "market": [
+                "photo-1611974789855-9c2a0a7236a3", "photo-1624996379697-f01d168b1a52", 
+                "photo-1590283603385-17ffb3a7f29f", "photo-1579532536935-619928decd08", 
+                "photo-1526304640581-d334cdbbf45e", "photo-1618044733300-9472054094ee", 
+                "photo-1631603090989-93f9ef6f9d80", "photo-1640340434855-6084b1f4901c", 
+                "photo-1642543492481-44e81e3914a7", "photo-1535320903710-d993d3d77d29", 
+                "photo-1616440347437-b1c73416efc2", "photo-1504868584819-f8e8b4b6d7e3", 
+                "photo-1591696205602-2f950c417cb9", "photo-1607604276583-eef5d076aa5f", 
+                "photo-1460925895917-afdab827c52f", "photo-1518186285589-2f7649de83e0", 
+                "photo-1543286386-7a39e2d9080b", "photo-1454165804606-c3d57bc86b40", 
+                "photo-1559526324-4b87b5e36e44", "photo-1634733988138-bf2c3a2a13fa", 
+                "photo-1620266757065-58142ee59481", "photo-1618044619888-009e412ff12a", 
+                "photo-1628157582853-a796fa650a6a", "photo-1618042164219-62c820f10723", 
+                "photo-1486406146926-c627a92ad1ab"
+            ],
+            "blog": [
+                "photo-1561414927-6d86591d0c4f", "photo-1559526324-4b87b5e36e44", 
+                "photo-1507679799987-c73779587ccf", "photo-1454165804606-c3d57bc86b40", 
+                "photo-1554224155-8d04cb21cd6c", "photo-1450133064473-71024230f91b", 
+                "photo-1516245834210-c4c142787335", "photo-1560518883-ce09059eeffa", 
+                "photo-1582213782179-e0d53f98f2ca", "photo-1434030216411-0b793f4b4173", 
+                "photo-1457369804613-52c61a468e7d", "photo-1580519542036-c47de6196ba5", 
+                "photo-1526304640581-d334cdbbf45e", "photo-1502920917128-1fc50ed76e7e", 
+                "photo-1579621970563-ebec7560ff3e", "photo-1569025690938-a00729c9e1f9", 
+                "photo-1579621970795-87fcf3f88371", "photo-1553729459-efe14ef6055d", 
+                "photo-1506126613408-eca07ce68773", "photo-1518495973542-4542c06a5843", 
+                "photo-1519389950473-47ba0277781c", "photo-1537462715879-360eeb61a0bc", 
+                "photo-1504280390367-361c6d9f38f4", "photo-1518186285589-2f7649de83e0", 
+                "photo-1542838132-92c53300491e"
+            ]
+        };
+
+        function getHashCode(str) {
+            let hash = 0;
+            if (!str) return hash;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = (hash << 5) - hash + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash);
+        }
+
+        function getFallbackImage(title, category) {
+            const strLower = (title || "").toLowerCase();
+            const hash = getHashCode(strLower);
+            
+            if (strLower.includes("vàng") || strLower.includes("gold") || strLower.includes("sjc")) {
+                const goldList = ["photo-1618042164219-62c820f10723", "photo-1599733589046-9b8308b5b50d", "photo-1610375461246-83df960bbd04"];
+                return goldList[hash % goldList.length];
+            }
+            if (strLower.includes("dầu") || strLower.includes("oil") || strLower.includes("xăng") || strLower.includes("năng lượng") || strLower.includes("pvs") || strLower.includes("điện") || strLower.includes("gas")) {
+                const energyList = ["photo-1518709268805-4e9042af9f23", "photo-1466611653911-95081537e5b7", "photo-1541872703-74c5e44368f9"];
+                return energyList[hash % energyList.length];
+            }
+            if (strLower.includes("bất động sản") || strLower.includes("nhà đất") || strLower.includes("bđs") || strLower.includes("đất nền") || strLower.includes("căn hộ") || strLower.includes("pdr") || strLower.includes("vinhomes")) {
+                const reList = ["photo-1560518883-ce09059eeffa", "photo-1582407947304-fd86f028f716", "photo-1513694203232-719a280e022f"];
+                return reList[hash % reList.length];
+            }
+            if (strLower.includes("cổ phiếu") || strLower.includes("chứng khoán") || strLower.includes("vn-index") || strLower.includes("vnindex") || strLower.includes("krx") || strLower.includes("cổ đông") || strLower.includes("ssi") || strLower.includes("fpt")) {
+                const stockList = ["photo-1611974789855-9c2a0a7236a3", "photo-1590283603385-17ffb3a7f29f", "photo-1535320903710-d993d3d77d29"];
+                return stockList[hash % stockList.length];
+            }
+            
+            const cat = category === 'market' ? 'market' : 'blog';
+            const list = UNSPLASH_FALLBACKS[cat];
+            return list[hash % list.length];
+        }
+
+        async function resolveUnsplashImage(prompt, title, category) {
+            try {
+                if (prompt && prompt.startsWith('http')) {
+                    return {
+                        url: prompt,
+                        authorName: 'Unsplash',
+                        authorLink: 'https://unsplash.com'
+                    };
+                }
+
+                const query = prompt || title || "finance";
+                const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=3&client_id=${UNSPLASH_ACCESS_KEY}`;
+                
+                const response = await fetch(url, { headers: { "Accept-Version": "v1" } });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.results && data.results.length > 0) {
+                        const count = Math.min(data.results.length, 3);
+                        const index = Math.floor(Math.random() * count);
+                        const photo = data.results[index];
+                        
+                        return {
+                            url: photo.urls.raw + '&auto=format&fit=crop&w=800&q=80',
+                            authorName: photo.user.name || 'Unsplash',
+                            authorLink: photo.user.links.html || 'https://unsplash.com'
+                        };
+                    }
+                }
+            } catch (e) {
+                console.error("Lỗi khi gọi Unsplash API:", e);
+            }
+            
+            const fallbackId = getFallbackImage(title, category);
+            return {
+                url: `https://images.unsplash.com/${fallbackId}?auto=format&fit=crop&w=800&q=80`,
+                authorName: 'Unsplash',
+                authorLink: 'https://unsplash.com'
+            };
+        }
+
+        function buildTemplate(title, desc, category, body, imageUrl, tags, hashtags, dateString, authorName, authorLink) {
             const depth = category === 'market' ? '../' : '../'; 
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt || 'finance stock market graph')}?width=800&height=400&nologo=true`;
             
             const tagsHtml = (tags || []).map(t => `<span style="display:inline-block; padding:4px 12px; background:rgba(99,102,241,0.2); color:#a5b4fc; border-radius:15px; font-size:12px; margin-right:5px;">${t}</span>`).join('');
             const hashHtml = (hashtags || []).map(t => `<a href="#" style="color:#60a5fa; text-decoration:none; margin-right:8px;">${t}</a>`).join('');
@@ -2713,6 +2876,8 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             }
 
             const categoryName = category === 'market' ? 'Thị trường' : 'Bài viết';
+            const finalAuthorName = authorName || 'Unsplash';
+            const finalAuthorLink = authorLink || 'https://unsplash.com';
 
             return `<!DOCTYPE html>
 <html lang="vi">
@@ -2765,6 +2930,13 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
     th { background: #1e293b !important; color: #ffffff !important; font-weight: 600 !important; border: 1px solid rgba(255,255,255,0.08) !important; padding: 12px 14px !important; }
     td { padding: 12px 14px !important; border: 1px solid rgba(255,255,255,0.08) !important; color: #cbd5e1 !important; background: transparent !important; }
     tr:nth-child(even) td { background: rgba(255,255,255,0.02) !important; }
+
+    /* CSS cho Ảnh bìa chuẩn SEO */
+    .article-cover-figure { margin: 0 0 30px 0; width: 100%; }
+    .article-cover-figure img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: block; }
+    .article-cover-caption { margin-top: 12px; font-size: 0.85rem; color: #94a3b8; line-height: 1.5; text-align: center; font-style: italic; }
+    .article-cover-caption a { color: #60a5fa; text-decoration: none; }
+    .article-cover-caption a:hover { text-decoration: underline; }
   </style>
 </head>
 <body data-lead-popup>
@@ -2798,9 +2970,12 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
         <span class="meta-item">📁 Chuyên mục: <a href="/${category}/">${categoryName}</a></span>
       </div>
       
-      <div style="margin-bottom: 25px;">
-          <img src="${imageUrl}" alt="Cover image for ${title}" onerror="this.src='https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80'" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
-      </div>
+      <figure class="article-cover-figure">
+          <img src="${imageUrl}" alt="${title}" loading="lazy">
+          <figcaption class="article-cover-caption">
+              ${desc} | <em>Ảnh bởi <a href="${finalAuthorLink}" target="_blank" rel="noopener noreferrer nofollow">${finalAuthorName}</a> trên Unsplash</em>
+          </figcaption>
+      </figure>
       
       ${body}
 
