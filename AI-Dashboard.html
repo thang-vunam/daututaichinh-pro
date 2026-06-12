@@ -614,6 +614,24 @@ Bạn có thể viết:
                         <i class="fa-solid fa-wand-magic-sparkles"></i> AI Tự động sửa chuẩn SEO
                     </button>
 
+                    <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                        <label style="color: #a5b4fc; font-weight: 600; display: block; margin-bottom: 8px;"><i class="fa-regular fa-image"></i> Cấu hình Ảnh bìa</label>
+                        
+                        <div style="margin-top: 8px;">
+                            <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 4px;">Từ khóa tìm ảnh Unsplash (tiếng Anh)</label>
+                            <input type="text" id="review-image-prompt" placeholder="Ví dụ: financial chart abstract..." style="font-size: 0.85rem; width: 100%; padding: 8px; background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 6px; color: var(--text-color);" />
+                        </div>
+                        
+                        <div style="margin-top: 8px;">
+                            <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 4px;">Hoặc dán URL ảnh trực tiếp</label>
+                            <input type="text" id="review-image-url" placeholder="https://images.unsplash.com/..." style="font-size: 0.85rem; width: 100%; padding: 8px; background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 6px; color: var(--text-color);" />
+                        </div>
+                        
+                        <button class="btn" id="btn-reload-cover" onclick="manualReloadCoverImage(event)" style="width: 100%; justify-content: center; margin-top: 10px; background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3);">
+                            <i class="fa-solid fa-rotate"></i> Cập nhật & Tải lại ảnh bìa
+                        </button>
+                    </div>
+
                     <div style="margin-top: 15px; padding: 15px; background: rgba(99,102,241,0.1); border-radius: 10px; border: 1px solid rgba(99,102,241,0.2);">
                         <h4 style="font-size: 0.9rem; color: #a5b4fc; margin-bottom: 8px;"><i class="fa-solid fa-circle-info"></i> Hướng dẫn SEO</h4>
                         <ul style="font-size: 0.8rem; color: var(--text-muted); padding-left: 18px; line-height: 1.7;">
@@ -971,9 +989,9 @@ Bạn có thể viết:
                 
                 if (isRawText) {
                     btn.innerHTML = '<div class="loader"></div> AI đang định dạng lại nội dung & Tối ưu SEO...';
-                    seoPrompt = 'Hôm nay là ' + today + '. Bạn là Biên tập viên báo tài chính. Tôi có một văn bản thô bên dưới' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. NHIỆM VỤ CỦA BẠN: 1. ĐỊNH DẠNG LẠI nội dung thô này thành mã HTML mạch lạc, đẹp mắt: tự động chia đoạn nhỏ bằng thẻ <p>, siêu bôi đậm bằng <strong> cho các số liệu, tên riêng hoặc ý chính quan trọng, dùng <h2> hoặc <h3> cho các tiêu đề phụ, dùng thẻ danh sách <ul><li> nếu nội dung có tính chất liệt kê. (CHỈ DÙNG HTML cơ bản. KHÔNG tự ý sáng tác hay phịa thêm nội dung, phải bám sát 100% nguyên tác). 2. Phân tích nội dung để tạo SEO metadata. Trả về ĐÚNG MỘT khối JSON có định dạng sau: {"title":"Có chứa từ khóa chính, 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Mô tả ngắn gọn, 120-150 ký tự","imagePrompt":"10 từ tiếng Anh mô tả ảnh làm cover","tags":["tag1","tag2"],"hashtags":["#hash1","#hash2"], "htmlContent": "Toàn bộ mã HTML của bài viết đã được làm đẹp"}. KHÔNG GIẢI THÍCH GÌ THÊM. Nội dung thô: ' + content;
+                    seoPrompt = 'Hôm nay là ' + today + '. Bạn là Biên tập viên báo tài chính. Tôi có một văn bản thô bên dưới' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. NHIỆM VỤ CỦA BẠN: 1. ĐỊNH DẠNG LẠI nội dung thô này thành mã HTML mạch lạc, đẹp mắt: tự động chia đoạn nhỏ bằng thẻ <p>, siêu bôi đậm bằng <strong> cho các số liệu, tên riêng hoặc ý chính quan trọng, dùng <h2> hoặc <h3> cho các tiêu đề phụ, dùng thẻ danh sách <ul><li> nếu nội dung có tính chất liệt kê. (CHỈ DÙNG HTML cơ bản. KHÔNG tự ý sáng tác hay phịa thêm nội dung, phải bám sát 100% nguyên tác). 2. Phân tích nội dung để tạo SEO metadata. Trả về ĐÚNG MỘT khối JSON có định dạng sau: {"title":"Có chứa từ khóa chính, 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Mô tả ngắn gọn, 120-150 ký tự","imagePrompt":"10 từ tiếng Anh mô tả ảnh làm cover mang tính biểu trưng hoặc trừu tượng (ví dụ: finance abstract background, business workspace laptop, bull market statue, gold and money... KHÔNG tìm ảnh biểu đồ cận cảnh có chữ ngoại quốc hay ngày tháng cũ)","tags":["tag1","tag2"],"hashtags":["#hash1","#hash2"], "htmlContent": "Toàn bộ mã HTML của bài viết đã được làm đẹp"}. KHÔNG GIẢI THÍCH GÌ THÊM. Nội dung thô: ' + content;
                 } else {
-                    seoPrompt = 'Hôm nay là ngày ' + today + '. Tôi đã viết xong 1 bài viết' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. Bạn là Chuyên gia SEO RankMath. Hãy phân tích nội dung, chèn từ khóa chính vào Tiêu đề và Mô tả tự nhiên. Trả về JSON: {"title":"30-55 ký tự chuẩn SEO","slug":"url-url","metaDescription":"120-150 ký tự","imagePrompt":"10 eng words","tags":["tag1","tag2"],"hashtags":["#hash1"]} CHỈ JSON. Nội dung bài: ' + content.substring(0, 2000);
+                    seoPrompt = 'Hôm nay là ngày ' + today + '. Tôi đã viết xong 1 bài viết' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. Bạn là Chuyên gia SEO RankMath. Hãy phân tích nội dung, chèn từ khóa chính vào Tiêu đề và Mô tả tự nhiên. Trả về JSON: {"title":"30-55 ký tự chuẩn SEO","slug":"url-url","metaDescription":"120-150 ký tự","imagePrompt":"10 eng words for abstract/symbolic cover image, no foreign tickers or dates","tags":["tag1","tag2"],"hashtags":["#hash1"]} CHỈ JSON. Nội dung bài: ' + content.substring(0, 2000);
                 }
 
                 const resp = await callGemini(key, seoPrompt);
@@ -1016,6 +1034,10 @@ Bạn có thể viết:
                 currentArticleData.imageUrl = resolvedImage.url;
                 currentArticleData.authorName = resolvedImage.authorName;
                 currentArticleData.authorLink = resolvedImage.authorLink;
+
+                // Điền thông tin ảnh bìa vào UI input
+                document.getElementById('review-image-prompt').value = currentArticleData.imagePrompt || '';
+                document.getElementById('review-image-url').value = currentArticleData.imageUrl || '';
 
                 // Build template với nội dung của người dùng
                 const fullHtml = buildTemplate(
@@ -1282,13 +1304,17 @@ Bạn có thể viết:
                     // Blog: Tìm chủ đề đầu tư/tài chính đang hot
                     prompt = `Hôm nay là ngày ${today}, năm ${year}. Hãy TÌM KIẾM trên Google các chủ đề ĐANG ĐƯỢC QUAN TÂM NHẤT về đầu tư, tài chính cá nhân tại Việt Nam TRONG TUẦN NÀY. Tập trung vào: xu hướng đầu tư mới, lãi suất ngân hàng, vàng, bất động sản, crypto, chiến lược đầu tư đang hot trên cộng đồng. Dựa trên kết quả tìm kiếm THỰC TẾ, đề xuất 3 tiêu đề bài viết chuyên sâu, CỤ THỂ (có dữ liệu, xu hướng thật). Trả về JSON: [{"title":"tiêu đề cụ thể","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, TUYỆT ĐỐI KHÔNG chứa dấu phẩy)","reason":"lý do - trích nguồn tin thực tế"}] CHỈ JSON, KHÔNG giải thích.`;
                 }
-                const text = await callGeminiWithSearch(key, prompt);
                 
-                let cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
-                let suggestions = [];
-                try { suggestions = JSON.parse(cleaned); } catch(e) {
-                    // Fallback: tách theo dòng
-                    suggestions = cleaned.split('\n').filter(l => l.trim()).slice(0, 3).map((l, i) => ({title: l.replace(/^\d+\.\s*/, ''), reason: ''}));
+                // Gọi Gemini API với Google Search Grounding
+                const responseText = await callGeminiWithSearch(key, prompt);
+                let cleaned = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+                
+                let suggestions;
+                try {
+                    suggestions = JSON.parse(cleaned);
+                } catch(parseErr) {
+                    // Fallback: tách theo dòng nếu không parse được JSON
+                    suggestions = cleaned.split('\n').filter(l => l.trim()).slice(0, 3).map((l, i) => ({title: l.replace(/^\d+\.\s*/, ''), keyword: '', reason: ''}));
                 }
                 
                 const panel = document.getElementById('suggest-panel');
@@ -1372,7 +1398,7 @@ NHIỆM VỤ SEO BẮT BUỘC (Hybrid):
 5. ĐỊNH DẠNG BÁO CHÍ (Tùy chọn): Nếu bài viết có trích dẫn lời phát biểu của chuyên gia, tổ chức uy tín, BẮT BUỘC dùng thẻ <blockquote> để bọc câu nói đó lại nhằm tăng độ uy tín. KHÔNG bịa ra trích dẫn giả mạo nếu ngữ cảnh không có thật.
 
 Trả về 1 chuỗi JSON duy nhất:
-{"title":"Chứa từ khóa chính. BẮT BUỘC 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. BẮT BUỘC 120-150 ký tự","htmlContent":"Nội dung HTML dùng h2 p ul li. CHÈN 1-2 Outbound link. (CHÚ Ý: LƯU Ý TỐI QUAN TRỌNG: Mọi dấu ngoặc kép bên trong HTML hoặc Blockquote phải được thay bằng dấu nháy đơn (') hoặc escape (\\\") để KHÔNG LÀM VỠ định dạng JSON)","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa","tags":["Chứng khoán","Cổ phiếu"],"hashtags":["#chungkhoan","#dautu"]}
+{"title":"Chứa từ khóa chính. BẮT BUỘC 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. BẮT BUỘC 120-150 ký tự","htmlContent":"Nội dung HTML dùng h2 p ul li. CHÈN 1-2 Outbound link. (CHÚ Ý: LƯU Ý TỐI QUAN TRỌNG: Mọi dấu ngoặc kép bên trong HTML hoặc Blockquote phải được thay bằng dấu nháy đơn (\') hoặc escape (\\\") để KHÔNG LÀM VỠ định dạng JSON)","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa mang tính biểu trưng hoặc trừu tượng (ví dụ: finance abstract background, business workspace laptop, bull market statue, gold and money... KHÔNG tìm ảnh biểu đồ cận cảnh có chữ ngoại quốc hay ngày tháng cũ)","tags":["Chứng khoán","Cổ phiếu"],"hashtags":["#chungkhoan","#dautu"]}
 
 KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse error). LƯU Ý LUÔN KIỂM TRA JSON QUOTES. Viết xuất sắc nhất có thể. Khởi chạy với Từ khóa chính: ${topic}`;
 
@@ -1413,6 +1439,14 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
                 currentArticleData.imageUrl = resolvedImage.url;
                 currentArticleData.authorName = resolvedImage.authorName;
                 currentArticleData.authorLink = resolvedImage.authorLink;
+
+                // Điền thông tin ảnh bìa vào UI input
+                if (document.getElementById('review-image-prompt')) {
+                    document.getElementById('review-image-prompt').value = currentArticleData.imagePrompt || '';
+                }
+                if (document.getElementById('review-image-url')) {
+                    document.getElementById('review-image-url').value = currentArticleData.imageUrl || '';
+                }
 
                 // Build the full HTML template wrapped around the AI article body
                 const fullHtml = buildTemplate(
@@ -2640,16 +2674,69 @@ ${emptyMsg}
             }
         }
 
+        async function manualReloadCoverImage(event) {
+            const promptVal = document.getElementById('review-image-prompt').value.trim();
+            const urlVal = document.getElementById('review-image-url').value.trim();
+            
+            if (!promptVal && !urlVal) {
+                return alert("Vui lòng nhập từ khóa tìm ảnh hoặc dán link ảnh trực tiếp!");
+            }
+            
+            const btn = event ? event.currentTarget : null;
+            let originalHtml = "";
+            if (btn) {
+                originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...';
+                btn.disabled = true;
+            }
+            
+            try {
+                if (urlVal) {
+                    currentArticleData.imageUrl = urlVal;
+                    currentArticleData.authorName = '';
+                    currentArticleData.authorLink = '';
+                } else {
+                    currentArticleData.imagePrompt = promptVal;
+                    const resolvedImage = await resolveUnsplashImage(promptVal, currentArticleData.title, currentArticleData.category);
+                    currentArticleData.imageUrl = resolvedImage.url;
+                    currentArticleData.authorName = resolvedImage.authorName;
+                    currentArticleData.authorLink = resolvedImage.authorLink;
+                    
+                    document.getElementById('review-image-url').value = resolvedImage.url;
+                }
+                
+                const fullHtml = buildTemplate(
+                    currentArticleData.title,
+                    currentArticleData.metaDescription,
+                    currentArticleData.category,
+                    currentArticleData.htmlContent,
+                    currentArticleData.imageUrl,
+                    currentArticleData.tags,
+                    currentArticleData.hashtags,
+                    currentArticleData.dateString,
+                    currentArticleData.authorName,
+                    currentArticleData.authorLink
+                );
+                document.getElementById('review-html').value = fullHtml;
+                refreshPreview();
+                alert("Đã cập nhật ảnh bìa thành công!");
+            } catch(e) {
+                alert("Lỗi tải ảnh bìa: " + e.message);
+            } finally {
+                if (btn) {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
+            }
+        }
+
         function extractArticleBody(html) {
-            const startMarker = 'box-shadow: 0 4px 15px rgba(0,0,0,0.4);">';
+            const startMarker = '</figure>';
             const endMarker = '<div style="margin-top: 30px; padding-top: 15px;';
             
             let startIndex = html.indexOf(startMarker);
             if (startIndex === -1) return null;
-            
-            startIndex = html.indexOf('</div>', startIndex);
-            if (startIndex === -1) return null;
-            startIndex += 6; // Move past </div>
+            startIndex += startMarker.length; // Move past </figure>
             
             const endIndex = html.indexOf(endMarker, startIndex);
             if (endIndex === -1) return null;
@@ -2687,12 +2774,16 @@ ${extractedBody}
 Yêu cầu điều chỉnh của người dùng:
 "${instruction}"
 
+Từ khóa tìm kiếm ảnh Unsplash hiện tại là: "${currentArticleData.imagePrompt || ""}"
+
 Nhiệm vụ:
 1. Hãy điều chỉnh nội dung HTML trên dựa theo yêu cầu của người dùng (ví dụ: chuyển đổi đoạn văn/danh sách thành bảng so sánh đẹp mắt, định dạng lại bảng biểu, thay đổi văn phong, chỉnh sửa chi tiết số liệu, v.v.).
 2. Kết quả chỉnh sửa phải trả về dưới dạng mã HTML chuẩn (chỉ phần body của bài viết, dùng h2, h3, p, strong, ul, li, table, th, td...). Không chèn thêm thẻ <html>, <head>, <body> hoặc các CSS styles/inline styles phức tạp vào table/th/td vì hệ thống đã tự động cấu hình giao diện tối ưu cho Dark Mode.
 3. Tuyệt đối giữ lại các liên kết (thẻ a) hiện có trong nội dung để đảm bảo tối ưu SEO, không được tự ý gỡ bỏ hoặc sửa đổi liên kết trừ khi người dùng yêu cầu rõ ràng.
-4. Trả về kết quả dưới dạng một chuỗi JSON duy nhất có cấu trúc sau:
-{"htmlContent":"Mã HTML bài viết đã được chỉnh sửa (chú ý escape dấu nháy kép bên trong thẻ HTML để không làm vỡ JSON)","title":"Tiêu đề mới của bài viết (mặc định giữ nguyên: ${currentTitle})","metaDescription":"Mô tả SEO mới của bài viết (mặc định giữ nguyên: ${currentDesc})"}
+4. KHÔNG tự ý chèn bất kỳ thẻ <img> thô nào vào trường htmlContent. Việc hiển thị ảnh bìa của bài viết đã có hệ thống tự động xử lý bên ngoài.
+5. Nếu người dùng yêu cầu thay đổi hình ảnh, ảnh bìa, hoặc chủ đề của hình ảnh, bạn BẮT BUỘC phải tạo ra một từ khóa tìm kiếm tiếng Anh khác với từ khóa hiện tại (nhưng vẫn liên quan chặt chẽ đến chủ đề bài viết/yêu cầu người dùng) và đặt vào trường imagePrompt trong chuỗi JSON trả về. Nếu người dùng không yêu cầu thay đổi hình ảnh/ảnh bìa, hãy giữ nguyên giá trị từ khóa hiện tại là "${currentArticleData.imagePrompt || ""}".
+6. Trả về kết quả dưới dạng một chuỗi JSON duy nhất có cấu trúc sau:
+{"htmlContent":"Mã HTML bài viết đã được chỉnh sửa (chú ý escape dấu nháy kép bên trong thẻ HTML để không làm vỡ JSON)","title":"Tiêu đề mới của bài viết (mặc định giữ nguyên: ${currentTitle})","metaDescription":"Mô tả SEO mới của bài viết (mặc định giữ nguyên: ${currentDesc})","imagePrompt":"Mô tả tìm kiếm ảnh Unsplash mới bằng tiếng Anh"}
 
 KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
@@ -2711,17 +2802,27 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                 currentArticleData.metaDescription = data.metaDescription || currentDesc;
                 currentArticleData.htmlContent = data.htmlContent;
                 
+                // Check if imagePrompt has changed or if we need to resolve image
+                const oldPrompt = currentArticleData.imagePrompt || "";
+                const newPrompt = (data.imagePrompt || oldPrompt).trim();
+                
                 // Update input fields
                 document.getElementById('review-title').value = currentArticleData.title;
                 document.getElementById('review-desc').value = currentArticleData.metaDescription;
                 
-                // Rebuild full HTML and update review-html textarea
-                if (!currentArticleData.imageUrl) {
-                    const resolvedImage = await resolveUnsplashImage(currentArticleData.imagePrompt, currentArticleData.title, currentArticleData.category);
+                const promptChanged = newPrompt !== oldPrompt;
+                
+                if (promptChanged || !currentArticleData.imageUrl) {
+                    currentArticleData.imagePrompt = newPrompt;
+                    const resolvedImage = await resolveUnsplashImage(newPrompt, currentArticleData.title, currentArticleData.category);
                     currentArticleData.imageUrl = resolvedImage.url;
                     currentArticleData.authorName = resolvedImage.authorName;
                     currentArticleData.authorLink = resolvedImage.authorLink;
                 }
+
+                // Điền thông tin ảnh bìa vào UI input
+                document.getElementById('review-image-prompt').value = currentArticleData.imagePrompt || '';
+                document.getElementById('review-image-url').value = currentArticleData.imageUrl || '';
 
                 const fullHtml = buildTemplate(
                     currentArticleData.title,
