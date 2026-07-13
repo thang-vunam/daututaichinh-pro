@@ -2289,7 +2289,7 @@ ${emptyMsg}
         }
 
         // Danh sách model dự phòng (thử lần lượt khi quota hết)
-        const FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+        const FALLBACK_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.0-flash-lite'];
 
         // HELPER: Gọi Gemini API (có auto-retry + fallback model + timeout)
         async function callGemini(apiKey, prompt, modelOverride = null, timeoutMs = 45000) {
