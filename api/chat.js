@@ -188,7 +188,7 @@ export default async function handler(request, ctx) {
 
 // ─── Call Gemini API ────────────────────────────────────
 async function callGemini(apiKey, history, systemPrompt, useSearch) {
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`;
 
   const geminiBody = {
     system_instruction: {
