@@ -1310,16 +1310,30 @@ Bạn có thể viết:
                     const catContext = category === 'market' 
                         ? 'cho chuyên mục tin tức thị trường chứng khoán Việt Nam' 
                         : 'cho chuyên mục phân tích đầu tư & tài chính cá nhân Việt Nam';
-                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Hãy TÌM KIẾM trên Google các tin tức và bài viết MỚI NHẤT trong tuần này liên quan đến chủ đề: "${userKeyword}" ${catContext}. Dựa trên kết quả tìm kiếm THỰC TẾ, gợi ý 3 góc nhìn/tiêu đề bài viết CỤ THỂ, CẬP NHẬT, hấp dẫn và chuẩn SEO. Mỗi tiêu đề phải phản ánh sự kiện hoặc dữ liệu THỰC TẾ đang diễn ra. Trả về JSON: [{"title":"tiêu đề cụ thể có số liệu hoặc sự kiện thật","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, TUYỆT ĐỐI KHÔNG chứa dấu phẩy)","reason":"lý do nóng dựa trên tin tức thực tế tìm được"}] CHỈ JSON, KHÔNG giải thích.`;
+                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Bạn là Biên tập viên cao cấp của chuyên trang tài chính daututaichinh.pro.
+Hãy gợi ý 3 tiêu đề bài viết phân tích CỤ THỂ, sắc sảo, hấp dẫn và chuẩn SEO xoay quanh chủ đề: "${userKeyword}" ${catContext}.
+QUY TẮC BẮT BUỘC:
+• TUYỆT ĐỐI KHÔNG tự ý bịa ra điểm số VN-Index (như 1200, 1300...) nếu không có dữ liệu thực tế.
+• Tập trung vào: góc nhìn chiến lược, phân tích dòng tiền, cơ hội/rủi ro nhóm ngành, định giá và câu chuyện kinh doanh thực tế.
+• Trả về JSON: [{"title":"tiêu đề cụ thể sắc sảo","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, KHÔNG chứa dấu phẩy)","reason":"góc nhìn phân tích nổi bật"}] CHỈ JSON, KHÔNG giải thích.`;
                 } else if(category === 'market') {
-                    // Market: Tìm tin chứng khoán nóng nhất hôm nay
-                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Hãy TÌM KIẾM trên Google các tin tức NÓNG NHẤT về thị trường chứng khoán Việt Nam TRONG NGÀY HÔM NAY hoặc TUẦN NÀY. Tập trung vào: diễn biến VN-Index, cổ phiếu tăng/giảm mạnh, tin tức doanh nghiệp niêm yết, chính sách mới ảnh hưởng thị trường, dòng tiền ngoại. Dựa trên kết quả tìm kiếm THỰC TẾ, đề xuất 3 tiêu đề bài viết CỤ THỂ nhất có thể (có tên cổ phiếu, con số, sự kiện thật). Trả về JSON: [{"title":"tiêu đề cụ thể","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, TUYỆT ĐỐI KHÔNG chứa dấu phẩy)","reason":"lý do - trích nguồn tin thực tế"}] CHỈ JSON, KHÔNG giải thích.`;
+                    // Market: Gợi ý chủ đề thị trường chuyên nghiệp
+                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Bạn là Chuyên gia phân tích thị trường chứng khoán của daututaichinh.pro.
+Hãy đề xuất 3 tiêu đề bài viết phân tích thị trường chứng khoán Việt Nam chuẩn SEO, sắc sảo và cuốn hút nhà đầu tư.
+QUY TẮC BẮT BUỘC:
+• TUYỆT ĐỐI KHÔNG tự ý bịa ra điểm số VN-Index giả định (như mốc 1200, 1300...).
+• Tập trung vào: xu hướng dòng tiền (khối ngoại, tự doanh), nhóm ngành tâm điểm (Ngân hàng, Chứng khoán, Bất động sản, Xuất khẩu, Công nghệ...), kỳ vọng kết quả kinh doanh, vĩ mô và chiến lược quản trị danh mục.
+• Trả về JSON: [{"title":"tiêu đề chuyên sâu chuẩn SEO","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, KHÔNG chứa dấu phẩy)","reason":"lý do và góc nhìn phân tích"}] CHỈ JSON, KHÔNG giải thích.`;
                 } else {
                     // Blog: Tìm chủ đề đầu tư/tài chính đang hot
-                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Hãy TÌM KIẾM trên Google các chủ đề ĐANG ĐƯỢC QUAN TÂM NHẤT về đầu tư, tài chính cá nhân tại Việt Nam TRONG TUẦN NÀY. Tập trung vào: xu hướng đầu tư mới, lãi suất ngân hàng, vàng, bất động sản, crypto, chiến lược đầu tư đang hot trên cộng đồng. Dựa trên kết quả tìm kiếm THỰC TẾ, đề xuất 3 tiêu đề bài viết chuyên sâu, CỤ THỂ (có dữ liệu, xu hướng thật). Trả về JSON: [{"title":"tiêu đề cụ thể","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, TUYỆT ĐỐI KHÔNG chứa dấu phẩy)","reason":"lý do - trích nguồn tin thực tế"}] CHỈ JSON, KHÔNG giải thích.`;
+                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Bạn là Chuyên gia tài chính cá nhân & đầu tư của daututaichinh.pro.
+Hãy đề xuất 3 tiêu đề bài viết chuyên sâu về đầu tư, tài chính cá nhân tại Việt Nam chuẩn SEO, thực tế và hữu ích.
+QUY TẮC BẮT BUỘC:
+• Tập trung vào: chiến lược đầu tư thông minh, quản lý dòng tiền, cơ hội tích sản, thị trường lãi suất/vàng/bất động sản/fintech.
+• Trả về JSON: [{"title":"tiêu đề cụ thể","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, KHÔNG chứa dấu phẩy)","reason":"giá trị bài viết mang lại"}] CHỈ JSON, KHÔNG giải thích.`;
                 }
                 
-                // Gọi Gemini API với Google Search Grounding
+                // Gọi Gemini API với cơ chế dự phòng
                 const responseText = await callGeminiWithSearch(key, prompt);
                 let cleaned = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
                 
@@ -1333,7 +1347,7 @@ Bạn có thể viết:
                 
                 const panel = document.getElementById('suggest-panel');
                 const list = document.getElementById('suggest-list');
-                list.innerHTML = '<div style="font-size:0.75rem; color:#60a5fa; margin-bottom:8px; display:flex; align-items:center; gap:5px;"><i class="fa-brands fa-google"></i> Dữ liệu từ Google Search real-time — ' + today + '</div>';
+                list.innerHTML = '<div style="font-size:0.75rem; color:#60a5fa; margin-bottom:8px; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Gợi ý chủ đề phân tích chuyên sâu — ' + today + '</div>';
                 suggestions.slice(0, 3).forEach((s, i) => {
                     const card = document.createElement('div');
                     card.className = 'suggest-card';
