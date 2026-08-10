@@ -662,7 +662,7 @@ Bạn có thể viết:
             </div>
             <div class="form-group">
                 <label>GitHub Repo Owner (Username của bạn)</label>
-                <input type="text" id="cfg-owner" placeholder="Ví dụ: thangvudeveloper" />
+                <input type="text" id="cfg-owner" value="thang-vunam" placeholder="thang-vunam" />
             </div>
             <div class="form-group">
                 <label>Tên Repository</label>
@@ -1164,7 +1164,7 @@ Bạn có thể viết:
         function loadSettings() {
             document.getElementById('cfg-gemini').value = getItemSafe('gemini_key') || '';
             document.getElementById('cfg-github').value = getItemSafe('github_token') || '';
-            document.getElementById('cfg-owner').value = getItemSafe('github_owner') || '';
+            document.getElementById('cfg-owner').value = getItemSafe('github_owner') || 'thang-vunam';
             document.getElementById('cfg-repo').value = 'daututaichinh-pro';
             
             // Lấy model đã lưu trước
@@ -1184,10 +1184,10 @@ Bạn có thể viết:
                 closeSettings();
 
                 // 2. Lấy giá trị
-                const vGem = document.getElementById('cfg-gemini').value || '';
-                const vGit = document.getElementById('cfg-github').value || '';
-                const vOwn = document.getElementById('cfg-owner').value || '';
-                const vRep = document.getElementById('cfg-repo').value || '';
+                const vGem = document.getElementById('cfg-gemini').value.trim() || '';
+                const vGit = document.getElementById('cfg-github').value.trim() || '';
+                const vOwn = document.getElementById('cfg-owner').value.trim() || 'thang-vunam';
+                const vRep = document.getElementById('cfg-repo').value.trim() || 'daututaichinh-pro';
                 const vMod = document.getElementById('cfg-model').value || 'auto';
 
                 // 3. Lưu vào Storage an toàn
@@ -1509,9 +1509,9 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
         // TÍNH NĂNG PUSH CODE LÊN GITHUB
         async function publishToGithub() {
             const token = getItemSafe('github_token');
-            const owner = getItemSafe('github_owner');
+            const owner = getItemSafe('github_owner') || 'thang-vunam';
             const repo = 'daututaichinh-pro';
-            if(!token || !owner || !repo) return alert("Vui lòng cấu hình thông tin GitHub!");
+            if(!token) return alert("Vui lòng cấu hình GitHub Personal Access Token trước!");
 
             const slug = document.getElementById('review-slug').value;
             const content = document.getElementById('review-html').value;
@@ -1880,9 +1880,9 @@ ${emptyMsg}
         // THU HỒI BÀI ĐĂNG
         async function recallArticle() {
             const token = getItemSafe('github_token');
-            const owner = getItemSafe('github_owner');
-            const repo = getItemSafe('github_repo');
-            if(!token || !owner || !repo) return alert('Vui lòng cấu hình GitHub!');
+            const owner = getItemSafe('github_owner') || 'thang-vunam';
+            const repo = 'daututaichinh-pro';
+            if(!token) return alert('Vui lòng cấu hình GitHub Token!');
 
             const slug = document.getElementById('review-slug').value;
             const category = document.getElementById('input-category').value;
@@ -1915,9 +1915,9 @@ ${emptyMsg}
         // TẠM THỜI: HÀM QUÉT VÀ DỌN DẸP 3 BÀI LỖI
         async function cleanupOldArticles() {
             const token = getItemSafe('github_token');
-            const owner = getItemSafe('github_owner');
-            const repo = getItemSafe('github_repo');
-            if(!token || !owner || !repo) return alert('Vui lòng cấu hình GitHub!');
+            const owner = getItemSafe('github_owner') || 'thang-vunam';
+            const repo = 'daututaichinh-pro';
+            if(!token) return alert('Vui lòng cấu hình GitHub Token!');
 
             if(!confirm(`⚠️ CHÚ Ý: Hành động này sẽ TỰ ĐỘNG XÓA 3 bài viết có chứa từ khóa: ESG, Nâng hạng khỏi trang web.\n\nBạn có chắc chắn muốn bỏ đi các bài lỗi này không?`)) return;
 
@@ -1986,9 +1986,9 @@ ${emptyMsg}
         // TÍNH NĂNG XÓA BÀI VIẾT TỪ URL BẤT KỲ
         async function deleteAnyArticle() {
             const token = getItemSafe('github_token');
-            const owner = getItemSafe('github_owner');
-            const repo = getItemSafe('github_repo');
-            if(!token || !owner || !repo) return alert('Vui lòng cấu hình GitHub!');
+            const owner = getItemSafe('github_owner') || 'thang-vunam';
+            const repo = 'daututaichinh-pro';
+            if(!token) return alert('Vui lòng cấu hình GitHub Token!');
 
             const inputVal = document.getElementById('delete-url-input').value.trim();
             if(!inputVal) return alert('Vui lòng dán Link hoặc Slug vào ô!');
@@ -2067,9 +2067,9 @@ ${emptyMsg}
         // CHUẨN HÓA NGÀY THÁNG CATALOG (SỬA LỖI BÀI CŨ KHÔNG CÓ NGÀY)
         async function fixCatalogDates() {
             const token = getItemSafe('github_token');
-            const owner = getItemSafe('github_owner');
-            const repo = getItemSafe('github_repo');
-            if(!token) return alert('Vui lòng cấu hình GitHub!');
+            const owner = getItemSafe('github_owner') || 'thang-vunam';
+            const repo = 'daututaichinh-pro';
+            if(!token) return alert('Vui lòng cấu hình GitHub Token!');
 
             const btn = document.getElementById('btn-fix-dates');
             const originalHTML = btn.innerHTML;
@@ -2141,9 +2141,9 @@ ${emptyMsg}
         // ĐỒNG BỘ MÃ SEO & MỤC LỤC LÊN GITHUB CHO CÁC BÀI XƯA CŨ
         async function syncSeoToGithub() {
             const token = getItemSafe('github_token');
-            const owner = getItemSafe('github_owner');
-            const repo = getItemSafe('github_repo');
-            if(!token || !owner || !repo) return alert('Vui lòng cấu hình GitHub!');
+            const owner = getItemSafe('github_owner') || 'thang-vunam';
+            const repo = 'daututaichinh-pro';
+            if(!token) return alert('Vui lòng cấu hình GitHub Token!');
 
             if(!confirm("⚠️ KÍCH HOẠT QUY TRÌNH NÂNG CẤP SEO TOÀN QUỐC\n\nHành động này sẽ tải về toàn bộ bài viết cũ từ Github, nhúng mã nguồn Mục Lục & Youtube siêu tốc vào và Push ngược lại lên sever.\n\nSẽ mất khoảng 1-2 phút tùy số lượng bài viết. Bạn đã sẵn sàng?")) return;
 
