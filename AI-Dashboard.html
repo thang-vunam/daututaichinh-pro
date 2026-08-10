@@ -1069,12 +1069,12 @@ Bạn có thể viết:
             }
         }
 
-        // HÀM LẤY MODEL HIỆU LỰC (Tự động chuyển model mới nhất)
+        // HÀM LẤY MODEL HIỆU LỰC (Tối ưu cho Free Tier)
         function getEffectiveGeminiModel() {
             const saved = getItemSafe('gemini_model') || 'auto';
-            // Các model cũ/đã ngừng hoặc chế độ auto -> chuyển ngay sang gemini-flash-latest
+            // Chế độ Auto hoặc các model đã cũ -> dùng gemini-3.1-flash-lite (Free tier ổn định nhất)
             if (saved === 'auto' || saved === 'gemini-2.5-flash' || saved.includes('2.0') || saved.includes('3.5') || saved === 'gemini-3-pro-preview') {
-                return 'gemini-flash-latest';
+                return 'gemini-3.1-flash-lite';
             }
             return saved;
         }
@@ -1107,14 +1107,14 @@ Bạn có thể viết:
                     // Tùy chọn Auto luôn đứng đầu
                     const autoOpt = document.createElement('option');
                     autoOpt.value = 'auto';
-                    autoOpt.textContent = '✨ Tự động chọn Model mới nhất (Khuyên dùng)';
+                    autoOpt.textContent = '✨ Tự động chọn (Khuyên dùng - Tối ưu Free Tier)';
                     select.appendChild(autoOpt);
                     
                     // Sắp xếp ưu tiên các model Flash / Pro mới nhất
                     const priorityList = [
-                        'gemini-flash-latest',
                         'gemini-3.1-flash-lite',
                         'gemini-flash-lite-latest',
+                        'gemini-flash-latest',
                         'gemini-3-flash-preview',
                         'gemini-3.1-flash-lite-preview',
                         'gemini-2.5-flash-lite',
@@ -1133,14 +1133,14 @@ Bạn có thể viết:
                         option.value = modelName;
                         
                         let displayName = modelName;
-                        if(modelName === 'gemini-flash-latest') displayName = '⚡ Gemini Flash Latest (Bản mới nhất, Tự cập nhật)';
-                        else if(modelName === 'gemini-3.1-flash-lite') displayName = '🚀 Gemini 3.1 Flash Lite (Thế hệ 3.1, Siêu nhanh)';
-                        else if(modelName === 'gemini-flash-lite-latest') displayName = '⚡ Gemini Flash Lite Latest (Bản nhẹ mới nhất)';
+                        if(modelName === 'gemini-3.1-flash-lite') displayName = '🚀 Gemini 3.1 Flash Lite (Tối ưu Free Tier, Siêu nhanh)';
+                        else if(modelName === 'gemini-flash-lite-latest') displayName = '⚡ Gemini Flash Lite Latest (Bản nhẹ, Free Tier)';
+                        else if(modelName === 'gemini-flash-latest') displayName = '⚡ Gemini Flash Latest (Bản đầy đủ mới nhất)';
                         else if(modelName === 'gemini-3-flash-preview') displayName = '🧪 Gemini 3 Flash Preview (Thế hệ 3)';
                         else if(modelName === 'gemini-3.1-flash-lite-preview') displayName = '🧪 Gemini 3.1 Flash Lite Preview';
                         else if(modelName === 'gemini-2.5-flash-lite') displayName = '🚀 Gemini 2.5 Flash Lite';
                         else if(modelName === 'gemini-3.1-pro-preview') displayName = '💎 Gemini 3.1 Pro Preview (Phân tích nâng cao)';
-                        else if(modelName === 'gemini-pro-latest') displayName = '💎 Gemini Pro Latest (Bản Pro mới nhất)';
+                        else if(modelName === 'gemini-pro-latest') displayName = '💎 Gemini Pro Latest (Bản Pro)';
                         else if(modelName.includes('pro')) displayName = `💎 ${modelName} (Pro)`;
                         else if(modelName.includes('flash')) displayName = `⚡ ${modelName}`;
                         
@@ -1150,8 +1150,8 @@ Bạn có thể viết:
                     
                     if(savedValue === 'auto' || generateModels.includes(savedValue)) {
                         select.value = savedValue;
-                    } else if(generateModels.includes('gemini-flash-latest')) {
-                        select.value = 'gemini-flash-latest';
+                    } else if(generateModels.includes('gemini-3.1-flash-lite')) {
+                        select.value = 'gemini-3.1-flash-lite';
                     } else {
                         select.value = 'auto';
                     }
@@ -2302,11 +2302,11 @@ ${emptyMsg}
             });
         }
 
-        // Danh sách model dự phòng theo thứ tự ưu tiên (thử lần lượt khi 404 hoặc 429 quota)
+        // Danh sách model dự phòng theo thứ tự ưu tiên (Tối ưu Free Tier)
         const FALLBACK_MODELS = [
-            'gemini-flash-latest',
             'gemini-3.1-flash-lite',
             'gemini-flash-lite-latest',
+            'gemini-flash-latest',
             'gemini-3-flash-preview',
             'gemini-3.1-flash-lite-preview',
             'gemini-2.5-flash-lite',
@@ -2443,16 +2443,13 @@ ${emptyMsg}
                 clearTimeout(timeoutId);
             }
             
-            // Nếu model hiện tại không hỗ trợ google_search, fallback sang callGemini thường
+            // Nếu Google Search bị giới hạn Quota hoặc không hỗ trợ -> Tự động chuyển sang gọi Gemini tiêu chuẩn (Free Tier)
             if(!res.ok) {
                 const errMsg = data.error?.message || '';
-                if(errMsg.includes('not supported') || errMsg.includes('google_search') || errMsg.includes('tool')) {
-                    debugEl.innerText = '⚠️ Model không hỗ trợ Search Grounding, dùng chế độ thường...';
-                    debugEl.style.color = '#facc15';
-                    setTimeout(() => { debugEl.innerText = ''; }, 5000);
-                    return await callGemini(apiKey, prompt);
-                }
-                throw new Error(errMsg || "Lỗi API");
+                debugEl.innerText = '⚠️ Tính năng Search bị giới hạn Quota Free Tier. Đang dùng AI phân tích trực tiếp...';
+                debugEl.style.color = '#facc15';
+                setTimeout(() => { debugEl.innerText = ''; }, 5000);
+                return await callGemini(apiKey, prompt);
             }
             
             debugEl.innerText = '';
