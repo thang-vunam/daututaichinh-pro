@@ -53,7 +53,7 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             # If Gemini API Key is present, make real call
             try:
                 history = req_body.get('history', [])
-                gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_key}"
+                gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={gemini_key}"
                 
                 system_prompt = 'Bạn là "Trợ lý Đầu tư" — chatbot AI chính thức của website daututaichinh.pro.'
                 gemini_body = {
