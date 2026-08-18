@@ -237,36 +237,35 @@ main {
 
   .nav-links {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 2px 0;
-    gap: 6px 8px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
+    padding: 4px 0 0 0;
+    gap: 0;
   }
   
   .nav-links a {
     margin-left: 0;
-    font-size: 12.5px;
-    padding: 5px 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
+    font-size: 13px;
+    padding: 4px 6px;
     white-space: nowrap;
-    color: #cbd5e1;
+    color: #cbd5f5;
     text-decoration: none;
-    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+    border-radius: 0;
   }
 
   .nav-links a:hover,
   .nav-links a:active {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.4);
     color: #60a5fa;
-    text-decoration: none;
+    text-decoration: underline;
+    background: transparent;
   }
 
   main {
-    padding-top: 110px; /* Spacing for the responsive header */
+    padding-top: 105px; /* Spacing for the header */
   }
 }
 
