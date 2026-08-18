@@ -224,7 +224,7 @@ function handleFormSubmit(form) {
 
     } catch (err) {
       showMessage(msgEl, 'error',
-        '❌ Đã xảy ra lỗi. Vui lòng thử lại hoặc liên hệ qua email: thangvu@phs.vn'
+        '❌ Đã xảy ra lỗi. Vui lòng thử lại hoặc liên hệ qua email: thangvu.3131@gmail.com'
       );
       console.error('Form submission error:', err);
       btn.classList.remove('loading');
