@@ -80,6 +80,25 @@
   </div>
 </section>
 
+<!-- ================= TÌM KIẾM BÀI VIẾT TOÀN TRANG ================= -->
+<section class="section" style="padding: 25px 0 10px 0;">
+  <div class="container">
+    <div class="search-filter-box" style="max-width: 850px; margin: 0 auto;">
+      <div class="search-input-wrapper">
+        <span class="search-input-icon">🔍</span>
+        <input type="text" id="home-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu (VD: SSI, VN-Index, HPG, PVS, lãi suất, bất động sản...)..." autocomplete="off" />
+      </div>
+      <div id="home-search-results" style="display: none; margin-top: 15px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+          <span style="font-weight:600; color:#60a5fa; font-size:0.95rem;"><i class="fa-solid fa-magnifying-glass"></i> Kết quả tìm kiếm bài viết:</span>
+          <span id="home-search-count" style="font-size:0.85rem; color:#94a3b8;"></span>
+        </div>
+        <div id="home-search-list" style="display:flex; flex-direction:column; gap:12px; max-height: 400px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= THỊ TRƯỜNG ================= -->
 <section id="thi-truong" class="section section-alt">
   <div class="container">
@@ -239,5 +258,71 @@
 <script src="lead-form.js" defer></script>
 <script src="chatbot.js" defer></script>
 <script src="seo-optimize.js" defer></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('home-search-input');
+    const resultsBox = document.getElementById('home-search-results');
+    const countEl = document.getElementById('home-search-count');
+    const listEl = document.getElementById('home-search-list');
+    
+    let allArticles = [];
+    let isLoaded = false;
+
+    async function loadCatalogs() {
+      if (isLoaded) return;
+      try {
+        const [marketRes, blogRes] = await Promise.allSettled([
+          fetch('/market/_catalog.json').then(r => r.json()),
+          fetch('/blog/_catalog.json').then(r => r.json())
+        ]);
+        
+        const marketList = marketRes.status === 'fulfilled' ? marketRes.value.map(a => ({...a, category: 'market', catLabel: 'Thị trường'})) : [];
+        const blogList = blogRes.status === 'fulfilled' ? blogRes.value.map(a => ({...a, category: 'blog', catLabel: 'Bài viết'})) : [];
+        
+        allArticles = [...marketList, ...blogList].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        isLoaded = true;
+      } catch(e) {
+        console.log('Error loading search catalogs:', e);
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('focus', loadCatalogs);
+      searchInput.addEventListener('input', async function() {
+        await loadCatalogs();
+        const query = this.value.toLowerCase().trim();
+        
+        if (!query) {
+          resultsBox.style.display = 'none';
+          return;
+        }
+
+        const matched = allArticles.filter(a => {
+          const title = (a.title || '').toLowerCase();
+          const desc = (a.desc || '').toLowerCase();
+          const slug = (a.slug || '').toLowerCase();
+          return title.includes(query) || desc.includes(query) || slug.includes(query);
+        });
+
+        resultsBox.style.display = 'block';
+        countEl.innerHTML = `Tìm thấy <strong style="color:#60a5fa">${matched.length}</strong> bài viết`;
+
+        if (matched.length === 0) {
+          listEl.innerHTML = '<div style="color:#94a3b8; font-size:0.9rem; padding:10px 0;">Không tìm thấy bài viết nào phù hợp với từ khóa này.</div>';
+        } else {
+          listEl.innerHTML = matched.slice(0, 8).map(a => `
+            <a href="/${a.category}/${a.slug}.html" style="display:block; padding:12px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:8px; text-decoration:none; transition:0.2s;" onmouseover="this.style.background='rgba(59,130,246,0.15)'; this.style.borderColor='#3b82f6'" onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-size:0.75rem; padding:2px 8px; border-radius:10px; background:${a.category === 'market' ? 'rgba(99,102,241,0.2)' : 'rgba(16,185,129,0.2)'}; color:${a.category === 'market' ? '#a5b4fc' : '#6ee7b7'}; font-weight:600;">${a.catLabel}</span>
+                <span style="font-size:0.75rem; color:#94a3b8;">📅 ${a.date || ''}</span>
+              </div>
+              <div style="font-size:0.95rem; font-weight:600; color:#f8fafc; line-height:1.4;">${a.title}</div>
+            </a>
+          `).join('');
+        }
+      });
+    }
+  });
+</script>
 </body>
 </html>
