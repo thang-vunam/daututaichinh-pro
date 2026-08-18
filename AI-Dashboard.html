@@ -1317,13 +1317,14 @@ QUY TẮC BẮT BUỘC:
 • Tập trung vào: góc nhìn chiến lược, phân tích dòng tiền, cơ hội/rủi ro nhóm ngành, định giá và câu chuyện kinh doanh thực tế.
 • Trả về JSON: [{"title":"tiêu đề cụ thể sắc sảo","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, KHÔNG chứa dấu phẩy)","reason":"góc nhìn phân tích nổi bật"}] CHỈ JSON, KHÔNG giải thích.`;
                 } else if(category === 'market') {
-                    // Market: Gợi ý chủ đề thị trường chuyên nghiệp
-                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Bạn là Chuyên gia phân tích thị trường chứng khoán của daututaichinh.pro.
-Hãy đề xuất 3 tiêu đề bài viết phân tích thị trường chứng khoán Việt Nam chuẩn SEO, sắc sảo và cuốn hút nhà đầu tư.
+                    // Market: Gợi ý chủ đề thị trường thời sự & nhận định thực chiến
+                    prompt = `Hôm nay là ngày ${today}, năm ${year}. Bạn là Chuyên gia Chiến lược & Nhận định Thị trường Chứng khoán Việt Nam của daututaichinh.pro.
+Hãy đề xuất 3 tiêu đề bài viết NHẬN ĐỊNH THỊ TRƯỜNG THỜI SỰ & NÓNG HỔI chuẩn SEO cho tuần/ngày hiện tại.
 QUY TẮC BẮT BUỘC:
-• TUYỆT ĐỐI KHÔNG tự ý bịa ra điểm số VN-Index giả định (như mốc 1200, 1300...).
-• Tập trung vào: xu hướng dòng tiền (khối ngoại, tự doanh), nhóm ngành tâm điểm (Ngân hàng, Chứng khoán, Bất động sản, Xuất khẩu, Công nghệ...), kỳ vọng kết quả kinh doanh, vĩ mô và chiến lược quản trị danh mục.
-• Trả về JSON: [{"title":"tiêu đề chuyên sâu chuẩn SEO","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, KHÔNG chứa dấu phẩy)","reason":"lý do và góc nhìn phân tích"}] CHỈ JSON, KHÔNG giải thích.`;
+• Định dạng bài: Nhận định thị trường tuần/phiên, diễn biến VN-Index, nhịp đập rung lắc/bứt phá, sóng ngành nóng (Ngân hàng, Chứng khoán, Bất động sản, Thép, Dầu khí, Đầu tư công...).
+• TUYỆT ĐỐI KHÔNG tự ý bịa điểm số VN-Index nếu không có số liệu thực tế từ Google Search.
+• Tập trung vào: Hành động của dòng tiền nội/ngoại, vùng kháng cự/hỗ trợ, tâm điểm cổ phiếu dẫn dắt, chiến lược giao dịch thực chiến cho nhà đầu tư cá nhân trong ngắn/trung hạn.
+• Trả về JSON: [{"title":"tiêu đề nhận định thị trường thời sự, cuốn hút","keyword":"1 cụm từ SEO chính (2-4 từ, BẮT BUỘC NẰM Y XÌ ĐÚC BÊN TRONG TIÊU ĐỀ, KHÔNG chứa dấu phẩy)","reason":"diễn biến thị trường và góc nhìn giao dịch nổi bật"}] CHỈ JSON, KHÔNG giải thích.`;
                 } else {
                     // Blog: Tìm chủ đề đầu tư/tài chính đang hot
                     prompt = `Hôm nay là ngày ${today}, năm ${year}. Bạn là Chuyên gia tài chính cá nhân & đầu tư của daututaichinh.pro.
@@ -1347,7 +1348,10 @@ QUY TẮC BẮT BUỘC:
                 
                 const panel = document.getElementById('suggest-panel');
                 const list = document.getElementById('suggest-list');
-                list.innerHTML = '<div style="font-size:0.75rem; color:#60a5fa; margin-bottom:8px; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Gợi ý chủ đề phân tích chuyên sâu — ' + today + '</div>';
+                const panelTitle = category === 'market' 
+                    ? `<i class="fa-solid fa-fire" style="color:#f97316"></i> Gợi ý Xu hướng & Nhận định Thị trường Nóng — ${today}`
+                    : `<i class="fa-solid fa-wand-magic-sparkles" style="color:#60a5fa"></i> Gợi ý bài viết Phân tích & Kiến thức Chuyên sâu — ${today}`;
+                list.innerHTML = `<div style="font-size:0.75rem; color:${category === 'market' ? '#fb923c' : '#60a5fa'}; margin-bottom:8px; display:flex; align-items:center; gap:5px;">${panelTitle}</div>`;
                 suggestions.slice(0, 3).forEach((s, i) => {
                     const card = document.createElement('div');
                     card.className = 'suggest-card';
