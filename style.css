@@ -88,7 +88,7 @@ main {
 
 /* ================= HERO ================= */
 .hero {
-  padding: 80px 0;
+  padding: 45px 0 35px 0;
 }
 
 .hero-grid {
@@ -149,7 +149,7 @@ main {
 
 /* ================= SECTION ================= */
 .section {
-  padding: 80px 0;
+  padding: 45px 0;
 }
 
 .section-alt {
@@ -172,7 +172,7 @@ main {
 
 /* ================= FOOTER ================= */
 .footer {
-  padding: 40px 0;
+  padding: 30px 0;
   text-align: center;
   border-top: 1px solid rgba(255,255,255,0.06);
 }
@@ -267,6 +267,26 @@ main {
 
   main {
     padding-top: 145px; /* Spacing for the sticky header with search */
+  }
+
+  .hero {
+    padding: 25px 0 20px 0;
+  }
+
+  .hero-grid {
+    gap: 24px;
+  }
+
+  .section {
+    padding: 28px 0;
+  }
+
+  .contact-grid {
+    gap: 24px;
+  }
+
+  .footer {
+    padding: 24px 0;
   }
 }
 
