@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     initTableOfContents();
     optimizeYoutubeEmbeds();
+    initSocialShareButtons();
 });
 
 function initTableOfContents() {
@@ -280,4 +281,80 @@ document.addEventListener('DOMContentLoaded', () => {
             relatedListContainer.innerHTML = '<div class="sidebar-empty">Không thể tải bài viết liên quan</div>';
         });
 });
+
+// ========== TỰ ĐỘNG CHÈN CỤM NÚT CHIA SẺ MẠNG XÃ HỘI ==========
+function initSocialShareButtons() {
+    // Chỉ chạy trên các trang có nội dung bài viết
+    const article = document.querySelector('.blog-article') || document.querySelector('article.article-main');
+    if (!article) return;
+    if (document.querySelector('.social-share-container')) return; // Tránh trùng lặp
+
+    const currentUrl = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(document.title || 'Đầu tư & Tài chính chuyên sâu');
+
+    const shareContainer = document.createElement('div');
+    shareContainer.className = 'social-share-container';
+    shareContainer.innerHTML = `
+        <div class="social-share-title">
+            <span>📢 Chia sẻ bài viết hữu ích này:</span>
+        </div>
+        <div class="social-share-buttons">
+            <a href="https://zalo.me/share?url=${currentUrl}" target="_blank" rel="noopener noreferrer" class="btn-share btn-share-zalo" title="Chia sẻ bài viết qua Zalo">
+                <span class="share-icon">💬</span> Chia sẻ Zalo
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=${currentUrl}" target="_blank" rel="noopener noreferrer" class="btn-share btn-share-fb" title="Chia sẻ lên Facebook">
+                <span class="share-icon">🌐</span> Facebook
+            </a>
+            <button type="button" class="btn-share btn-share-copy" onclick="copyArticleLink(this)" title="Sao chép liên kết bài viết">
+                <span class="share-icon">🔗</span> <span class="btn-copy-text">Sao chép Link</span>
+            </button>
+        </div>
+    `;
+
+    // Tìm vị trí chèn tối ưu: Trước hộp CTA nhận tài liệu hoặc trước thẻ Footer bài viết
+    const ctaBox = article.querySelector('#cta-open-popup-blog') ? article.querySelector('#cta-open-popup-blog').closest('div') : null;
+    if (ctaBox) {
+        article.insertBefore(shareContainer, ctaBox);
+    } else {
+        article.appendChild(shareContainer);
+    }
+}
+
+window.copyArticleLink = function(btn) {
+    const url = window.location.href;
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => showCopiedStatus(btn)).catch(() => fallbackCopy(url, btn));
+    } else {
+        fallbackCopy(url, btn);
+    }
+};
+
+function fallbackCopy(text, btn) {
+    try {
+        const temp = document.createElement('input');
+        temp.value = text;
+        temp.style.position = 'fixed';
+        temp.style.opacity = '0';
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        showCopiedStatus(btn);
+    } catch(e) {
+        alert('Đã sao chép link: ' + text);
+    }
+}
+
+function showCopiedStatus(btn) {
+    const textSpan = btn.querySelector('.btn-copy-text');
+    if (!textSpan) return;
+    const oldText = textSpan.innerText;
+    textSpan.innerText = '✅ Đã sao chép!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+        textSpan.innerText = oldText;
+        btn.classList.remove('copied');
+    }, 2500);
+}
+
 
