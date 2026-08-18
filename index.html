@@ -41,8 +41,27 @@
 
 <main>
 
+<!-- ================= TÌM KIẾM BÀI VIẾT TOÀN TRANG ================= -->
+<section class="section" style="padding: 20px 0 0 0;">
+  <div class="container">
+    <div class="search-filter-box" style="max-width: 850px; margin: 0 auto;">
+      <div class="search-input-wrapper">
+        <span class="search-input-icon">🔍</span>
+        <input type="text" id="home-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu (VD: SSI, VN-Index, HPG, PVS, lãi suất, bất động sản...)..." autocomplete="off" />
+      </div>
+      <div id="home-search-results" style="display: none; margin-top: 15px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+          <span style="font-weight:600; color:#60a5fa; font-size:0.95rem;"><i class="fa-solid fa-magnifying-glass"></i> Kết quả tìm kiếm bài viết:</span>
+          <span id="home-search-count" style="font-size:0.85rem; color:#94a3b8;"></span>
+        </div>
+        <div id="home-search-list" style="display:flex; flex-direction:column; gap:12px; max-height: 400px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ================= HERO ================= -->
-<section id="hero" class="hero">
+<section id="hero" class="hero" style="padding-top: 30px;">
   <div class="container hero-grid">
     <div class="hero-text">
       <p class="tagline">Kênh YouTube: Đầu tư & Tài chính chuyên sâu</p>
@@ -76,25 +95,6 @@
       <a class="link-inline" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
         Xem thêm video trên YouTube →
       </a>
-    </div>
-  </div>
-</section>
-
-<!-- ================= TÌM KIẾM BÀI VIẾT TOÀN TRANG ================= -->
-<section class="section" style="padding: 25px 0 10px 0;">
-  <div class="container">
-    <div class="search-filter-box" style="max-width: 850px; margin: 0 auto;">
-      <div class="search-input-wrapper">
-        <span class="search-input-icon">🔍</span>
-        <input type="text" id="home-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu (VD: SSI, VN-Index, HPG, PVS, lãi suất, bất động sản...)..." autocomplete="off" />
-      </div>
-      <div id="home-search-results" style="display: none; margin-top: 15px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
-          <span style="font-weight:600; color:#60a5fa; font-size:0.95rem;"><i class="fa-solid fa-magnifying-glass"></i> Kết quả tìm kiếm bài viết:</span>
-          <span id="home-search-count" style="font-size:0.85rem; color:#94a3b8;"></span>
-        </div>
-        <div id="home-search-list" style="display:flex; flex-direction:column; gap:12px; max-height: 400px; overflow-y: auto;"></div>
-      </div>
     </div>
   </div>
 </section>
