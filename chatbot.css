@@ -155,7 +155,7 @@
   border: 1px solid var(--chat-border);
   border-radius: var(--chat-radius);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
-  display: flex;
+  display: none;
   flex-direction: column;
   overflow: hidden;
 
@@ -167,6 +167,7 @@
 }
 
 .chatbot-window.open {
+  display: flex;
   opacity: 1;
   visibility: visible;
   transform: translateY(0) scale(1);
