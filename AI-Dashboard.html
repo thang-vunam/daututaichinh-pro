@@ -1747,8 +1747,21 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
   <section class="section" style="padding-top: 40px;">
     <div class="container">
       <h1 style="font-size: 1.8rem; margin-bottom: 10px;">${catTitle}</h1>
-      <p class="section-desc" style="margin-bottom: 30px;">${catDesc}</p>
-      <p style="color:#64748b;font-size:0.85rem;margin-bottom:20px;">Tổng cộng: ${sorted.length} bài viết</p>
+      <p class="section-desc" style="margin-bottom: 25px;">${catDesc}</p>
+      
+      <!-- THANH TÌM KIẾM BÀI VIẾT -->
+      <div class="search-filter-box">
+        <div class="search-input-wrapper">
+          <span class="search-input-icon">🔍</span>
+          <input type="text" id="article-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu..." autocomplete="off" />
+        </div>
+        <div id="search-result-count" class="search-result-count">Tổng cộng: ${sorted.length} bài viết</div>
+      </div>
+      <div id="no-search-results" style="display:none; text-align:center; padding: 40px 20px; color: #94a3b8; background: rgba(15,23,42,0.4); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1); margin-bottom: 20px;">
+        <div style="font-size: 2rem; margin-bottom: 10px;">🔎</div>
+        <div style="font-weight: 600; color: #f8fafc; margin-bottom: 6px;">Không tìm thấy bài viết phù hợp</div>
+        <div style="font-size: 0.9rem;">Thử tìm với từ khóa khác hoặc xóa ô tìm kiếm để xem tất cả bài viết.</div>
+      </div>
 ${cardsList}
 ${emptyMsg}
       <a href="/" class="link-inline" style="margin-top: 30px; display: inline-block;">← Về trang chủ</a>
@@ -1760,6 +1773,44 @@ ${emptyMsg}
 </footer>
 <script src="../lead-form.js"><\/script>
 <script src="../chatbot.js"><\/script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('article-search-input');
+    const countEl = document.getElementById('search-result-count');
+    const noResultEl = document.getElementById('no-search-results');
+    const cards = document.querySelectorAll('.market-card');
+    const total = cards.length;
+
+    if (input) {
+      input.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        let matched = 0;
+
+        cards.forEach(card => {
+          const text = card.innerText.toLowerCase();
+          if (!query || text.includes(query)) {
+            card.style.display = '';
+            matched++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (noResultEl) {
+          noResultEl.style.display = (matched === 0 && query !== '') ? 'block' : 'none';
+        }
+
+        if (countEl) {
+          if (query) {
+            countEl.innerHTML = 'Tìm thấy <strong style="color:#60a5fa">' + matched + '</strong> / ' + total + ' bài viết';
+          } else {
+            countEl.textContent = 'Tổng cộng: ' + total + ' bài viết';
+          }
+        }
+      });
+    }
+  });
+<\/script>
 </body>
 </html>`;
             
