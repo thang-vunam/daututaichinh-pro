@@ -199,18 +199,24 @@ main {
 @media (max-width: 768px) {
   .top-bar {
     height: auto;
-    padding: 12px 0;
+    padding: 10px 0;
+    backdrop-filter: blur(12px);
+    background: rgba(11, 18, 32, 0.95);
   }
   
   .nav {
     flex-direction: column;
     height: auto;
-    gap: 12px;
+    gap: 10px;
+    align-items: stretch;
   }
 
   .brand {
     width: 100%;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
   }
   
   .brand-logo {
@@ -226,24 +232,49 @@ main {
   }
   
   .brand-sub {
-    display: none; /* Hide subtitle on very small screens to save vertical space */
+    display: none; /* Hide subtitle on small screens */
   }
 
   .nav-links {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    justify-content: flex-start;
+    padding: 4px 0 6px 0;
+    gap: 8px;
     width: 100%;
-    gap: 8px 12px;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    display: none;
   }
   
   .nav-links a {
     margin-left: 0;
     font-size: 13px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    white-space: nowrap;
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .nav-links a:hover,
+  .nav-links a:active {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #60a5fa;
+    text-decoration: none;
   }
 
   main {
-    padding-top: 110px; /* Adjusted spacing for the stacked header */
+    padding-top: 110px; /* Spacing for the responsive header */
   }
 }
 
@@ -777,3 +808,131 @@ main {
 .article-cover-caption a:hover {
   text-decoration: underline;
 }
+
+/* ================= SOCIAL SHARE BUTTONS ================= */
+.social-share-container {
+  margin: 35px 0 25px 0;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.social-share-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.social-share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-share-zalo {
+  background: rgba(0, 104, 255, 0.15);
+  color: #60a5fa;
+  border-color: rgba(0, 104, 255, 0.3);
+}
+
+.btn-share-zalo:hover {
+  background: #0068ff;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 104, 255, 0.3);
+}
+
+.btn-share-fb {
+  background: rgba(24, 119, 242, 0.15);
+  color: #93c5fd;
+  border-color: rgba(24, 119, 242, 0.3);
+}
+
+.btn-share-fb:hover {
+  background: #1877f2;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+}
+
+.btn-share-copy {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.btn-share-copy:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-share-copy.copied {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+/* ================= SEARCH FILTER BOX ================= */
+.search-filter-box {
+  margin-bottom: 25px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 1rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.search-input-field {
+  width: 100%;
+  padding: 12px 16px 12px 42px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-input-field:focus {
+  border-color: #3b82f6;
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.search-result-count {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-top: 10px;
+}
+
