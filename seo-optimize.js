@@ -3,6 +3,7 @@
  * Code tự động chạy sau khi trang load xong.
  */
 document.addEventListener('DOMContentLoaded', function() {
+    initFavicon();
     initTableOfContents();
     optimizeYoutubeEmbeds();
     initSocialShareButtons();
@@ -356,5 +357,23 @@ function showCopiedStatus(btn) {
         btn.classList.remove('copied');
     }, 2500);
 }
+
+function initFavicon() {
+    if (!document.querySelector("link[rel*='icon']")) {
+        const link32 = document.createElement('link');
+        link32.rel = 'icon';
+        link32.type = 'image/png';
+        link32.sizes = '32x32';
+        link32.href = '/favicon-32x32.png';
+        document.head.appendChild(link32);
+
+        const apple = document.createElement('link');
+        apple.rel = 'apple-touch-icon';
+        apple.sizes = '180x180';
+        apple.href = '/favicon.png';
+        document.head.appendChild(apple);
+    }
+}
+
 
 
