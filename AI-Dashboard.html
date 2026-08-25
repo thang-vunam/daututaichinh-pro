@@ -1262,25 +1262,29 @@ ${content.substring(0, 3000)}`;
 
         function splitHeaderLine(headerLine, colCount) {
             const knownPhrases = [
-                'Mã cổ phiếu', 'Mã CP', 'Mã ck', 'Cổ phiếu',
                 'Tổng dòng vốn dự kiến (Triệu USD)', 'Tổng dòng vốn dự kiến', 'Tổng dòng vốn',
-                'Tương đương (Tỷ VND)*', 'Tương đương (Tỷ VND)', 'Tương đương',
                 'Dòng vốn đợt 1 (Triệu USD)', 'Dòng vốn đợt 1', 'Dòng vốn đợt 2', 'Dòng vốn',
+                'Tương đương (Tỷ VND)*', 'Tương đương (Tỷ VND)', 'Tương đương',
+                'Mã cổ phiếu', 'Mã CP', 'Mã ck', 'Cổ phiếu',
                 'Tỷ trọng (%)', 'Tỷ trọng', 'Khối lượng', 'Giá trị', 'Thị giá', 'EPS', 'P/E', 'P/B', 'ROE', 'ROA'
             ];
             
-            let foundHeaders = [];
-            let remaining = headerLine;
+            knownPhrases.sort((a, b) => b.length - a.length);
             
+            let matches = [];
             for (let phrase of knownPhrases) {
-                if (remaining.includes(phrase)) {
-                    foundHeaders.push({ phrase, index: remaining.indexOf(phrase) });
+                const idx = headerLine.indexOf(phrase);
+                if (idx !== -1) {
+                    const overlaps = matches.some(m => !(idx + phrase.length <= m.idx || idx >= m.idx + m.len));
+                    if (!overlaps) {
+                        matches.push({ idx: idx, len: phrase.length, phrase: phrase });
+                    }
                 }
             }
             
-            if (foundHeaders.length >= 2) {
-                foundHeaders.sort((a, b) => a.index - b.index);
-                return foundHeaders.map(f => f.phrase);
+            if (matches.length >= 2) {
+                matches.sort((a, b) => a.idx - b.idx);
+                return matches.map(m => m.phrase);
             }
 
             const words = headerLine.split(/\s+/);
@@ -3313,11 +3317,13 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
     ul, ol { color: #cbd5e1; padding-left: 20px; margin-bottom: 15px; }
     li { margin-bottom: 6px; }
     img { max-width: 100%; border-radius: 12px; }
-    strong { color: #f1f5f9; }
-    table { width: 100% !important; margin: 25px 0 !important; border-collapse: collapse !important; background: #0f172a !important; color: #cbd5e1 !important; border: 1px solid rgba(255,255,255,0.08) !important; }
-    th { background: #1e293b !important; color: #ffffff !important; font-weight: 600 !important; border: 1px solid rgba(255,255,255,0.08) !important; padding: 12px 14px !important; }
-    td { padding: 12px 14px !important; border: 1px solid rgba(255,255,255,0.08) !important; color: #cbd5e1 !important; background: transparent !important; }
-    tr:nth-child(even) td { background: rgba(255,255,255,0.02) !important; }
+    .article-table-wrap { width: 100% !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; margin: 28px 0 !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.08) !important; background: #0f172a !important; }
+    table { width: 100% !important; margin: 0 !important; border-collapse: collapse !important; text-align: left !important; font-size: 0.95rem !important; border: none !important; }
+    th { background: #151f32 !important; color: #94a3b8 !important; font-weight: 600 !important; font-size: 0.9rem !important; padding: 14px 18px !important; border: none !important; border-bottom: 1px solid rgba(255,255,255,0.12) !important; white-space: normal !important; line-height: 1.4 !important; }
+    td { padding: 14px 18px !important; border: none !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; color: #cbd5e1 !important; font-variant-numeric: tabular-nums !important; }
+    tr:last-child td { border-bottom: none !important; }
+    tr:hover td { background: rgba(255,255,255,0.03) !important; }
+    td strong { color: #f8fafc !important; font-weight: 700 !important; font-size: 1rem !important; }
 
     /* CSS cho Ảnh bìa chuẩn SEO */
     .article-cover-figure { margin: 0 0 30px 0; width: 100%; }
