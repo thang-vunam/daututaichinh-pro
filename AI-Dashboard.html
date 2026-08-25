@@ -1912,56 +1912,6 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
             } catch(e) { /* Bỏ qua lỗi */ }
         }
         
-        // BACKFILL: Quét directory GitHub, thêm bài chưa có trong catalog
-        async function backfillCatalog(owner, repo, token, category, catalog) {
-            try {
-                const dirRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${category}`, {
-                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-                if(!dirRes.ok) return catalog;
-                const files = await dirRes.json();
-                const htmlFiles = files.filter(f => f.name.endsWith('.html') && f.name !== 'index.html');
-                
-                const catalogSlugs = catalog.map(a => a.slug);
-                
-                for(const file of htmlFiles) {
-                    const fileSlug = file.name.replace('.html', '');
-                    if(catalogSlugs.includes(fileSlug)) continue;
-                    
-                    // Bài chưa có trong catalog → fetch để lấy title
-                    let realTitle = fileSlug.replace(/-/g, ' ');
-                    realTitle = realTitle.charAt(0).toUpperCase() + realTitle.slice(1);
-                    try {
-                        const fileRes = await fetch(file.url, {
-                            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                        });
-                        if(fileRes.ok) {
-                            const fileData = await fileRes.json();
-                            const content = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
-                            // Lấy <title>
-                            const titleMatch = content.match(/<title>([^<|]+)/i);
-                            if(titleMatch) realTitle = titleMatch[1].trim();
-                            // Lấy <h1>
-                            const h1Match = content.match(/<h1>([^<]+)/i);
-                            if(h1Match) realTitle = h1Match[1].trim();
-                            // Lấy meta description
-                            const descMatch = content.match(/meta\s+name=["']description["']\s+content=["']([^"']+)/i);
-                            var extractedDesc = descMatch ? descMatch[1] : '';
-                        }
-                    } catch(e) {}
-                    
-                    catalog.push({
-                        title: realTitle,
-                        slug: fileSlug,
-                        desc: extractedDesc || '',
-                        date: '',
-                        category: category
-                    });
-                }
-            } catch(e) {}
-            return catalog;
-        }
-        
         // TẠO TRANG DANH SÁCH TỪ CATALOG
         async function generateListingFromCatalog(owner, repo, token, category, catalog) {
             const catTitle = category === 'market' ? 'Thị trường chứng khoán' : 'Bài viết & Phân tích';
@@ -1996,76 +1946,49 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
             const listingHtml = `<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"><\/script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-RJZJX69KDM');
-  <\/script>
+  <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-RJZJX69KDM');<\/script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${catTitle} | daututaichinh.pro</title>
-  <meta name="description" content="${catDesc}">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
-  <link rel="shortcut icon" href="/favicon.ico">
   <link rel="stylesheet" href="../style.css">
-  <link rel="stylesheet" href="../lead-form.css">
-  <link rel="stylesheet" href="../chatbot.css">
 </head>
-<body data-lead-popup>
+<body>
 <header class="top-bar">
   <div class="container nav">
-    <a href="/" class="brand">
-      <img src="../logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
-      <div class="brand-text">
-        <span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
-        <span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
-      </div>
-    </a>
+    <a href="/" class="brand">Đầu tư & Tài chính chuyên sâu</a>
     <nav class="nav-links">
       <a href="/">Trang chủ</a>
       <a href="/market/">Thị trường</a>
       <a href="/blog/">Bài viết</a>
-      <a href="/#tai-lieu">Tài liệu</a>
-      <a href="/#contact">Liên hệ</a>
     </nav>
+  </div>
+  <div class="header-search-bar">
+    <div class="container">
+      <div class="search-filter-box header-search-box">
+        <div class="search-input-wrapper">
+          <span class="search-input-icon">🔍</span>
+          <input type="text" id="article-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu (VD: SSI, VN-Index, HPG, PVS...)..." autocomplete="off" />
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 <main>
   <section class="section" style="padding-top: 40px;">
     <div class="container">
       <h1 style="font-size: 1.8rem; margin-bottom: 10px;">${catTitle}</h1>
-      <p class="section-desc" style="margin-bottom: 25px;">${catDesc}</p>
-      
-      <!-- THANH TÌM KIẾM BÀI VIẾT -->
-      <div class="search-filter-box">
-        <div class="search-input-wrapper">
-          <span class="search-input-icon">🔍</span>
-          <input type="text" id="article-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu..." autocomplete="off" />
-        </div>
-        <div id="search-result-count" class="search-result-count">Tổng cộng: ${sorted.length} bài viết</div>
-      </div>
+      <p class="section-desc" style="margin-bottom: 15px;">${catDesc}</p>
+      <div id="search-result-count" class="search-result-count" style="margin-bottom: 20px; font-weight: 500;">Tổng cộng: ${sorted.length} bài viết</div>
       <div id="no-search-results" style="display:none; text-align:center; padding: 40px 20px; color: #94a3b8; background: rgba(15,23,42,0.4); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1); margin-bottom: 20px;">
         <div style="font-size: 2rem; margin-bottom: 10px;">🔎</div>
         <div style="font-weight: 600; color: #f8fafc; margin-bottom: 6px;">Không tìm thấy bài viết phù hợp</div>
-        <div style="font-size: 0.9rem;">Thử tìm với từ khóa khác hoặc xóa ô tìm kiếm để xem tất cả bài viết.</div>
       </div>
 ${cardsList}
 ${emptyMsg}
-      <a href="/" class="link-inline" style="margin-top: 30px; display: inline-block;">← Về trang chủ</a>
     </div>
   </section>
 </main>
-<footer class="footer">
-  <div class="container"><p>© <span>${new Date().getFullYear()}</span> daututaichinh.pro</p></div>
-</footer>
-<script src="../lead-form.js"><\/script>
-<script src="../chatbot.js"><\/script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('article-search-input');
@@ -2073,33 +1996,19 @@ ${emptyMsg}
     const noResultEl = document.getElementById('no-search-results');
     const cards = document.querySelectorAll('.market-card');
     const total = cards.length;
-
     if (input) {
       input.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         let matched = 0;
-
         cards.forEach(card => {
           const text = card.innerText.toLowerCase();
           if (!query || text.includes(query)) {
             card.style.display = '';
             matched++;
-          } else {
-            card.style.display = 'none';
-          }
+          } else { card.style.display = 'none'; }
         });
-
-        if (noResultEl) {
-          noResultEl.style.display = (matched === 0 && query !== '') ? 'block' : 'none';
-        }
-
-        if (countEl) {
-          if (query) {
-            countEl.innerHTML = 'Tìm thấy <strong style="color:#60a5fa">' + matched + '</strong> / ' + total + ' bài viết';
-          } else {
-            countEl.textContent = 'Tổng cộng: ' + total + ' bài viết';
-          }
-        }
+        if (noResultEl) noResultEl.style.display = (matched === 0 && query !== '') ? 'block' : 'none';
+        if (countEl) countEl.textContent = query ? 'Tìm thấy ' + matched + ' / ' + total + ' bài viết' : 'Tổng cộng: ' + total + ' bài viết';
       });
     }
   });
@@ -2107,34 +2016,30 @@ ${emptyMsg}
 </body>
 </html>`;
             
-            // Push listing page
-            const indexPath = `${category}/index.html`;
-            let existSha = null;
+            const path = `${category}/index.html`;
+            const b64 = btoa(unescape(encodeURIComponent(listingHtml)));
+            let pageSha = null;
             try {
-                const existRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${indexPath}`, {
+                const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
                     headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
                 });
-                if(existRes.ok) {
-                    const existData = await existRes.json();
-                    existSha = existData.sha;
+                if(getRes.ok) {
+                    const getData = await getRes.json();
+                    pageSha = getData.sha;
                 }
             } catch(e) {}
             
-            const b64 = btoa(unescape(encodeURIComponent(listingHtml)));
-            const body = { message: `Auto: Cập nhật danh sách ${category}`, content: b64 };
-            if(existSha) body.sha = existSha;
-            await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${indexPath}`, {
+            await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                body: JSON.stringify({ message: `Auto: Cập nhật danh mục ${category}`, content: b64, sha: pageSha })
             });
         }
 
-        // CẬP NHẬT TRANG CHỦ index.html TRÊN GITHUB TỬ CATALOG (ĐÁNH SỐ BÀI)
+        // CẬP NHẬT TRANG CHỦ index.html TỪ CATALOG (ĐÁNH SỐ BÀI & AN TOÀN CHỐNG TRÙNG LẶP)
         async function updateHomepage(owner, repo, token) {
             const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/index.html`;
             
-            // 1. Fetch 2 catalog
             const getCat = async (cat) => {
                 try {
                     const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${cat}/_catalog.json`, {
@@ -2150,7 +2055,6 @@ ${emptyMsg}
             const marketCat = await getCat('market');
             const blogCat = await getCat('blog');
 
-            // 2. Lấy HTML trang chủ hiện tại
             const getRes = await fetch(apiUrl, {
                 headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
             });
@@ -2159,7 +2063,6 @@ ${emptyMsg}
             const sha = getData.sha;
             let content = decodeURIComponent(escape(atob(getData.content.replace(/\n/g, ''))));
 
-            // 3. Render 2 bài Market mới nhất
             const sortedMarket = [...marketCat].sort((a,b)=> (b.date||'').localeCompare(a.date||'')).slice(0, 2);
             let marketHtml = '<div class="market-grid">\n';
             sortedMarket.forEach((a, i) => {
@@ -2169,7 +2072,6 @@ ${emptyMsg}
             });
             marketHtml += '    </div>';
 
-            // 4. Render 3 bài Blog mới nhất
             const sortedBlog = [...blogCat].sort((a,b)=> (b.date||'').localeCompare(a.date||'')).slice(0, 3);
             let blogHtml = '';
             sortedBlog.forEach((a, i) => {
@@ -2177,36 +2079,22 @@ ${emptyMsg}
                 blogHtml += `    <article class="${cls}" style="margin-top:20px">\n        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">\n          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">${i+1}</span>\n          <span class="market-tag">Tâm điểm</span>\n          <span style="font-size:0.8rem;color:#64748b;">${a.date||''}</span>\n        </div>\n      <h3>${a.title}</h3>\n      <p>${a.desc}</p>\n      <a href="/blog/${a.slug}.html" class="link-inline">Đọc bài viết →</a>\n    </article>\n`;
             });
 
-            // 5. Replace vào content
-            // Thay thế Market block
-            let mStart = content.indexOf('<!-- DYNAMIC_MARKET_START -->');
-            let mEnd = content.indexOf('<!-- DYNAMIC_MARKET_END -->');
-            if(mStart === -1) {
-                const startIdx = content.indexOf('<div class="market-grid">');
-                const endIdx = content.indexOf('</section>', startIdx);
-                if(startIdx !== -1 && endIdx !== -1) {
-                    content = content.slice(0, startIdx) + '<!-- DYNAMIC_MARKET_START -->\n' + marketHtml + '\n    <!-- DYNAMIC_MARKET_END -->\n  </div>\n' + content.slice(endIdx);
-                }
-            } else {
-                content = content.slice(0, mStart) + '<!-- DYNAMIC_MARKET_START -->\n    ' + marketHtml + '\n    <!-- DYNAMIC_MARKET_END -->' + content.slice(mEnd + 27);
+            // 5. Replace an toàn bằng Regex (chống trùng lặp hoặc nhân đôi trang)
+            if (content.includes('<!-- DYNAMIC_MARKET_START -->') && content.includes('<!-- DYNAMIC_MARKET_END -->')) {
+                content = content.replace(
+                    /<!-- DYNAMIC_MARKET_START -->[\s\S]*?<!-- DYNAMIC_MARKET_END -->/,
+                    `<!-- DYNAMIC_MARKET_START -->\n    ${marketHtml}\n    <!-- DYNAMIC_MARKET_END -->`
+                );
             }
 
-            // Thay thế Blog block
-            let bStart = content.indexOf('<!-- DYNAMIC_BLOG_START -->');
-            let bEnd = content.indexOf('<!-- DYNAMIC_BLOG_END -->');
-            if(bStart === -1) {
-                const blogMarkerStart = '<p class="section-desc">';
-                const blogSec = content.indexOf('id="blog"');
-                const pEndIdx = content.indexOf('</p>', content.indexOf(blogMarkerStart, blogSec)) + 4;
-                const linkIdx = content.indexOf('<a href="/blog/"', pEndIdx);
-                if(pEndIdx > 4 && linkIdx !== -1) {
-                    content = content.slice(0, pEndIdx) + '\n    <!-- DYNAMIC_BLOG_START -->\n' + blogHtml + '\n    <!-- DYNAMIC_BLOG_END -->\n    ' + content.slice(linkIdx);
-                }
-            } else {
-                content = content.slice(0, bStart) + '<!-- DYNAMIC_BLOG_START -->\n' + blogHtml + '\n    <!-- DYNAMIC_BLOG_END -->' + content.slice(bEnd + 25);
+            if (content.includes('<!-- DYNAMIC_BLOG_START -->') && content.includes('<!-- DYNAMIC_BLOG_END -->')) {
+                content = content.replace(
+                    /<!-- DYNAMIC_BLOG_START -->[\s\S]*?<!-- DYNAMIC_BLOG_END -->/,
+                    `<!-- DYNAMIC_BLOG_START -->\n${blogHtml}\n    <!-- DYNAMIC_BLOG_END -->`
+                );
             }
 
-            // [FIX] Đồng bộ lại Menu Điều hướng trên trang chủ thành link tuyệt đối chuyên mục (không dùng anchor)
+            // Đồng bộ lại Menu Điều hướng trên trang chủ thành link tuyệt đối chuyên mục
             content = content.replace(/<a href="#thi-truong">Thị trường<\/a>/g, '<a href="/market/">Thị trường</a>');
             content = content.replace(/<a href="#blog">Bài viết<\/a>/g, '<a href="/blog/">Bài viết</a>');
             content = content.replace(/<li><a href="#thi-truong">Thị trường<\/a><\/li>/g, '<li><a href="/market/">Thị trường</a></li>');
