@@ -1008,20 +1008,31 @@ CHỈ TRẢ VỀ JSON, TUYỆT ĐỐI KHÔNG GIẢI THÍCH THÊM.
 Nội dung bài viết (trích đoạn):
 ${content.substring(0, 3000)}`;
 
-                const resp = await callGemini(key, seoPrompt, null, 90000);
-                let cleaned = resp.replace(/```json/g, '').replace(/```html/g, '').replace(/```/g, '').trim();
-                cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ' ' : '');
-                
                 let seo;
                 try {
+                    const resp = await callGemini(key, seoPrompt, null, 90000);
+                    let cleaned = resp.replace(/```json/g, '').replace(/```html/g, '').replace(/```/g, '').trim();
+                    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ' ' : '');
                     seo = JSON.parse(cleaned);
-                } catch(pe) {
+                } catch(aiErr) {
+                    console.warn("AI Busy / Error -> Using smart local extraction:", aiErr);
+                    // Tự động lấy dòng đầu tiên hoặc keyword làm tiêu đề
+                    const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 5);
+                    const firstLine = lines[0] || keyword || 'Nhận định & Phân tích thị trường';
+                    const cleanTitle = firstLine.replace(/^#+\s*/, '').replace(/^\d+[\.\)]\s*/, '').substring(0, 60);
+                    const cleanSlug = cleanTitle.toLowerCase()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[đĐ]/g, 'd')
+                        .replace(/[^a-z0-9\s-]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-');
+
                     seo = {
-                        title: keyword ? `${keyword} - Nhận định & Phân tích chuyên sâu` : 'Phân tích thị trường & Cơ hội đầu tư',
-                        slug: 'bai-viet-moi-' + Date.now(),
-                        metaDescription: content.substring(0, 150).replace(/\n/g, ' '),
-                        imagePrompt: 'finance investment stock market chart',
-                        tags: [keyword || 'Chứng khoán', 'Đầu tư'],
+                        title: cleanTitle,
+                        slug: cleanSlug || ('bai-viet-' + Date.now()),
+                        metaDescription: content.substring(0, 150).replace(/\n/g, ' ').trim(),
+                        imagePrompt: keyword ? `${keyword} stock market finance` : 'finance investment stock market chart',
+                        tags: [keyword || 'Chứng khoán', 'Đầu tư tài chính', 'Thị trường'],
                         hashtags: ['#chungkhoan', '#dautu']
                     };
                 }
@@ -2477,18 +2488,16 @@ ${emptyMsg}
                 clearTimeout(timeoutId);
             }
             
-            // Xử lý lỗi Quota (429) hoặc Model Not Found (404) - tự động chuyển sang model dự phòng
-            if(res.status === 429 || res.status === 404) {
+            // Xử lý tất cả các lỗi từ Google Gemini (429 Quota, 503 High Demand / Server Busy, 404 Model Not Found, 500)
+            if(!res.ok) {
                 const mainModel = getEffectiveGeminiModel();
-                
-                // Tìm model dự phòng chưa thử
                 const triedModels = modelOverride ? [mainModel, modelOverride] : [mainModel];
                 const nextModel = FALLBACK_MODELS.find(m => !triedModels.includes(m));
                 
                 if(nextModel) {
-                    debugEl.innerText = `⚠️ Model ${modelName} hết quota. Chuyển sang ${nextModel}...`;
+                    debugEl.innerText = `⚠️ Model ${modelName} tạm bận (${res.status}). Tự động chuyển sang ${nextModel}...`;
                     debugEl.style.color = '#facc15';
-                    await new Promise(r => setTimeout(r, 2000));
+                    await new Promise(r => setTimeout(r, 1000));
                     
                     const result = await callGemini(apiKey, prompt, nextModel, timeoutMs);
                     debugEl.innerText = `✅ Đã dùng model dự phòng: ${nextModel}`;
@@ -2497,43 +2506,9 @@ ${emptyMsg}
                     return result;
                 }
                 
-                // Hết model dự phòng → đợi rồi thử lại model chính
-                const errMsg = data.error?.message || '';
-                let waitSec = 60;
-                const retryMatch = errMsg.match(/retry in (\d+\.?\d*)/i);
-                if(retryMatch) waitSec = Math.ceil(parseFloat(retryMatch[1]));
-                waitSec = Math.min(waitSec, 90);
-                
-                for(let i = waitSec; i > 0; i--) {
-                    debugEl.innerText = `⏳ Tất cả model đều hết quota. Đợi ${i}s rồi thử lại...`;
-                    debugEl.style.color = '#facc15';
-                    await new Promise(r => setTimeout(r, 1000));
-                }
-                debugEl.innerText = '';
-                
-                // Thử lại lần cuối với model chính (cũng có timeout)
-                const retryController = new AbortController();
-                const retryTimeoutId = setTimeout(() => retryController.abort(), timeoutMs);
-                try {
-                    const retryRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mainModel}:generateContent?key=${apiKey}`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: [{ parts: [{text: prompt}] }] }),
-                        signal: retryController.signal
-                    });
-                    const retryData = await retryRes.json();
-                    if(!retryRes.ok) throw new Error('Hết quota tất cả model. Vui lòng đợi vài phút rồi thử lại.');
-                    return retryData.candidates[0].content.parts[0].text;
-                } catch(e) {
-                    clearTimeout(retryTimeoutId);
-                    if(e.name === 'AbortError') throw new Error('Timeout sau khi chờ quota. Vui lòng thử lại sau.');
-                    throw e;
-                } finally {
-                    clearTimeout(retryTimeoutId);
-                }
+                throw new Error(data.error?.message || `Lỗi từ máy chủ AI (${res.status})`);
             }
             
-            if(!res.ok) throw new Error(data.error?.message || "Lỗi API");
             debugEl.innerText = '';
             return data.candidates[0].content.parts[0].text;
         }
