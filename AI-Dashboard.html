@@ -836,42 +836,118 @@ Bạn có thể viết:
             renderReviewLinkList();
         }
 
+        function replaceAnchorInText(content, link) {
+            const anchor = (link.anchor || '').trim();
+            if (!anchor) return { updated: content, count: 0 };
+
+            // Tránh bọc đè nếu anchor đã nằm sẵn trong thẻ <a>
+            const escaped = escapeRegex(anchor);
+            const alreadyLinked = new RegExp(`<a[^>]*>[^<]*${escaped}[^<]*<\\/a>`, 'i');
+            if (alreadyLinked.test(content)) {
+                return { updated: content, count: 0 };
+            }
+
+            const pattern = new RegExp(escaped, 'i');
+            if (pattern.test(content)) {
+                let replacedCount = 0;
+                const updated = content.replace(pattern, (matched) => {
+                    replacedCount++;
+                    if (link.type === 'external') {
+                        return `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${matched}</a>`;
+                    } else {
+                        return `<a href="${link.url}">${matched}</a>`;
+                    }
+                });
+                return { updated: updated, count: replacedCount };
+            }
+
+            return { updated: content, count: 0 };
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
         function insertSingleReviewLink(index) {
             const link = reviewPendingLinks[index];
             if(!link) return;
-            // Chuyển sang tab Mã HTML nếu đang ở tab Preview
-            switchPreviewTab('code');
             const textarea = document.getElementById('review-html');
-            const html = buildLinkHtml(link);
-            const insertTag = '<p>' + html + '</p>';
+            let val = textarea.value;
+
+            // 1. Nếu đang bôi đen chữ trong textarea
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
-            const before = textarea.value.substring(0, start);
-            const after = textarea.value.substring(end);
+            if (start !== end) {
+                const selected = val.substring(start, end);
+                const html = link.type === 'external' 
+                    ? `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${selected}</a>`
+                    : `<a href="${link.url}">${selected}</a>`;
+                textarea.value = val.substring(0, start) + html + val.substring(end);
+                refreshPreview();
+                alert(`✅ Đã gắn link vào đoạn chữ bôi đen!`);
+                return;
+            }
+
+            // 2. Tự động tìm từ khóa (Anchor Text) trong nội dung và gắn link đúng vị trí
+            const res = replaceAnchorInText(val, link);
+            if (res.count > 0) {
+                textarea.value = res.updated;
+                refreshPreview();
+                alert(`🎉 Đã tự động gắn link vào từ khóa "${link.anchor}" ngay tại vị trí trong bài viết!`);
+                return;
+            }
+
+            // 3. Nếu không tìm thấy từ khóa: Chèn tại vị trí con trỏ
+            switchPreviewTab('code');
+            const insertTag = buildLinkHtml(link);
+            const before = val.substring(0, start);
+            const after = val.substring(end);
             textarea.value = before + insertTag + after;
             textarea.selectionStart = textarea.selectionEnd = start + insertTag.length;
             textarea.focus();
+            refreshPreview();
+            alert(`ℹ️ Không tìm thấy từ khóa "${link.anchor}" trong bài, đã chèn link tại vị trí con trỏ!`);
         }
 
         function insertAllReviewLinks() {
             if(reviewPendingLinks.length === 0) return alert('Chưa có link nào!');
             const textarea = document.getElementById('review-html');
-            const linksHtml = reviewPendingLinks.map(link => '<p>' + buildLinkHtml(link) + '</p>').join('\n');
-            // Chèn trước thẻ đóng </article> hoặc </main> để link nằm trong bài viết
             let val = textarea.value;
-            const articleEnd = val.lastIndexOf('</article>');
-            if(articleEnd !== -1) {
-                // Tìm vị trí trước </article> nhưng sau nội dung chính (trước CTA box)
-                const ctaBox = val.lastIndexOf('<div style="margin-top: 40px;');
-                const insertPos = ctaBox !== -1 ? ctaBox : articleEnd;
-                val = val.substring(0, insertPos) + '\n<!-- Links chèn thủ công -->\n' + linksHtml + '\n\n' + val.substring(insertPos);
-            } else {
-                val += '\n<!-- Links chèn thủ công -->\n' + linksHtml;
+            let linkedCount = 0;
+            let appendedLinks = [];
+
+            for (let link of reviewPendingLinks) {
+                const res = replaceAnchorInText(val, link);
+                if (res.count > 0) {
+                    val = res.updated;
+                    linkedCount++;
+                } else {
+                    appendedLinks.push(link);
+                }
             }
+
+            if (appendedLinks.length > 0) {
+                const linksHtml = appendedLinks.map(l => '<p>' + buildLinkHtml(l) + '</p>').join('\n');
+                const articleEnd = val.lastIndexOf('</article>');
+                if(articleEnd !== -1) {
+                    const ctaBox = val.lastIndexOf('<div style="margin-top: 40px;');
+                    const insertPos = ctaBox !== -1 ? ctaBox : articleEnd;
+                    val = val.substring(0, insertPos) + '\n<!-- Links bổ sung -->\n' + linksHtml + '\n\n' + val.substring(insertPos);
+                } else {
+                    val += '\n<!-- Links bổ sung -->\n' + linksHtml;
+                }
+            }
+
             textarea.value = val;
-            // Chuyển sang tab Code để thấy kết quả
-            switchPreviewTab('code');
-            alert('✅ Đã chèn ' + reviewPendingLinks.length + ' link vào bài viết! Bấm "Xem trước" để kiểm tra.');
+            refreshPreview();
+            
+            if (linkedCount > 0 && appendedLinks.length === 0) {
+                alert(`🎉 Đã tự động gắn link vào ${linkedCount} từ khóa (như "${reviewPendingLinks[0].anchor}") ngay đúng vị trí trong bài viết!`);
+            } else if (linkedCount > 0) {
+                alert(`✅ Đã gắn link vào ${linkedCount} từ khóa trong bài và thêm ${appendedLinks.length} link không tìm thấy từ khóa xuống cuối!`);
+            } else {
+                alert(`✅ Đã chèn ${appendedLinks.length} link vào bài viết! Bấm "Xem trước" để kiểm tra.`);
+            }
         }
 
         function switchLinkType(type) {
@@ -917,7 +993,7 @@ Bạn có thể viết:
                         <span class="link-item-url" title="${link.url}">→ ${link.url}</span>
                     </div>
                     <div class="link-item-actions">
-                        <button class="link-insert-btn" title="Chèn link này tại vị trí con trỏ" onclick="insertSingleLink(${i})"><i class="fa-solid fa-arrow-turn-down"></i></button>
+                        <button class="link-insert-btn" title="Chèn link này vào bài viết" onclick="insertSingleLink(${i})"><i class="fa-solid fa-arrow-turn-down"></i></button>
                         <button title="Xóa link này" onclick="removeLinkFromList(${i})"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                 </div>`;
@@ -948,26 +1024,70 @@ Bạn có thể viết:
             const link = pendingLinks[index];
             if(!link) return;
             const textarea = document.getElementById('manual-content');
-            const html = buildLinkHtml(link);
+            let val = textarea.value;
+
+            // 1. Nếu đang bôi đen
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
-            const before = textarea.value.substring(0, start);
-            const after = textarea.value.substring(end);
+            if (start !== end) {
+                const selected = val.substring(start, end);
+                const html = link.type === 'external' 
+                    ? `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${selected}</a>`
+                    : `<a href="${link.url}">${selected}</a>`;
+                textarea.value = val.substring(0, start) + html + val.substring(end);
+                alert(`✅ Đã gắn link vào đoạn chữ bôi đen!`);
+                return;
+            }
+
+            // 2. Tự động tìm từ khóa (Anchor Text) trong nội dung và gắn link đúng vị trí
+            const res = replaceAnchorInText(val, link);
+            if (res.count > 0) {
+                textarea.value = res.updated;
+                alert(`🎉 Đã tự động gắn link vào từ khóa "${link.anchor}" ngay tại vị trí trong bài viết!`);
+                return;
+            }
+
+            // 3. Nếu không tìm thấy: Chèn tại vị trí con trỏ
+            const html = buildLinkHtml(link);
+            const before = val.substring(0, start);
+            const after = val.substring(end);
             textarea.value = before + html + after;
-            // Đặt con trỏ sau link vừa chèn
             textarea.selectionStart = textarea.selectionEnd = start + html.length;
             textarea.focus();
+            alert(`ℹ️ Không tìm thấy từ khóa "${link.anchor}", đã chèn link tại vị trí con trỏ!`);
         }
 
         function insertAllLinks() {
             if(pendingLinks.length === 0) return alert('Chưa có link nào trong danh sách!');
             const textarea = document.getElementById('manual-content');
-            const linksHtml = '\n\n<!-- Links chèn tự động -->\n' + pendingLinks.map(link => '<p>' + buildLinkHtml(link) + '</p>').join('\n');
-            textarea.value += linksHtml;
+            let val = textarea.value;
+            let linkedCount = 0;
+            let appendedLinks = [];
+
+            for (let link of pendingLinks) {
+                const res = replaceAnchorInText(val, link);
+                if (res.count > 0) {
+                    val = res.updated;
+                    linkedCount++;
+                } else {
+                    appendedLinks.push(link);
+                }
+            }
+
+            if (appendedLinks.length > 0) {
+                val += '\n\n' + appendedLinks.map(l => '<p>' + buildLinkHtml(l) + '</p>').join('\n');
+            }
+
+            textarea.value = val;
             textarea.focus();
-            // Cuộn textarea xuống cuối
-            textarea.scrollTop = textarea.scrollHeight;
-            alert('✅ Đã chèn ' + pendingLinks.length + ' link vào cuối bài viết!');
+            
+            if (linkedCount > 0 && appendedLinks.length === 0) {
+                alert(`🎉 Đã tự động gắn link vào ${linkedCount} từ khóa (như "${pendingLinks[0].anchor}") ngay đúng vị trí trong bài viết!`);
+            } else if (linkedCount > 0) {
+                alert(`✅ Đã gắn link vào ${linkedCount} từ khóa trong bài và thêm ${appendedLinks.length} link không tìm thấy từ khóa xuống cuối!`);
+            } else {
+                alert(`✅ Đã chèn ${appendedLinks.length} link vào bài viết!`);
+            }
         }
 
         // CHẾ ĐỘ TỰ VIẾT: AI chỉ tối ưu SEO
