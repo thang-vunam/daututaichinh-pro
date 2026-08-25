@@ -596,7 +596,7 @@ Bạn có thể viết:
                     
                     <div class="form-group">
                         <label>Thẻ Title <span style="color:var(--text-muted)">(<span id="title-count">0</span> ký tự, chuẩn: 30–60)</span></label>
-                        <input type="text" id="review-title" oninput="updateSeoScores()"/>
+                        <input type="text" id="review-title" oninput="syncTitleChange()"/>
                         <div class="seo-bar" id="title-bar"></div>
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px;">
                             <div class="seo-label" id="title-status"></div>
@@ -606,7 +606,7 @@ Bạn có thể viết:
                     
                     <div class="form-group">
                         <label>Meta Description <span style="color:var(--text-muted)">(<span id="desc-count">0</span> ký tự, chuẩn: 120–160)</span></label>
-                        <textarea id="review-desc" style="min-height: 80px;" oninput="updateSeoScores()"></textarea>
+                        <textarea id="review-desc" style="min-height: 80px;" oninput="syncDescChange()"></textarea>
                         <div class="seo-bar" id="desc-bar"></div>
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 5px;">
                             <div class="seo-label" id="desc-status"></div>
@@ -1136,10 +1136,10 @@ ${content.substring(0, 3000)}`;
                     seo = JSON.parse(cleaned);
                 } catch(aiErr) {
                     console.warn("AI Busy / Error -> Using smart local extraction:", aiErr);
-                    // Tự động lấy dòng đầu tiên hoặc keyword làm tiêu đề
+                    // Tự động lấy dòng đầu tiên hoặc keyword làm tiêu đề (không cắt cụt từ)
                     const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 5);
                     const firstLine = lines[0] || keyword || 'Nhận định & Phân tích thị trường';
-                    const cleanTitle = firstLine.replace(/^#+\s*/, '').replace(/^\d+[\.\)]\s*/, '').substring(0, 60);
+                    const cleanTitle = firstLine.replace(/^#+\s*/, '').replace(/^\d+[\.\)]\s*/, '').substring(0, 120);
                     const cleanSlug = cleanTitle.toLowerCase()
                         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
                         .replace(/[đĐ]/g, 'd')
@@ -1150,7 +1150,7 @@ ${content.substring(0, 3000)}`;
                     seo = {
                         title: cleanTitle,
                         slug: cleanSlug || ('bai-viet-' + Date.now()),
-                        metaDescription: content.substring(0, 150).replace(/\n/g, ' ').trim(),
+                        metaDescription: content.substring(0, 155).replace(/\n/g, ' ').trim(),
                         imagePrompt: keyword ? `${keyword} stock market finance` : 'finance investment stock market chart',
                         tags: [keyword || 'Chứng khoán', 'Đầu tư tài chính', 'Thị trường'],
                         hashtags: ['#chungkhoan', '#dautu']
@@ -2815,6 +2815,48 @@ ${emptyMsg}
             const data = await res.json();
             if(!res.ok) throw new Error(data.message);
             return data;
+        }
+
+        // ĐỒNG BỘ 2 CHIỀU THỜI GIAN THỰC (Khi người dùng sửa Title / Meta Description)
+        function syncTitleChange() {
+            updateSeoScores();
+            const newTitle = document.getElementById('review-title').value.trim();
+            if (!newTitle) return;
+            const textarea = document.getElementById('review-html');
+            let html = textarea.value;
+            if (!html) return;
+
+            // 1. Cập nhật thẻ <h1> trong bài viết
+            html = html.replace(/<h1[^>]*>[\s\S]*?<\/h1>/i, `<h1>${newTitle}</h1>`);
+
+            // 2. Cập nhật thẻ <title>
+            html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${newTitle} | daututaichinh.pro</title>`);
+
+            // 3. Cập nhật OpenGraph & Twitter Title
+            html = html.replace(/<meta\s+property=["']og:title["']\s+content=["'][^"']*["']/i, `<meta property="og:title" content="${newTitle}"`);
+            html = html.replace(/<meta\s+name=["']twitter:title["']\s+content=["'][^"']*["']/i, `<meta name="twitter:title" content="${newTitle}"`);
+
+            textarea.value = html;
+            refreshPreview();
+        }
+
+        function syncDescChange() {
+            updateSeoScores();
+            const newDesc = document.getElementById('review-desc').value.trim();
+            if (!newDesc) return;
+            const textarea = document.getElementById('review-html');
+            let html = textarea.value;
+            if (!html) return;
+
+            // 1. Cập nhật <meta name="description">
+            html = html.replace(/<meta\s+name=["']description["']\s+content=["'][^"']*["']/i, `<meta name="description" content="${newDesc}"`);
+
+            // 2. Cập nhật OpenGraph & Twitter Description
+            html = html.replace(/<meta\s+property=["']og:description["']\s+content=["'][^"']*["']/i, `<meta property="og:description" content="${newDesc}"`);
+            html = html.replace(/<meta\s+name=["']twitter:description["']\s+content=["'][^"']*["']/i, `<meta name="twitter:description" content="${newDesc}"`);
+
+            textarea.value = html;
+            refreshPreview();
         }
 
         // SEO SCORES - cập nhật điểm và thanh màu (RankMath style)
