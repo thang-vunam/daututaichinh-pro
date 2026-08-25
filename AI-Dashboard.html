@@ -1218,7 +1218,7 @@ ${content.substring(0, 3000)}`;
             }
         }
 
-        // Helper format văn bản thô thành HTML chuẩn nhanh chóng & chính xác
+        // Helper format văn bản thô thành HTML chuẩn nhanh chóng & chính xác (Bảo toàn 100% nội dung)
         function formatRawTextToHtml(rawText) {
             const lines = rawText.split('\n');
             let resultHtml = [];
@@ -1234,12 +1234,14 @@ ${content.substring(0, 3000)}`;
                 // 1. Dò tìm Bảng Markdown chuẩn (chứa '|')
                 if (line.includes('|') && line.split('|').filter(c => c.trim()).length >= 2 && !line.startsWith('*') && !line.startsWith('-')) {
                     let tableLines = [];
-                    while (i < lines.length && lines[i].includes('|') && lines[i].split('|').filter(c => c.trim()).length >= 2) {
-                        tableLines.push(lines[i].trim());
-                        i++;
+                    let j = i;
+                    while (j < lines.length && lines[j].includes('|') && lines[j].split('|').filter(c => c.trim()).length >= 2) {
+                        tableLines.push(lines[j].trim());
+                        j++;
                     }
                     if (tableLines.length >= 2) {
                         resultHtml.push(renderMarkdownTable(tableLines));
+                        i = j;
                         continue;
                     }
                 }
@@ -1247,12 +1249,14 @@ ${content.substring(0, 3000)}`;
                 // 2. Dò tìm Bảng Tab (Copy-paste trực tiếp từ Excel / Google Sheets)
                 if (lines[i].includes('\t') && lines[i].split('\t').filter(c => c.trim()).length >= 2 && !line.startsWith('*') && !line.startsWith('-')) {
                     let tableLines = [];
-                    while (i < lines.length && lines[i].includes('\t') && lines[i].split('\t').filter(c => c.trim()).length >= 2) {
-                        tableLines.push(lines[i]);
-                        i++;
+                    let j = i;
+                    while (j < lines.length && lines[j].includes('\t') && lines[j].split('\t').filter(c => c.trim()).length >= 2) {
+                        tableLines.push(lines[j]);
+                        j++;
                     }
                     if (tableLines.length >= 2) {
                         resultHtml.push(renderDelimitedTable(tableLines, '\t'));
+                        i = j;
                         continue;
                     }
                 }
@@ -1277,7 +1281,7 @@ ${content.substring(0, 3000)}`;
                     continue;
                 }
 
-                // 5. Đoạn văn thông thường (<p>)
+                // 5. Đoạn văn thông thường (<p>) - ĐẢM BẢO 100% KHÔNG BAO GIỜ BỎ SÓT DÒNG NÀO
                 resultHtml.push(`<p>${line}</p>`);
                 i++;
             }
@@ -3070,14 +3074,23 @@ ${emptyMsg}
 
         function extractArticleBody(html) {
             const startMarker = '</figure>';
-            const endMarker = '<div style="margin-top: 30px; padding-top: 15px;';
-            
             let startIndex = html.indexOf(startMarker);
-            if (startIndex === -1) return null;
-            startIndex += startMarker.length; // Move past </figure>
+            if (startIndex !== -1) {
+                startIndex += startMarker.length;
+            } else {
+                const h1Index = html.indexOf('</h1>');
+                startIndex = h1Index !== -1 ? h1Index + 5 : 0;
+            }
             
-            const endIndex = html.indexOf(endMarker, startIndex);
-            if (endIndex === -1) return null;
+            // Tìm điểm kết thúc là trước phần Tags / Hashtags hoặc CTA Box hoặc </article>
+            const tagMarker = '<div style="margin-top: 30px; padding-top: 15px;';
+            const ctaMarker = '<div style="margin-top: 40px;';
+            const articleEndMarker = '</article>';
+            
+            let endIndex = html.indexOf(tagMarker, startIndex);
+            if (endIndex === -1) endIndex = html.indexOf(ctaMarker, startIndex);
+            if (endIndex === -1) endIndex = html.indexOf(articleEndMarker, startIndex);
+            if (endIndex === -1) endIndex = html.length;
             
             return html.substring(startIndex, endIndex).trim();
         }
@@ -3104,7 +3117,7 @@ ${emptyMsg}
             const currentYear = new Date().getFullYear();
 
             const systemPrompt = `Hôm nay là ngày ${today}, năm ${currentYear}. Bạn là Chuyên gia chỉnh sửa bài viết Tài chính Chứng khoán chuẩn SEO.
-Dưới đây là phần nội dung bài viết hiện tại (dạng HTML):
+Dưới đây là TOÀN BỘ nội dung bài viết hiện tại (dạng HTML):
 ---
 ${extractedBody}
 ---
@@ -3114,14 +3127,14 @@ Yêu cầu điều chỉnh của người dùng:
 
 Từ khóa tìm kiếm ảnh Unsplash hiện tại là: "${currentArticleData.imagePrompt || ""}"
 
-Nhiệm vụ:
-1. Hãy điều chỉnh nội dung HTML trên dựa theo yêu cầu của người dùng (ví dụ: chuyển đổi đoạn văn/danh sách thành bảng so sánh đẹp mắt, định dạng lại bảng biểu, thay đổi văn phong, chỉnh sửa chi tiết số liệu, v.v.).
+NGUYÊN TẮC BẮT BUỘC KHI CHỈNH SỬA:
+1. NGUYÊN TẮC BẢO TOÀN NỘI DUNG (QUAN TRỌNG NHẤT): TUYỆT ĐỐI KHÔNG ĐƯỢC TÓM TẮT, KHÔNG RÚT GỌN, KHÔNG BỎ BỚT BẤT KỲ ĐOẠN VĂN, MỤC NỘI DUNG, BẢNG BIỂU HAY SỐ LIỆU NÀO TRONG BÀI GỐC CỦA TÁC GIẢ. Toàn bộ nội dung bài viết phải được giữ nguyên vẹn 100%, chỉ thực hiện sửa đổi chính xác vào phần mà người dùng chỉ định.
 2. Kết quả chỉnh sửa phải trả về dưới dạng mã HTML chuẩn (chỉ phần body của bài viết, dùng h2, h3, p, strong, ul, li, table, th, td...). Không chèn thêm thẻ <html>, <head>, <body> hoặc các CSS styles/inline styles phức tạp vào table/th/td vì hệ thống đã tự động cấu hình giao diện tối ưu cho Dark Mode.
 3. Tuyệt đối giữ lại các liên kết (thẻ a) hiện có trong nội dung để đảm bảo tối ưu SEO, không được tự ý gỡ bỏ hoặc sửa đổi liên kết trừ khi người dùng yêu cầu rõ ràng.
 4. KHÔNG tự ý chèn bất kỳ thẻ <img> thô nào vào trường htmlContent. Việc hiển thị ảnh bìa của bài viết đã có hệ thống tự động xử lý bên ngoài.
 5. Nếu người dùng yêu cầu thay đổi hình ảnh, ảnh bìa, hoặc chủ đề của hình ảnh, bạn BẮT BUỘC phải tạo ra một từ khóa tìm kiếm tiếng Anh khác với từ khóa hiện tại (nhưng vẫn liên quan chặt chẽ đến chủ đề bài viết/yêu cầu người dùng) và đặt vào trường imagePrompt trong chuỗi JSON trả về. Nếu người dùng không yêu cầu thay đổi hình ảnh/ảnh bìa, hãy giữ nguyên giá trị từ khóa hiện tại là "${currentArticleData.imagePrompt || ""}".
 6. Trả về kết quả dưới dạng một chuỗi JSON duy nhất có cấu trúc sau:
-{"htmlContent":"Mã HTML bài viết đã được chỉnh sửa (chú ý escape dấu nháy kép bên trong thẻ HTML để không làm vỡ JSON)","title":"Tiêu đề mới của bài viết (mặc định giữ nguyên: ${currentTitle})","metaDescription":"Mô tả SEO mới của bài viết (mặc định giữ nguyên: ${currentDesc})","imagePrompt":"Mô tả tìm kiếm ảnh Unsplash mới bằng tiếng Anh"}
+{"htmlContent":"Toàn bộ mã HTML bài viết đầy đủ (đã áp dụng chỉnh sửa, chú ý escape dấu nháy kép bên trong thẻ HTML để không làm vỡ JSON)","title":"Tiêu đề bài viết (mặc định giữ nguyên: ${currentTitle})","metaDescription":"Mô tả SEO bài viết (mặc định giữ nguyên: ${currentDesc})","imagePrompt":"Mô tả tìm kiếm ảnh Unsplash mới bằng tiếng Anh"}
 
 KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
