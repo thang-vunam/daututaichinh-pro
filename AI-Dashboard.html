@@ -1098,40 +1098,200 @@ ${content.substring(0, 3000)}`;
             }
         }
 
-        // Helper format văn bản thô thành HTML chuẩn nhanh chóng
+        // Helper format văn bản thô thành HTML chuẩn nhanh chóng & tự động nhận diện Bảng biểu (Tables)
         function formatRawTextToHtml(rawText) {
             const lines = rawText.split('\n');
-            let html = [];
-            let inList = false;
+            let resultHtml = [];
+            let i = 0;
 
-            for (let i = 0; i < lines.length; i++) {
+            while (i < lines.length) {
                 let line = lines[i].trim();
                 if (!line) {
-                    if (inList) { html.push('</ul>'); inList = false; }
+                    i++;
                     continue;
                 }
 
+                // 1. Dò tìm Bảng Markdown (chứa '|')
+                if (line.includes('|') && line.split('|').filter(c => c.trim()).length >= 2) {
+                    let tableLines = [];
+                    while (i < lines.length && lines[i].includes('|') && lines[i].split('|').filter(c => c.trim()).length >= 2) {
+                        tableLines.push(lines[i].trim());
+                        i++;
+                    }
+                    if (tableLines.length >= 2) {
+                        resultHtml.push(renderMarkdownTable(tableLines));
+                        continue;
+                    }
+                }
+
+                // 2. Dò tìm Bảng Tab (Copy-paste từ Excel / Google Sheets)
+                if (lines[i].includes('\t') && lines[i].split('\t').filter(c => c.trim()).length >= 2) {
+                    let tableLines = [];
+                    while (i < lines.length && lines[i].includes('\t') && lines[i].split('\t').filter(c => c.trim()).length >= 2) {
+                        tableLines.push(lines[i]);
+                        i++;
+                    }
+                    if (tableLines.length >= 2) {
+                        resultHtml.push(renderDelimitedTable(tableLines, '\t'));
+                        continue;
+                    }
+                }
+
+                // 3. Dò tìm Bảng số liệu cột (Header + các dòng Ticker/Tên + số liệu)
+                if (isDataBlockTable(lines, i)) {
+                    let { htmlTable, nextIndex } = parseDataBlockTable(lines, i);
+                    if (htmlTable) {
+                        resultHtml.push(htmlTable);
+                        i = nextIndex;
+                        continue;
+                    }
+                }
+
+                // 4. Tiêu đề Markdown hoặc số thứ tự
                 const isMarkdownHeading = /^#+\s+/.test(line);
                 const isNumberedHeading = /^((\d+[\.\)]|[I|V|X]+[\.\)]|#+)\s+)/i.test(line);
 
                 if (isMarkdownHeading) {
-                    if (inList) { html.push('</ul>'); inList = false; }
                     const text = line.replace(/^#+\s*/, '');
-                    html.push(`<h2>${text}</h2>`);
+                    resultHtml.push(`<h2>${text}</h2>`);
+                    i++;
                 } else if (isNumberedHeading && line.length < 120) {
-                    if (inList) { html.push('</ul>'); inList = false; }
-                    html.push(`<h3>${line}</h3>`);
+                    resultHtml.push(`<h3>${line}</h3>`);
+                    i++;
                 } else if (/^[-*•]\s+/.test(line)) {
-                    if (!inList) { html.push('<ul>'); inList = true; }
-                    const itemText = line.replace(/^[-*•]\s*/, '');
-                    html.push(`  <li>${itemText}</li>`);
+                    let listItems = [];
+                    while (i < lines.length && /^[-*•]\s+/.test(lines[i].trim())) {
+                        listItems.push(`  <li>${lines[i].trim().replace(/^[-*•]\s*/, '')}</li>`);
+                        i++;
+                    }
+                    resultHtml.push(`<ul>\n${listItems.join('\n')}\n</ul>`);
                 } else {
-                    if (inList) { html.push('</ul>'); inList = false; }
-                    html.push(`<p>${line}</p>`);
+                    resultHtml.push(`<p>${line}</p>`);
+                    i++;
                 }
             }
-            if (inList) html.push('</ul>');
+
+            return resultHtml.join('\n');
+        }
+
+        function renderMarkdownTable(lines) {
+            let html = ['<div class="article-table-wrap"><table>'];
+            let isHeader = true;
+            for (let l of lines) {
+                if (/^[\|\s\-:]+$/.test(l)) {
+                    isHeader = false;
+                    continue;
+                }
+                const cells = l.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1 || c !== '');
+                if (cells.length === 0) continue;
+
+                if (isHeader) {
+                    html.push('  <thead><tr>' + cells.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>');
+                    isHeader = false;
+                } else {
+                    html.push('  <tr>' + cells.map((c, idx) => idx === 0 ? `<td><strong>${c}</strong></td>` : `<td>${c}</td>`).join('') + '</tr>');
+                }
+            }
+            html.push('</tbody></table></div>');
             return html.join('\n');
+        }
+
+        function renderDelimitedTable(lines, delimiter) {
+            let html = ['<div class="article-table-wrap"><table>'];
+            for (let idx = 0; idx < lines.length; idx++) {
+                const cells = lines[idx].split(delimiter).map(c => c.trim()).filter(c => c !== '');
+                if (cells.length === 0) continue;
+                if (idx === 0) {
+                    html.push('  <thead><tr>' + cells.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>');
+                } else {
+                    html.push('  <tr>' + cells.map((c, cIdx) => cIdx === 0 ? `<td><strong>${c}</strong></td>` : `<td>${c}</td>`).join('') + '</tr>');
+                }
+            }
+            html.push('</tbody></table></div>');
+            return html.join('\n');
+        }
+
+        function isDataBlockTable(lines, startIndex) {
+            if (startIndex + 2 >= lines.length) return false;
+            let dataRowsCount = 0;
+            for (let j = startIndex + 1; j < Math.min(startIndex + 8, lines.length); j++) {
+                const parts = lines[j].trim().split(/\s+/);
+                if (parts.length >= 2 && anyNumberInRow(parts)) {
+                    dataRowsCount++;
+                }
+            }
+            return dataRowsCount >= 2;
+        }
+
+        function anyNumberInRow(parts) {
+            return parts.slice(1).some(p => /^[\d\.,%]+$/.test(p) || /\d/.test(p));
+        }
+
+        function parseDataBlockTable(lines, startIndex) {
+            const headerLine = lines[startIndex].trim();
+            let dataRows = [];
+            let curr = startIndex + 1;
+
+            while (curr < lines.length) {
+                const l = lines[curr].trim();
+                if (!l) break;
+                const parts = l.split(/\s+/);
+                if (parts.length >= 2 && anyNumberInRow(parts)) {
+                    dataRows.push(parts);
+                    curr++;
+                } else {
+                    break;
+                }
+            }
+
+            if (dataRows.length < 2) return { htmlTable: null, nextIndex: startIndex };
+
+            const colCount = dataRows[0].length;
+            let headers = splitHeaderLine(headerLine, colCount);
+
+            let html = ['<div class="article-table-wrap"><table>'];
+            html.push('  <thead><tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr></thead><tbody>');
+            
+            for (let row of dataRows) {
+                html.push('  <tr>' + row.map((cell, cIdx) => cIdx === 0 ? `<td><strong>${cell}</strong></td>` : `<td>${cell}</td>`).join('') + '</tr>');
+            }
+            html.push('</tbody></table></div>');
+
+            return { htmlTable: html.join('\n'), nextIndex: curr };
+        }
+
+        function splitHeaderLine(headerLine, colCount) {
+            const knownPhrases = [
+                'Mã cổ phiếu', 'Mã CP', 'Mã ck', 'Cổ phiếu',
+                'Tổng dòng vốn dự kiến (Triệu USD)', 'Tổng dòng vốn dự kiến', 'Tổng dòng vốn',
+                'Tương đương (Tỷ VND)*', 'Tương đương (Tỷ VND)', 'Tương đương',
+                'Dòng vốn đợt 1 (Triệu USD)', 'Dòng vốn đợt 1', 'Dòng vốn đợt 2', 'Dòng vốn',
+                'Tỷ trọng (%)', 'Tỷ trọng', 'Khối lượng', 'Giá trị', 'Thị giá', 'EPS', 'P/E', 'P/B', 'ROE', 'ROA'
+            ];
+            
+            let foundHeaders = [];
+            let remaining = headerLine;
+            
+            for (let phrase of knownPhrases) {
+                if (remaining.includes(phrase)) {
+                    foundHeaders.push({ phrase, index: remaining.indexOf(phrase) });
+                }
+            }
+            
+            if (foundHeaders.length >= 2) {
+                foundHeaders.sort((a, b) => a.index - b.index);
+                return foundHeaders.map(f => f.phrase);
+            }
+
+            const words = headerLine.split(/\s+/);
+            if (words.length <= colCount) return words;
+            
+            const chunkSize = Math.ceil(words.length / colCount);
+            let chunks = [];
+            for (let k = 0; k < words.length; k += chunkSize) {
+                chunks.push(words.slice(k, k + chunkSize).join(' '));
+            }
+            return chunks.slice(0, colCount);
         }
 
         // HÀM LẤY MODEL HIỆU LỰC (Tối ưu cho Free Tier)
