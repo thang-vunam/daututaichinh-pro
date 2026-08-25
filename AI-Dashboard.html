@@ -1111,7 +1111,7 @@ ${content.substring(0, 3000)}`;
                     continue;
                 }
 
-                // 1. Dò tìm Bảng Markdown chuẩn (các dòng liên tiếp có chứa '|')
+                // 1. Dò tìm Bảng Markdown chuẩn (chứa '|')
                 if (line.includes('|') && line.split('|').filter(c => c.trim()).length >= 2 && !line.startsWith('*') && !line.startsWith('-')) {
                     let tableLines = [];
                     while (i < lines.length && lines[i].includes('|') && lines[i].split('|').filter(c => c.trim()).length >= 2) {
@@ -1137,33 +1137,60 @@ ${content.substring(0, 3000)}`;
                     }
                 }
 
-                // 3. Tiêu đề Markdown (#, ##, ###)
-                const isMarkdownHeading = /^#+\s+/.test(line);
-                const isNumberedHeading = /^((\d+[\.\)]|[I|V|X]+[\.\)]|#+)\s+)/i.test(line);
+                // 3. Dò tìm Tiêu đề H2 / H3 chuẩn SEO (để tự động sinh Mục lục TOC Menu và phân cấp nội dung)
+                const heading = detectHeading(line);
+                if (heading) {
+                    resultHtml.push(`<${heading.tag}>${heading.text}</${heading.tag}>`);
+                    i++;
+                    continue;
+                }
 
-                if (isMarkdownHeading) {
-                    const text = line.replace(/^#+\s*/, '');
-                    resultHtml.push(`<h2>${text}</h2>`);
-                    i++;
-                } else if (isNumberedHeading && line.length < 90 && !line.includes(':') && !line.includes('(')) {
-                    resultHtml.push(`<h3>${line}</h3>`);
-                    i++;
-                } else if (/^[-*•+]\s+/.test(line) || /^\*\s+/.test(line)) {
-                    // Danh sách gạch đầu dòng (List Items)
+                // 4. Danh sách gạch đầu dòng (*, -, •, +)
+                if (/^[-*•+]\s+/.test(line)) {
                     let listItems = [];
-                    while (i < lines.length && (/^[-*•+]\s+/.test(lines[i].trim()) || /^\*\s+/.test(lines[i].trim()))) {
+                    while (i < lines.length && /^[-*•+]\s+/.test(lines[i].trim())) {
                         const itemText = lines[i].trim().replace(/^[-*•+]\s*/, '');
                         listItems.push(`  <li>${itemText}</li>`);
                         i++;
                     }
                     resultHtml.push(`<ul>\n${listItems.join('\n')}\n</ul>`);
-                } else {
-                    resultHtml.push(`<p>${line}</p>`);
-                    i++;
+                    continue;
                 }
+
+                // 5. Đoạn văn thông thường (<p>)
+                resultHtml.push(`<p>${line}</p>`);
+                i++;
             }
 
             return resultHtml.join('\n');
+        }
+
+        // Nhận diện Tiêu đề H2, H3 thông minh
+        function detectHeading(line) {
+            if (!line) return null;
+            const trimmed = line.trim();
+            
+            // Markdown Headings
+            if (/^###\s+/.test(trimmed)) return { tag: 'h3', text: trimmed.replace(/^###\s+/, '') };
+            if (/^##\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^##\s+/, '') };
+            if (/^#\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^#\s+/, '') };
+            
+            // Tiêu đề phụ (1.1, 1.2, 2.1, a), b)...)
+            if (/^(\d+\.\d+|[a-d]\))\s+/i.test(trimmed) && trimmed.length < 130) {
+                return { tag: 'h3', text: trimmed };
+            }
+            
+            // Tiêu đề chính mục (1., 2., 3., I., II., III., Phần 1, Điểm nhấn 1, Mục 1...)
+            if (/^((\d+[\.\)]|[I|V|X]+[\.\)]|Phần\s+\d+:?|Điểm\s+nhấn\s+\d+:?|Mục\s+\d+:?)\s+)/i.test(trimmed) && trimmed.length < 160) {
+                return { tag: 'h2', text: trimmed };
+            }
+            
+            // Dòng chữ in hoa ngắn (tiêu đề không dấu chấm cuối câu)
+            if (trimmed.length > 6 && trimmed.length < 75 && trimmed === trimmed.toUpperCase() && !trimmed.endsWith('.') && !trimmed.includes(',') && !trimmed.startsWith('*') && !trimmed.startsWith('-')) {
+                return { tag: 'h2', text: trimmed };
+            }
+            
+            return null;
         }
 
         function renderMarkdownTable(lines) {
