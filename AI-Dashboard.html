@@ -981,35 +981,49 @@ Bạn có thể viết:
             if(!content) return alert('Vui lòng nhập nội dung bài viết!');
 
             const btn = document.getElementById('btn-manual-seo');
-            btn.innerHTML = '<div class="loader"></div> AI đang phân tích SEO...';
+            btn.innerHTML = '<div class="loader"></div> AI đang phân tích SEO & Ảnh bìa...';
             btn.disabled = true;
 
             try {
                 const secManualKw = document.getElementById('manual-secondary-keywords').value.trim();
                 const today = new Date().toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
-                const year = new Date().getFullYear();
                 const lsiContext = secManualKw ? ` và bộ từ khóa phụ: "${secManualKw}"` : '';
                 
                 const isRawText = !content.includes('<p>') && !content.includes('<h2>') && !content.includes('<div>');
-                let seoPrompt = '';
-                
-                if (isRawText) {
-                    btn.innerHTML = '<div class="loader"></div> AI đang định dạng lại nội dung & Tối ưu SEO...';
-                    seoPrompt = 'Hôm nay là ' + today + '. Bạn là Biên tập viên báo tài chính. Tôi có một văn bản thô bên dưới' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. NHIỆM VỤ CỦA BẠN: 1. ĐỊNH DẠNG LẠI nội dung thô này thành mã HTML mạch lạc, đẹp mắt: tự động chia đoạn nhỏ bằng thẻ <p>, siêu bôi đậm bằng <strong> cho các số liệu, tên riêng hoặc ý chính quan trọng, dùng <h2> hoặc <h3> cho các tiêu đề phụ, dùng thẻ danh sách <ul><li> nếu nội dung có tính chất liệt kê. (CHỈ DÙNG HTML cơ bản. KHÔNG tự ý sáng tác hay phịa thêm nội dung, phải bám sát 100% nguyên tác). 2. Phân tích nội dung để tạo SEO metadata. Trả về ĐÚNG MỘT khối JSON có định dạng sau: {"title":"Có chứa từ khóa chính, 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Mô tả ngắn gọn, 120-150 ký tự","imagePrompt":"10 từ tiếng Anh mô tả ảnh làm cover mang tính biểu trưng hoặc trừu tượng (ví dụ: finance abstract background, business workspace laptop, bull market statue, gold and money... KHÔNG tìm ảnh biểu đồ cận cảnh có chữ ngoại quốc hay ngày tháng cũ)","tags":["tag1","tag2"],"hashtags":["#hash1","#hash2"], "htmlContent": "Toàn bộ mã HTML của bài viết đã được làm đẹp"}. KHÔNG GIẢI THÍCH GÌ THÊM. Nội dung thô: ' + content;
-                } else {
-                    seoPrompt = 'Hôm nay là ngày ' + today + '. Tôi đã viết xong 1 bài viết' + (keyword ? ' với từ khóa chính: "' + keyword + '"' : '') + lsiContext + '. Bạn là Chuyên gia SEO RankMath. Hãy phân tích nội dung, chèn từ khóa chính vào Tiêu đề và Mô tả tự nhiên. Trả về JSON: {"title":"30-55 ký tự chuẩn SEO","slug":"url-url","metaDescription":"120-150 ký tự","imagePrompt":"10 eng words for abstract/symbolic cover image, no foreign tickers or dates","tags":["tag1","tag2"],"hashtags":["#hash1"]} CHỈ JSON. Nội dung bài: ' + content.substring(0, 2000);
-                }
+                let htmlBody = isRawText ? formatRawTextToHtml(content) : content;
 
-                const resp = await callGemini(key, seoPrompt);
+                // Prompt SEO Metadata siêu tốc (chỉ phân tích 3000 ký tự đầu, không nhồi full HTML vào JSON để AI trả về trong 2-4 giây)
+                const seoPrompt = `Hôm nay là ngày ${today}. Tôi có một bài viết về tài chính chứng khoán${keyword ? ' với từ khóa chính: "' + keyword + '"' : ''}${lsiContext}.
+Hãy phân tích nội dung, chèn từ khóa chính vào Tiêu đề và Mô tả tự nhiên chuẩn RankMath SEO.
+Trả về ĐÚNG MỘT KHỐI JSON:
+{
+  "title": "Tiêu đề hấp dẫn chuẩn SEO, chứa từ khóa chính, độ dài 35-55 ký tự",
+  "slug": "url-slug-khong-dau-ngan-gon",
+  "metaDescription": "Mô tả SEO tóm tắt nội dung bài viết, độ dài 120-155 ký tự",
+  "imagePrompt": "10 English keywords for abstract professional finance cover image on Unsplash (e.g. stock market growth chart, modern trading office, financial district skyline, bull statue... NO text or foreign tickers)",
+  "tags": ["tag1", "tag2", "tag3"],
+  "hashtags": ["#tag1", "#tag2"]
+}
+CHỈ TRẢ VỀ JSON, TUYỆT ĐỐI KHÔNG GIẢI THÍCH THÊM.
+Nội dung bài viết (trích đoạn):
+${content.substring(0, 3000)}`;
+
+                const resp = await callGemini(key, seoPrompt, null, 90000);
                 let cleaned = resp.replace(/```json/g, '').replace(/```html/g, '').replace(/```/g, '').trim();
                 cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ' ' : '');
-                const seo = JSON.parse(cleaned);
                 
-                let htmlBody = content;
-                if(isRawText && seo.htmlContent) {
-                    htmlBody = seo.htmlContent;
-                } else if(isRawText) {
-                    htmlBody = content.split('\n').filter(l => l.trim()).map(l => '<p>' + l.trim() + '</p>').join('\n');
+                let seo;
+                try {
+                    seo = JSON.parse(cleaned);
+                } catch(pe) {
+                    seo = {
+                        title: keyword ? `${keyword} - Nhận định & Phân tích chuyên sâu` : 'Phân tích thị trường & Cơ hội đầu tư',
+                        slug: 'bai-viet-moi-' + Date.now(),
+                        metaDescription: content.substring(0, 150).replace(/\n/g, ' '),
+                        imagePrompt: 'finance investment stock market chart',
+                        tags: [keyword || 'Chứng khoán', 'Đầu tư'],
+                        hashtags: ['#chungkhoan', '#dautu']
+                    };
                 }
 
                 // Điền vào review panel
@@ -1071,6 +1085,42 @@ Bạn có thể viết:
                 btn.innerHTML = '<span><i class="fa-solid fa-magnifying-glass-chart"></i> AI Tối ưu SEO & Chuẩn bị đăng</span>';
                 btn.disabled = false;
             }
+        }
+
+        // Helper format văn bản thô thành HTML chuẩn nhanh chóng
+        function formatRawTextToHtml(rawText) {
+            const lines = rawText.split('\n');
+            let html = [];
+            let inList = false;
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (!line) {
+                    if (inList) { html.push('</ul>'); inList = false; }
+                    continue;
+                }
+
+                const isMarkdownHeading = /^#+\s+/.test(line);
+                const isNumberedHeading = /^((\d+[\.\)]|[I|V|X]+[\.\)]|#+)\s+)/i.test(line);
+
+                if (isMarkdownHeading) {
+                    if (inList) { html.push('</ul>'); inList = false; }
+                    const text = line.replace(/^#+\s*/, '');
+                    html.push(`<h2>${text}</h2>`);
+                } else if (isNumberedHeading && line.length < 120) {
+                    if (inList) { html.push('</ul>'); inList = false; }
+                    html.push(`<h3>${line}</h3>`);
+                } else if (/^[-*•]\s+/.test(line)) {
+                    if (!inList) { html.push('<ul>'); inList = true; }
+                    const itemText = line.replace(/^[-*•]\s*/, '');
+                    html.push(`  <li>${itemText}</li>`);
+                } else {
+                    if (inList) { html.push('</ul>'); inList = false; }
+                    html.push(`<p>${line}</p>`);
+                }
+            }
+            if (inList) html.push('</ul>');
+            return html.join('\n');
         }
 
         // HÀM LẤY MODEL HIỆU LỰC (Tối ưu cho Free Tier)
@@ -2392,7 +2442,7 @@ ${emptyMsg}
         ];
 
         // HELPER: Gọi Gemini API (có auto-retry + fallback model + timeout)
-        async function callGemini(apiKey, prompt, modelOverride = null, timeoutMs = 45000) {
+        async function callGemini(apiKey, prompt, modelOverride = null, timeoutMs = 90000) {
             const modelName = modelOverride || getEffectiveGeminiModel();
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
             const debugEl = document.getElementById('debug-log');
