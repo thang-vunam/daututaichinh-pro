@@ -528,9 +528,9 @@ main {
   -webkit-overflow-scrolling: touch;
   margin: 28px 0;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: #0f172a;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .blog-article table,
@@ -540,23 +540,29 @@ main {
   text-align: left;
   font-size: 0.95rem;
   line-height: 1.5;
+  border: none;
 }
 
 .blog-article th,
 .article-table-wrap th {
-  background: #1e293b;
-  color: #f8fafc;
-  font-weight: 700;
-  padding: 14px 16px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.12);
-  white-space: nowrap;
+  background: #151f32;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 14px 18px;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: normal;
+  line-height: 1.4;
 }
 
 .blog-article td,
 .article-table-wrap td {
-  padding: 13px 16px;
+  padding: 14px 18px;
+  border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   color: #cbd5e1;
+  font-variant-numeric: tabular-nums;
 }
 
 .blog-article tr:last-child td,
@@ -566,18 +572,21 @@ main {
 
 .blog-article tr:nth-child(even) td,
 .article-table-wrap tr:nth-child(even) td {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.015);
 }
 
 .blog-article tr:hover td,
 .article-table-wrap tr:hover td {
-  background: rgba(59, 130, 246, 0.08);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .blog-article td:first-child strong,
-.article-table-wrap td:first-child strong {
-  color: #60a5fa;
+.article-table-wrap td:first-child strong,
+.blog-article td strong,
+.article-table-wrap td strong {
+  color: #f8fafc;
   font-weight: 700;
+  font-size: 1rem;
 }
 
 /* Mobile tối ưu */
