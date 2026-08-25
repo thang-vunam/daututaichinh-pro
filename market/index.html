@@ -40,21 +40,25 @@
       <a href="/#contact">Liên hệ</a>
     </nav>
   </div>
+  <!-- THANH TÌM KIẾM CỐ ĐỊNH CHUNG VỚI MENU (STICKY HEADER) -->
+  <div class="header-search-bar">
+    <div class="container">
+      <div class="search-filter-box header-search-box">
+        <div class="search-input-wrapper">
+          <span class="search-input-icon">🔍</span>
+          <input type="text" id="article-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu (VD: SSI, VN-Index, HPG, PVS, lãi suất...)..." autocomplete="off" />
+        </div>
+      </div>
+    </div>
+  </div>
 </header>
 <main>
   <section class="section" style="padding-top: 40px;">
     <div class="container">
       <h1 style="font-size: 1.8rem; margin-bottom: 10px;">Thị trường chứng khoán</h1>
-      <p class="section-desc" style="margin-bottom: 25px;">Tổng hợp nhận định thị trường, phân tích kỹ thuật và tin tức chứng khoán Việt Nam.</p>
+      <p class="section-desc" style="margin-bottom: 15px;">Tổng hợp nhận định thị trường, phân tích kỹ thuật và tin tức chứng khoán Việt Nam.</p>
       
-      <!-- THANH TÌM KIẾM BÀI VIẾT -->
-      <div class="search-filter-box">
-        <div class="search-input-wrapper">
-          <span class="search-input-icon">🔍</span>
-          <input type="text" id="article-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu..." autocomplete="off" />
-        </div>
-        <div id="search-result-count" class="search-result-count">Tổng cộng: 27 bài viết</div>
-      </div>
+      <div id="search-result-count" class="search-result-count" style="margin-bottom: 20px; font-weight: 500;">Tổng cộng: 20 bài viết</div>
       <div id="no-search-results" style="display:none; text-align:center; padding: 40px 20px; color: #94a3b8; background: rgba(15,23,42,0.4); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1); margin-bottom: 20px;">
         <div style="font-size: 2rem; margin-bottom: 10px;">🔎</div>
         <div style="font-weight: 600; color: #f8fafc; margin-bottom: 6px;">Không tìm thấy bài viết phù hợp</div>
@@ -63,69 +67,6 @@
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
           <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">1</span>
-          <span style="font-size:0.8rem;color:#94a3b8;">2026-08-10</span>
-        </div>
-        <h3>VN-Index đối mặt thử thách 1.770 - 1.800 điểm</h3>
-        <p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">VN-Index đang đứng trước ngưỡng cản 1.770-1.800 điểm. Liệu dòng tiền có đủ mạnh để bứt phá hay thị trường sẽ tiếp tục giằng co? Xem nhận định ngay.</p>
-        <a href="vn-index-truoc-cua-ai-1770-1800-diem.html" class="link-inline">Đọc bài viết →</a>
-      </article>
-      <article class="market-card" style="margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">2</span>
-          <span style="font-size:0.8rem;color:#94a3b8;">2026-07-27</span>
-        </div>
-        <h3>Nhận định thị trường chứng khoán tuần 27 - 31.07.2026</h3>
-        <p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">Nhận định thị trường chứng khoán tuần 27 - 31.07.2026: Phân tích xu hướng VN-Index, dòng tiền vĩ mô và chiến lược đầu tư phù hợp khi áp lực điều chỉnh gia tăng.</p>
-        <a href="nhan-dinh-thi-truong-chung-khoan-tuan-27-31-07-2026.html" class="link-inline">Đọc bài viết →</a>
-      </article>
-      <article class="market-card" style="margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">3</span>
-          <span style="font-size:0.8rem;color:#94a3b8;">2026-07-20</span>
-        </div>
-        <h3>VN-Index mất 33 điểm: Sàn HOSE rực đỏ sáng 20/7</h3>
-        <p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">VN-Index mất 33 điểm ngay trong phiên sáng ngày 20/7/2026, áp lực bán tháo ồ ạt cuốn phăng mốc hỗ trợ cứng MA200. Đọc ngay phân tích từ chuyên gia.</p>
-        <a href="vn-index-mat-33-diem-san-hose-ruc-do-sang-20-7.html" class="link-inline">Đọc bài viết →</a>
-      </article>
-      <article class="market-card" style="margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">4</span>
-          <span style="font-size:0.8rem;color:#94a3b8;">2026-07-13</span>
-        </div>
-        <h3>Nhận định thị trường tuần 13-17/07: Đáy mới ở đâu?</h3>
-        <p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">Nhận định thị trường tuần 13-17/07/2026: VN-Index lùi về mốc 1.828,34 điểm trong bối cảnh thanh khoản suy giảm và lãi suất huy động tăng áp lực.</p>
-        <a href="nhan-dinh-thi-truong-tuan-13-17-07-2026.html" class="link-inline">Đọc bài viết →</a>
-      </article>
-      <article class="market-card" style="margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">5</span>
-          <span style="font-size:0.8rem;color:#94a3b8;">2026-07-06</span>
-        </div>
-        <h3>PNJ: Liệu có hồi phục sau phát biểu của bà Dung?</h3>
-        <p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">PNJ nỗ lực khôi phục niềm tin của nhà đầu tư sau phát biểu chính thức từ Chủ tịch Cao Thị Ngọc Dung về sự cố tại công ty thành viên P-Lab.</p>
-        <a href="pnj-lieu-co-hoi-phuc-sau-phat-bieu-cua-ba-dung.html" class="link-inline">Đọc bài viết →</a>
-      </article>
-      <article class="market-card" style="margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">6</span>
-          <span style="font-size:0.8rem;color:#94a3b8;">2026-06-22</span>
-        </div>
-        <h3>VN-Index vượt 1800: Tiệc vui hay "game" của "cá mập"?</h3>
-        <p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">VN-Index cán mốc 1800, "xanh vỏ đỏ lòng" và ảnh hưởng Vingroup: "cuộc chơi" thật sự? Phân tích IDC, MSN & lộ trình nâng hạng 2026.</p>
-        <a href="vn-index-1800-diem-tiec-vui-hay-cuoc-choi-cua-ga-khong-lo.html" class="link-inline">Đọc bài viết →</a>
-      </article>
-      <article class="market-card" style="margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">7</span>
-          <span style="font-size:0.8rem;color:#94a3b8;">2026-06-15</span>
-        </div>
-        <h3>VN-Index mất 1.800 điểm: Chờ tín hiệu cân bằng</h3>
-        <p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">VN-Index thủng mốc hỗ trợ tâm lý 1.800 điểm sau chuỗi giảm 4 tuần liên tiếp. Liệu thị trường chứng khoán tuần mới có sớm tìm được điểm cân bằng?</p>
-        <a href="vn-index-thung-moc-1800-diem-cho-tin-hieu-can-bang.html" class="link-inline">Đọc bài viết →</a>
-      </article>
-      <article class="market-card" style="margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">8</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-06-08</span>
         </div>
         <h3>VN-Index giảm sâu hơn 22 điểm sáng ngày 8/6</h3>
@@ -134,7 +75,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">9</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">2</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-06-08</span>
         </div>
         <h3>Cổ phiếu SSI: Ông Nguyễn Duy Hưng đăng ký mua 1 triệu</h3>
@@ -143,7 +84,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">10</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">3</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-06-07</span>
         </div>
         <h3>Nhận định thị trường tuần 8.6.2026: Đáy cát lún?</h3>
@@ -152,7 +93,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">11</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">4</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-06-01</span>
         </div>
         <h3>VN-Index trước áp lực trái phiếu và nghịch lý HNX</h3>
@@ -161,7 +102,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">12</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">5</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-05-25</span>
         </div>
         <h3>Siêu sóng IPO 100.000 tỷ: Khối tư nhân thay máu TTCK</h3>
@@ -170,7 +111,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">13</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">6</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-05-24</span>
         </div>
         <h3>Nhận định thị trường tuần 25 - 29.05.2026</h3>
@@ -179,7 +120,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">14</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">7</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-05-17</span>
         </div>
         <h3>VN-Index vượt đỉnh 1.921: Cơn say 2.000 điểm cận kề</h3>
@@ -188,7 +129,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">15</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">8</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-05-10</span>
         </div>
         <h3>Nhận định thị trường tuần 11-15/05/2026: Thử lửa vùng đỉnh</h3>
@@ -197,7 +138,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">16</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">9</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-05-04</span>
         </div>
         <h3>MWG: Ông Đoàn Văn Hiểu Em đăng ký bán 2 triệu cổ phiếu</h3>
@@ -206,7 +147,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">17</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">10</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-05-03</span>
         </div>
         <h3>VN-Index bứt phá 10,7% tháng 4 nhờ VIC, VHM kéo điểm: Rủi ro điều chỉnh về 1.820 điểm chờ đợi tháng 5?</h3>
@@ -215,7 +156,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">18</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">11</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-04-20</span>
         </div>
         <h3>Nhận định thị trường chứng khoán tuần 20/04-24/04/2026</h3>
@@ -224,7 +165,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">19</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">12</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-04-12</span>
         </div>
         <h3>VN-Index tuần 13.04 : Lợi nhuận bứt phá, nghịch lý khó tin</h3>
@@ -233,7 +174,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">20</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">13</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-04-08</span>
         </div>
         <h3>VN-Index bật vọt 8.4.2026: Dấu ấn nâng hạng thị trường</h3>
@@ -242,7 +183,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">21</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">14</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-04-05</span>
         </div>
         <h3>Nhận định TTCK VN tuần 06-10/04/2026: Nâng hạng & Trung Đông</h3>
@@ -251,7 +192,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">22</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">15</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-04-03</span>
         </div>
         <h3>Cổ Phiếu SSI: Kịch Bản Q1 2026 & Nâng Hạng Thị Trường</h3>
@@ -260,7 +201,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">23</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">16</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-04-02</span>
         </div>
         <h3>Trump đe dọa Iran: Dầu vọt, chứng khoán toàn cầu bất ổn</h3>
@@ -269,7 +210,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">24</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">17</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-04-01</span>
         </div>
         <h3>Nóng Rực 2026: Nâng Hạng VN - Vốn Ngoại Chuẩn Bị Đổ Bộ</h3>
@@ -278,7 +219,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">25</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">18</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-03-31</span>
         </div>
         <h3>"Kỷ Nguyên Vươn Mình" Hay "Vùng Nhiễu Động"? 7 Điểm Nhấn Đắt Giá Từ Kinh Tế Quý I/2026</h3>
@@ -287,7 +228,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">26</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">19</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-03-27</span>
         </div>
         <h3>VN-Index "Bốc Hơi" 51 Điểm: 5 Bài Học "Xương Máu" Sau Tuần Giao Dịch Đẫm Máu</h3>
@@ -296,7 +237,7 @@
       </article>
       <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">27</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">20</span>
           <span style="font-size:0.8rem;color:#94a3b8;">2026-03-20</span>
         </div>
         <h3>Toàn cảnh Thị trường Chứng khoán Việt Nam tuần 16/03 – 20/03/2026</h3>
@@ -342,9 +283,9 @@
 
         if (countEl) {
           if (query) {
-            countEl.innerHTML = 'Tìm thấy <strong style="color:#60a5fa">' + matched + '</strong> / ' + total + ' bài viết';
+            countEl.innerHTML = `Tìm thấy <strong style="color:#60a5fa">${matched}</strong> / ${total} bài viết`;
           } else {
-            countEl.textContent = 'Tổng cộng: ' + total + ' bài viết';
+            countEl.textContent = `Tổng cộng: ${total} bài viết`;
           }
         }
       });
