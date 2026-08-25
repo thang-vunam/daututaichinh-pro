@@ -521,6 +521,65 @@ main {
   color: #cfd9e6;
 }
 
+/* Article Table Styling */
+.article-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 28px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0f172a;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.blog-article table,
+.article-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.blog-article th,
+.article-table-wrap th {
+  background: #1e293b;
+  color: #f8fafc;
+  font-weight: 700;
+  padding: 14px 16px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
+}
+
+.blog-article td,
+.article-table-wrap td {
+  padding: 13px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+}
+
+.blog-article tr:last-child td,
+.article-table-wrap tr:last-child td {
+  border-bottom: none;
+}
+
+.blog-article tr:nth-child(even) td,
+.article-table-wrap tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.blog-article tr:hover td,
+.article-table-wrap tr:hover td {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.blog-article td:first-child strong,
+.article-table-wrap td:first-child strong {
+  color: #60a5fa;
+  font-weight: 700;
+}
+
 /* Mobile tối ưu */
 @media (max-width: 640px) {
   body {
