@@ -1111,6 +1111,7 @@ Bạn có thể viết:
                 
                 const isRawText = !content.includes('<p>') && !content.includes('<h2>') && !content.includes('<div>');
                 let htmlBody = isRawText ? formatRawTextToHtml(content) : content;
+                htmlBody = ensureSemanticHeadings(htmlBody);
 
                 // Prompt SEO Metadata siêu tốc (chỉ phân tích 3000 ký tự đầu, không nhồi full HTML vào JSON để AI trả về trong 2-4 giây)
                 const seoPrompt = `Hôm nay là ngày ${today}. Tôi có một bài viết về tài chính chứng khoán${keyword ? ' với từ khóa chính: "' + keyword + '"' : ''}${lsiContext}.
@@ -1155,6 +1156,13 @@ ${content.substring(0, 3000)}`;
                         tags: [keyword || 'Chứng khoán', 'Đầu tư tài chính', 'Thị trường'],
                         hashtags: ['#chungkhoan', '#dautu']
                     };
+                }
+
+                // Loại bỏ tiêu đề bị lặp ở dòng đầu tiên của body để tránh trùng với <h1>
+                if (seo.title && htmlBody) {
+                    const escTitle = seo.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    htmlBody = htmlBody.replace(new RegExp(`^\\s*<h[12]>${escTitle}<\\/h[12]>\\s*`, 'i'), '');
+                    htmlBody = htmlBody.replace(new RegExp(`^\\s*<p>${escTitle}<\\/p>\\s*`, 'i'), '');
                 }
 
                 // Điền vào review panel
@@ -1216,6 +1224,29 @@ ${content.substring(0, 3000)}`;
                 btn.innerHTML = '<span><i class="fa-solid fa-magnifying-glass-chart"></i> AI Tối ưu SEO & Chuẩn bị đăng</span>';
                 btn.disabled = false;
             }
+        }
+
+        // Chuẩn hóa toàn bộ thẻ Heading (H2, H3) trong văn bản để đảm bảo luôn có mục lục chuẩn SEO
+        function ensureSemanticHeadings(html) {
+            if (!html) return '';
+            let res = html;
+            
+            // 1. Markdown headings ## và ###
+            res = res.replace(/(^|\n)###\s+([^\n<]+)/g, '$1<h3>$2</h3>');
+            res = res.replace(/(^|\n)##\s+([^\n<]+)/g, '$1<h2>$2</h2>');
+            res = res.replace(/(^|\n)#\s+([^\n<]+)/g, '$1<h2>$2</h2>');
+            
+            // 2. Sub-headings (1.1, 1.1., a), b)...) dạng in đậm hoặc đoạn văn
+            const subPattern = '(\\d+(\\.\\d+)+[\\.\\)\\/:\\-]?|[a-d]\\))';
+            res = res.replace(new RegExp('<p>\\s*<(?:strong|b)>\\s*(' + subPattern + '\\s*[^<]+)<\\/(?:strong|b)>\\s*<\\/p>', 'gi'), '<h3>$1</h3>');
+            res = res.replace(new RegExp('<p>\\s*(' + subPattern + '\\s+[^\n<]{3,120})<\\/p>', 'gi'), '<h3>$1</h3>');
+            
+            // 3. Main headings (1., 2., 3., 1/, 1-, I., II., Phần 1, Điểm nhấn 1...)
+            const mainPattern = '(\\d+[\\.\\)\\/:\\-](?!\\d)|[IVXLCDM]+[\\.\\)\\/:\\-]|Phần\\s+\\d+|Điểm\\s+nhấn\\s+\\d+|Mục\\s+\\d+|Bước\\s+\\d+|Bài\\s+học\\s+\\d+|Chương\\s+\\d+)';
+            res = res.replace(new RegExp('<p>\\s*<(?:strong|b)>\\s*(' + mainPattern + '[^<]+)<\\/(?:strong|b)>\\s*<\\/p>', 'gi'), '<h2>$1</h2>');
+            res = res.replace(new RegExp('<p>\\s*(' + mainPattern + '\\s+[^\n<]{3,120})<\\/p>', 'gi'), '<h2>$1</h2>');
+            
+            return res;
         }
 
         // Helper format văn bản thô thành HTML chuẩn nhanh chóng & chính xác (Bảo toàn 100% nội dung)
@@ -1289,29 +1320,34 @@ ${content.substring(0, 3000)}`;
             return resultHtml.join('\n');
         }
 
-        // Nhận diện Tiêu đề H2, H3 thông minh
+        // Nhận diện Tiêu đề H2, H3 thông minh từ văn bản thô
         function detectHeading(line) {
             if (!line) return null;
-            const trimmed = line.trim();
+            let trimmed = line.trim();
             
             // Markdown Headings
             if (/^###\s+/.test(trimmed)) return { tag: 'h3', text: trimmed.replace(/^###\s+/, '') };
             if (/^##\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^##\s+/, '') };
             if (/^#\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^#\s+/, '') };
             
+            // Loại bỏ bọc in đậm markdown nếu có: **1. Tiêu đề** -> 1. Tiêu đề
+            const cleanLine = trimmed.replace(/^\*+|\*+$/g, '').trim();
+            
             // Tiêu đề phụ (1.1, 1.2, 2.1, a), b)...)
-            if (/^(\d+\.\d+|[a-d]\))\s+/i.test(trimmed) && trimmed.length < 130) {
-                return { tag: 'h3', text: trimmed };
+            if (/^(\d+(\.\d+)+[\.\)\/:\\-]?|[a-d]\))\s*/i.test(cleanLine) && cleanLine.length < 130) {
+                return { tag: 'h3', text: cleanLine };
             }
             
-            // Tiêu đề chính mục (1., 2., 3., I., II., III., Phần 1, Điểm nhấn 1, Mục 1...)
-            if (/^((\d+[\.\)]|[I|V|X]+[\.\)]|Phần\s+\d+:?|Điểm\s+nhấn\s+\d+:?|Mục\s+\d+:?)\s+)/i.test(trimmed) && trimmed.length < 160) {
-                return { tag: 'h2', text: trimmed };
+            // Tiêu đề chính mục (1., 2., 3., 1/, 1-, 1:, I., II., III., Phần 1, Điểm nhấn 1, Mục 1, Bước 1, Bài học 1, Chương 1...)
+            if (/^((\d+[\.\)\/:\\-](?!\d)|[IVXLCDM]+[\.\)\/:\\-]|Phần\s+\d+|Điểm\s+nhấn\s+\d+|Mục\s+\d+|Bước\s+\d+|Bài\s+học\s+\d+|Chương\s+\d+)\s*)/i.test(cleanLine) && cleanLine.length < 160) {
+                return { tag: 'h2', text: cleanLine };
             }
             
-            // Dòng chữ in hoa ngắn (tiêu đề không dấu chấm cuối câu)
-            if (trimmed.length > 6 && trimmed.length < 75 && trimmed === trimmed.toUpperCase() && !trimmed.endsWith('.') && !trimmed.includes(',') && !trimmed.startsWith('*') && !trimmed.startsWith('-')) {
-                return { tag: 'h2', text: trimmed };
+            // Dòng chữ in hoa ngắn hoặc tiêu đề ngắn đứng riêng (không có dấu chấm cuối câu)
+            if (cleanLine.length > 5 && cleanLine.length < 80 && !cleanLine.endsWith('.') && !cleanLine.includes(',') && !cleanLine.startsWith('-') && !cleanLine.startsWith('•')) {
+                if (cleanLine === cleanLine.toUpperCase()) {
+                    return { tag: 'h2', text: cleanLine };
+                }
             }
             
             return null;
@@ -1711,11 +1747,15 @@ NHIỆM VỤ SEO BẮT BUỘC (Hybrid):
 1. TỪ KHÓA CHÍNH (Focus Keyword): "${topic}".
 2. BẮT BUỘC chèn TỪ KHÓA CHÍNH một cách cực kỳ tự nhiên vào đầu của Tiêu đề (Title) và Mô tả (Meta Description).
 3. Trong đoạn mở bài (Sapo), phải lặp lại Từ khóa chính 1 lần. ${lsiPrompt}
-4. Tuyệt đối giữ văn phong sắc sảo, tự nhiên, không nhồi nhét từ khóa (keyword stuffing).
-5. ĐỊNH DẠNG BÁO CHÍ (Tùy chọn): Nếu bài viết có trích dẫn lời phát biểu của chuyên gia, tổ chức uy tín, BẮT BUỘC dùng thẻ <blockquote> để bọc câu nói đó lại nhằm tăng độ uy tín. KHÔNG bịa ra trích dẫn giả mạo nếu ngữ cảnh không có thật.
+4. CẤU TRÚC BÀI VIẾT CHUẨN SEO BẮT BUỘC (ĐỂ SINH MỤC LỤC TỰ ĐỘNG):
+• Bài viết BẮT BUỘC phải có tối thiểu 3 đến 5 phần nội dung chính, mỗi phần PHẢI bọc trong thẻ <h2> (ví dụ: <h2>1. Bối cảnh thị trường...</h2>, <h2>2. Phân tích chi tiết và số liệu...</h2>, <h2>3. Định giá và Triển vọng...</h2>, <h2>4. Khuyến nghị và Chiến lược...</h2>).
+• Trong các phần có thể dùng thêm thẻ <h3> cho mục con (ví dụ: <h3>1.1 Áp lực từ khối ngoại</h3>).
+• TUYỆT ĐỐI KHÔNG dùng <p><strong>1. Tiêu đề</strong></p> hoặc markdown ## thay cho thẻ <h2>/<h3>.
+5. Tuyệt đối giữ văn phong sắc sảo, tự nhiên, không nhồi nhét từ khóa (keyword stuffing).
+6. ĐỊNH DẠNG BÁO CHÍ (Tùy chọn): Nếu bài viết có trích dẫn lời phát biểu của chuyên gia, tổ chức uy tín, BẮT BUỘC dùng thẻ <blockquote> để bọc câu nói đó lại nhằm tăng độ uy tín. KHÔNG bịa ra trích dẫn giả mạo nếu ngữ cảnh không có thật.
 
 Trả về 1 chuỗi JSON duy nhất:
-{"title":"Chứa từ khóa chính. BẮT BUỘC 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. BẮT BUỘC 120-150 ký tự","htmlContent":"Nội dung HTML dùng h2 p ul li. CHÈN 1-2 Outbound link. (CHÚ Ý: LƯU Ý TỐI QUAN TRỌNG: Mọi dấu ngoặc kép bên trong HTML hoặc Blockquote phải được thay bằng dấu nháy đơn (\') hoặc escape (\\\") để KHÔNG LÀM VỠ định dạng JSON)","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa mang tính biểu trưng hoặc trừu tượng (ví dụ: finance abstract background, business workspace laptop, bull market statue, gold and money... KHÔNG tìm ảnh biểu đồ cận cảnh có chữ ngoại quốc hay ngày tháng cũ)","tags":["Chứng khoán","Cổ phiếu"],"hashtags":["#chungkhoan","#dautu"]}
+{"title":"Chứa từ khóa chính. BẮT BUỘC 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. BẮT BUỘC 120-150 ký tự","htmlContent":"Nội dung HTML hoàn chỉnh gồm đoạn mở đầu <p>, tiếp theo là các phần <h2>, <h3>, <p>, <ul>, <li>, bảng <table> nếu có so sánh số liệu. CHÈN 1-2 Outbound link. (CHÚ Ý: LƯU Ý TỐI QUAN TRỌNG: Mọi dấu ngoặc kép bên trong HTML hoặc Blockquote phải được thay bằng dấu nháy đơn (\') hoặc escape (\\\") để KHÔNG LÀM VỠ định dạng JSON)","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa mang tính biểu trưng hoặc trừu tượng (ví dụ: finance abstract background, business workspace laptop, bull market statue, gold and money... KHÔNG tìm ảnh biểu đồ cận cảnh có chữ ngoại quốc hay ngày tháng cũ)","tags":["Chứng khoán","Cổ phiếu"],"hashtags":["#chungkhoan","#dautu"]}
 
 KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse error). LƯU Ý LUÔN KIỂM TRA JSON QUOTES. Viết xuất sắc nhất có thể. Khởi chạy với Từ khóa chính: ${topic}`;
 
@@ -1730,6 +1770,9 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
                     return '';
                 });
                 const data = JSON.parse(cleanedText);
+                
+                // Chuẩn hóa toàn bộ thẻ Heading (H2, H3) trong htmlContent
+                data.htmlContent = ensureSemanticHeadings(data.htmlContent);
 
                 // Populate Review Panel
                 document.getElementById('review-title').value = data.title;
@@ -3022,7 +3065,10 @@ ${emptyMsg}
             if (endIndex === -1) endIndex = html.indexOf(articleEndMarker, startIndex);
             if (endIndex === -1) endIndex = html.length;
             
-            return html.substring(startIndex, endIndex).trim();
+            let body = html.substring(startIndex, endIndex).trim();
+            // Loại bỏ khối Mục Lục đã sinh nếu có để tránh bị nhân đôi khi tái tạo
+            body = body.replace(/<div class="seo-toc-container">[\s\S]*?<\/ul>\s*<\/div>/gi, '').trim();
+            return body;
         }
 
         async function chatEditDraft() {
@@ -3060,10 +3106,11 @@ Từ khóa tìm kiếm ảnh Unsplash hiện tại là: "${currentArticleData.im
 NGUYÊN TẮC BẮT BUỘC KHI CHỈNH SỬA:
 1. NGUYÊN TẮC BẢO TOÀN NỘI DUNG (QUAN TRỌNG NHẤT): TUYỆT ĐỐI KHÔNG ĐƯỢC TÓM TẮT, KHÔNG RÚT GỌN, KHÔNG BỎ BỚT BẤT KỲ ĐOẠN VĂN, MỤC NỘI DUNG, BẢNG BIỂU HAY SỐ LIỆU NÀO TRONG BÀI GỐC CỦA TÁC GIẢ. Toàn bộ nội dung bài viết phải được giữ nguyên vẹn 100%, chỉ thực hiện sửa đổi chính xác vào phần mà người dùng chỉ định.
 2. Kết quả chỉnh sửa phải trả về dưới dạng mã HTML chuẩn (chỉ phần body của bài viết, dùng h2, h3, p, strong, ul, li, table, th, td...). Không chèn thêm thẻ <html>, <head>, <body> hoặc các CSS styles/inline styles phức tạp vào table/th/td vì hệ thống đã tự động cấu hình giao diện tối ưu cho Dark Mode.
-3. Tuyệt đối giữ lại các liên kết (thẻ a) hiện có trong nội dung để đảm bảo tối ưu SEO, không được tự ý gỡ bỏ hoặc sửa đổi liên kết trừ khi người dùng yêu cầu rõ ràng.
-4. KHÔNG tự ý chèn bất kỳ thẻ <img> thô nào vào trường htmlContent. Việc hiển thị ảnh bìa của bài viết đã có hệ thống tự động xử lý bên ngoài.
-5. Nếu người dùng yêu cầu thay đổi hình ảnh, ảnh bìa, hoặc chủ đề của hình ảnh, bạn BẮT BUỘC phải tạo ra một từ khóa tìm kiếm tiếng Anh khác với từ khóa hiện tại (nhưng vẫn liên quan chặt chẽ đến chủ đề bài viết/yêu cầu người dùng) và đặt vào trường imagePrompt trong chuỗi JSON trả về. Nếu người dùng không yêu cầu thay đổi hình ảnh/ảnh bìa, hãy giữ nguyên giá trị từ khóa hiện tại là "${currentArticleData.imagePrompt || ""}".
-6. Trả về kết quả dưới dạng một chuỗi JSON duy nhất có cấu trúc sau:
+3. CẤU TRÚC TIÊU ĐỀ: BẮT BUỘC giữ hoặc tạo các tiêu đề phần chính dạng thẻ <h2> (và <h3> cho mục nhỏ). Tuyệt đối không xóa bỏ các thẻ <h2> hoặc chuyển thành <p><strong>.
+4. Tuyệt đối giữ lại các liên kết (thẻ a) hiện có trong nội dung để đảm bảo tối ưu SEO, không được tự ý gỡ bỏ hoặc sửa đổi liên kết trừ khi người dùng yêu cầu rõ ràng.
+5. KHÔNG tự ý chèn bất kỳ thẻ <img> thô nào vào trường htmlContent. Việc hiển thị ảnh bìa của bài viết đã có hệ thống tự động xử lý bên ngoài.
+6. Nếu người dùng yêu cầu thay đổi hình ảnh, ảnh bìa, hoặc chủ đề của hình ảnh, bạn BẮT BUỘC phải tạo ra một từ khóa tìm kiếm tiếng Anh khác với từ khóa hiện tại (nhưng vẫn liên quan chặt chẽ đến chủ đề bài viết/yêu cầu người dùng) và đặt vào trường imagePrompt trong chuỗi JSON trả về. Nếu người dùng không yêu cầu thay đổi hình ảnh/ảnh bìa, hãy giữ nguyên giá trị từ khóa hiện tại là "${currentArticleData.imagePrompt || ""}".
+7. Trả về kết quả dưới dạng một chuỗi JSON duy nhất có cấu trúc sau:
 {"htmlContent":"Toàn bộ mã HTML bài viết đầy đủ (đã áp dụng chỉnh sửa, chú ý escape dấu nháy kép bên trong thẻ HTML để không làm vỡ JSON)","title":"Tiêu đề bài viết (mặc định giữ nguyên: ${currentTitle})","metaDescription":"Mô tả SEO bài viết (mặc định giữ nguyên: ${currentDesc})","imagePrompt":"Mô tả tìm kiếm ảnh Unsplash mới bằng tiếng Anh"}
 
 KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
@@ -3081,7 +3128,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                 // Update global state
                 currentArticleData.title = data.title || currentTitle;
                 currentArticleData.metaDescription = data.metaDescription || currentDesc;
-                currentArticleData.htmlContent = data.htmlContent;
+                currentArticleData.htmlContent = ensureSemanticHeadings(data.htmlContent);
                 
                 // Check if imagePrompt has changed or if we need to resolve image
                 const oldPrompt = currentArticleData.imagePrompt || "";
@@ -3247,6 +3294,54 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
         function buildTemplate(title, desc, category, body, imageUrl, tags, hashtags, dateString, authorName, authorLink) {
             const depth = category === 'market' ? '../' : '../'; 
             
+            // 1. Chuẩn hóa toàn bộ thẻ Heading (H2, H3)
+            let processedBody = ensureSemanticHeadings(body);
+
+            // 2. Trích xuất H2, H3 để gắn ID và tạo Mục lục (Table of Contents - TOC)
+            const headingRegex = /<(h[23])([^>]*)>(.*?)<\/\1>/gi;
+            let headingsList = [];
+            let headingIdx = 0;
+
+            processedBody = processedBody.replace(headingRegex, (match, tag, attrs, inner) => {
+                const cleanTag = tag.toLowerCase();
+                const plainText = inner.replace(/<[^>]+>/g, '').trim();
+
+                let headingId = `heading-${headingIdx}`;
+                const idMatch = attrs.match(/id=["']([^"']+)["']/i);
+                if (idMatch) {
+                    headingId = idMatch[1];
+                } else {
+                    attrs = ` id="${headingId}"${attrs}`;
+                }
+
+                headingsList.push({
+                    tag: cleanTag,
+                    id: headingId,
+                    text: plainText
+                });
+                headingIdx++;
+                return `<${cleanTag}${attrs}>${inner}</${cleanTag}>`;
+            });
+
+            // 3. Render HTML Mục lục nếu bài viết có từ 2 tiêu đề trở lên
+            let tocHtml = '';
+            if (headingsList.length >= 2) {
+                const tocItems = headingsList.map(h => {
+                    const cls = h.tag === 'h2' ? 'toc-h2' : 'toc-h3';
+                    return `        <li class="${cls}"><a href="#${h.id}">${h.text}</a></li>`;
+                }).join('\n');
+
+                tocHtml = `      <div class="seo-toc-container">
+        <div class="toc-header">
+          <span class="toc-title"><i class="fa-solid fa-list-ul"></i> Nội dung chính</span>
+          <button class="toc-toggle" onclick="this.parentElement.parentElement.classList.toggle('collapsed')"><i class="fa-solid fa-chevron-up"></i></button>
+        </div>
+        <ul class="toc-list">
+${tocItems}
+        </ul>
+      </div>\n`;
+            }
+
             const tagsHtml = (tags || []).map(t => `<span style="display:inline-block; padding:4px 12px; background:rgba(99,102,241,0.2); color:#a5b4fc; border-radius:15px; font-size:12px; margin-right:5px;">${t}</span>`).join('');
             const hashHtml = (hashtags || []).map(t => `<a href="#" style="color:#60a5fa; text-decoration:none; margin-right:8px;">${t}</a>`).join('');
 
@@ -3326,6 +3421,22 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
     .article-cover-caption { margin-top: 12px; font-size: 0.85rem; color: #94a3b8; line-height: 1.5; text-align: center; font-style: italic; }
     .article-cover-caption a { color: #60a5fa; text-decoration: none; }
     .article-cover-caption a:hover { text-decoration: underline; }
+
+    /* CSS cho Mục lục bài viết (Table of Contents - TOC) */
+    html { scroll-behavior: smooth; }
+    h1, h2, h3, h4, h5, h6 { scroll-margin-top: 110px; }
+    .seo-toc-container { background: rgba(99, 102, 241, 0.07); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 12px; padding: 20px; margin: 25px 0 30px; backdrop-filter: blur(8px); }
+    .toc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .toc-title { font-weight: 700; font-size: 1.05rem; color: #a5b4fc; }
+    .toc-toggle { background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 4px; transition: 0.2s; }
+    .toc-list { list-style: none !important; padding: 0 !important; margin: 0 !important; }
+    .toc-list li { margin-bottom: 8px; line-height: 1.5; }
+    .toc-h2 { font-weight: 600; }
+    .toc-h3 { padding-left: 20px; font-size: 0.95em; color: #94a3b8; }
+    .toc-list a { text-decoration: none; color: #cbd5e1; transition: color 0.2s; display: inline-block; }
+    .toc-list a:hover { color: #60a5fa; text-decoration: underline; }
+    .seo-toc-container.collapsed .toc-list { display: none; }
+    .seo-toc-container.collapsed .toc-toggle { transform: rotate(180deg); color: #60a5fa; }
   </style>
 </head>
 <body data-lead-popup>
@@ -3366,7 +3477,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
           </figcaption>
       </figure>
       
-      ${body}
+${tocHtml}      ${processedBody}
 
       <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
           <div style="margin-bottom: 10px;"><strong>Tags: </strong> ${tagsHtml}</div>
