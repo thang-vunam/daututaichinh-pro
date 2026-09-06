@@ -34,11 +34,14 @@ function bindTocInteractions(tocCard) {
             const targetId = this.getAttribute('href').substring(1);
             const targetEl = document.getElementById(targetId);
             if (targetEl) {
-                const headerOffset = 100; // Chiều cao thanh menu cố định + padding an toàn
+                // Trên mobile (<= 768px), thanh header 2 tầng (Brand + 5 links) cao ~105-115px.
+                // Đặt offset 140px để tiêu đề có khoảng thở 25-30px, tuyệt đối không bị che mất dòng trên cùng.
+                const isMobile = window.innerWidth <= 768;
+                const headerOffset = isMobile ? 140 : 105;
                 const elementPosition = targetEl.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
                 window.scrollTo({
-                    top: offsetPosition,
+                    top: Math.max(0, offsetPosition),
                     behavior: 'smooth'
                 });
             }
@@ -46,11 +49,187 @@ function bindTocInteractions(tocCard) {
     });
 }
 
+function initBackToTocButton(tocCard) {
+    if (!tocCard || document.getElementById('btn-back-to-toc')) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'btn-back-to-toc';
+    btn.className = 'back-to-toc-btn';
+    btn.setAttribute('aria-label', 'Quay lại mục lục');
+    btn.setAttribute('title', 'Quay lại mục lục');
+    btn.innerHTML = '<i class="fa-solid fa-list-ul"></i><span>Mục lục</span>';
+    document.body.appendChild(btn);
+
+    // Khi click: cuộn mượt về vị trí Mục lục
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Nếu mục lục đang thu gọn -> tự mở ra để người dùng dễ chọn
+        if (tocCard.classList.contains('collapsed')) {
+            tocCard.classList.remove('collapsed');
+        }
+        const isMobile = window.innerWidth <= 768;
+        const headerOffset = isMobile ? 140 : 105;
+        const tocPos = tocCard.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+        window.scrollTo({
+            top: Math.max(0, tocPos),
+            behavior: 'smooth'
+        });
+    });
+
+    // Hiện nút khi cuộn qua Mục lục (đáy của Mục lục đi qua đỉnh màn hình)
+    let isTicking = false;
+    function checkVisibility() {
+        const rect = tocCard.getBoundingClientRect();
+        if (rect.bottom < 80) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+        isTicking = false;
+    }
+
+    window.addEventListener('scroll', function() {
+        if (!isTicking) {
+            window.requestAnimationFrame(checkVisibility);
+            isTicking = true;
+        }
+    }, { passive: true });
+
+    checkVisibility();
+}
+
+function injectTocStyles() {
+    if (document.getElementById('seo-toc-injected-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'seo-toc-injected-styles';
+    style.innerHTML = `
+        /* Smooth scrolling và khoảng cách né Header cho các Heading */
+        html { scroll-behavior: smooth; }
+        h1, h2, h3, h4, h5, h6 { scroll-margin-top: 110px; }
+        
+        @media screen and (max-width: 768px) {
+            h1, h2, h3, h4, h5, h6 { scroll-margin-top: 140px !important; }
+        }
+
+        /* Hộp Mục lục chuẩn SEO */
+        .seo-toc-container {
+            background: rgba(99, 102, 241, 0.06);
+            border: 1px solid rgba(99, 102, 241, 0.22);
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin: 28px 0;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+        }
+        .toc-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px;
+        }
+        .toc-title { font-weight: 700; font-size: 1.05rem; color: #a5b4fc; }
+        .toc-toggle {
+            background: transparent; border: none; color: #cbd5e1; cursor: pointer;
+            padding: 6px 8px; border-radius: 6px; transition: 0.25s;
+        }
+        .toc-toggle:hover { color: #38bdf8; background: rgba(255,255,255,0.05); }
+        .toc-list { list-style: none !important; padding: 0 !important; margin: 0 !important; }
+        .toc-list li { margin-bottom: 4px; line-height: 1.4; }
+        .toc-h2 { font-weight: 600; }
+        .toc-h3 { padding-left: 18px; font-size: 0.95em; }
+
+        /* Tối ưu 1 & 2: Vùng bấm cảm ứng lớn (Touch Target) & Phản hồi thị giác khi chạm (:active) */
+        .toc-list a {
+            text-decoration: none;
+            color: #cbd5e1;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .toc-list a:hover {
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.08);
+            border-color: rgba(56, 189, 248, 0.2);
+        }
+        .toc-list a:active {
+            color: #60a5fa !important;
+            background: rgba(99, 102, 241, 0.25) !important;
+            border-color: rgba(99, 102, 241, 0.5) !important;
+            transform: scale(0.985);
+        }
+
+        /* Chế độ thu gọn */
+        .seo-toc-container.collapsed .toc-list { display: none; }
+        .seo-toc-container.collapsed .toc-toggle { transform: rotate(180deg); color: #38bdf8; }
+
+        /* Tối ưu 4: Nút nổi Quay lại Mục lục */
+        .back-to-toc-btn {
+            position: fixed;
+            bottom: 96px;
+            right: 24px;
+            z-index: 9980;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 15px;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(99, 102, 241, 0.45);
+            border-radius: 30px;
+            color: #93c5fd;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(99, 102, 241, 0.25);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(12px);
+            transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s, background 0.2s, border-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .back-to-toc-btn.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .back-to-toc-btn:hover {
+            background: rgba(30, 41, 59, 0.98);
+            border-color: #60a5fa;
+            color: #ffffff;
+            box-shadow: 0 6px 22px rgba(37, 99, 235, 0.45);
+        }
+        .back-to-toc-btn:active {
+            transform: scale(0.95);
+            background: rgba(99, 102, 241, 0.35);
+        }
+
+        /* Responsive Mobile */
+        @media screen and (max-width: 768px) {
+            .seo-toc-container { padding: 15px; margin: 20px 0; }
+            .toc-title { font-size: 1rem; }
+            .toc-h3 { padding-left: 14px; font-size: 0.9em; }
+            .back-to-toc-btn {
+                bottom: 82px;
+                right: 16px;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 function initTableOfContents() {
-    // Nếu trang đã có Mục lục HTML dựng sẵn -> Chỉ gắn sự kiện tương tác
+    // Luôn tiêm CSS hỗ trợ mục lục và mobile offset
+    injectTocStyles();
+
+    // Nếu trang đã có Mục lục HTML dựng sẵn -> Gắn sự kiện tương tác và nút Quay lại Mục lục
     const existingToc = document.querySelector('.seo-toc-container');
     if (existingToc) {
         bindTocInteractions(existingToc);
+        initBackToTocButton(existingToc);
         return;
     }
 
@@ -102,48 +281,7 @@ function initTableOfContents() {
     }
 
     bindTocInteractions(tocCard);
-
-    // Tiêm CSS động cho Mục Lục
-    const style = document.createElement('style');
-    style.innerHTML = `
-        /* Global fixes cho việc Menu che khuất tiêu đề */
-        html { scroll-behavior: smooth; }
-        h1, h2, h3, h4, h5, h6 { scroll-margin-top: 110px; }
-
-        .seo-toc-container {
-            background: rgba(155, 89, 240, 0.05);
-            border: 1px solid rgba(155, 89, 240, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 30px 0;
-            backdrop-filter: blur(8px);
-            transition: all 0.3s ease;
-        }
-        .toc-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 15px;
-        }
-        .toc-title { font-weight: 600; font-size: 1.1rem; color: #fff; }
-        .toc-toggle { background: transparent; border: none; color: #cbd5e1; cursor: pointer; padding: 5px; transition: 0.3s; }
-        .toc-list { list-style: none; padding: 0 !important; margin: 0 !important; }
-        .toc-list li { margin-bottom: 10px; line-height: 1.4; }
-        .toc-h2 { font-weight: 500; }
-        .toc-h3 { padding-left: 20px; font-size: 0.95em; }
-        .toc-list a { text-decoration: none; color: #cbd5e1; transition: color 0.2s; display: block; }
-        .toc-list a:hover { color: #00e5ff; }
-        
-        /* Chế độ thu gọn */
-        .seo-toc-container.collapsed .toc-list { display: none; }
-        .seo-toc-container.collapsed .toc-toggle { transform: rotate(180deg); color: #00e5ff; }
-        
-        /* Reponsive Mobile */
-        @media screen and (max-width: 768px) {
-            .seo-toc-container { padding: 15px; margin: 20px 0; }
-            .toc-title { font-size: 1rem; }
-            .toc-h3 { padding-left: 15px; font-size: 0.9em; }
-        }
-    `;
-    document.head.appendChild(style);
+    initBackToTocButton(tocCard);
 }
 
 function optimizeYoutubeEmbeds() {
