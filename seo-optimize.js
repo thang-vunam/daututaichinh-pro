@@ -2,14 +2,58 @@
  * GÓI TỐI ƯU HÓA SEO CẤP TỐC: MỤC LỤC & TỐC ĐỘ (Lite Youtube)
  * Code tự động chạy sau khi trang load xong.
  */
-document.addEventListener('DOMContentLoaded', function() {
+function initAllSeo() {
     initFavicon();
     initTableOfContents();
     optimizeYoutubeEmbeds();
     initSocialShareButtons();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAllSeo);
+} else {
+    initAllSeo();
+}
+
+function bindTocInteractions(tocCard) {
+    if (!tocCard || tocCard.dataset.tocBound) return;
+    tocCard.dataset.tocBound = 'true';
+
+    // Đảm bảo nút đóng/mở hoạt động
+    const toggleBtn = tocCard.querySelector('.toc-toggle');
+    if (toggleBtn) {
+        toggleBtn.onclick = function() {
+            tocCard.classList.toggle('collapsed');
+        };
+    }
+
+    // Gắn click handler cho từng link TOC để cuộn trang chính xác (tránh bị thanh menu che)
+    tocCard.querySelectorAll('.toc-list a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                const headerOffset = 100; // Chiều cao thanh menu cố định + padding an toàn
+                const elementPosition = targetEl.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+}
 
 function initTableOfContents() {
+    // Nếu trang đã có Mục lục HTML dựng sẵn -> Chỉ gắn sự kiện tương tác
+    const existingToc = document.querySelector('.seo-toc-container');
+    if (existingToc) {
+        bindTocInteractions(existingToc);
+        return;
+    }
+
     // Chỉ lấy H2, H3 trong phần bài viết chính để tránh lấy nhầm Header/Footer
     const articleBody = document.querySelector('.blog-article') || document.querySelector('article') || document.body;
     const headings = articleBody.querySelectorAll('h2, h3');
@@ -23,7 +67,7 @@ function initTableOfContents() {
     let tocHTML = `
         <div class="toc-header">
             <span class="toc-title"><i class="fa-solid fa-list-ul"></i> Nội dung chính</span>
-            <button class="toc-toggle" onclick="this.parentElement.parentElement.classList.toggle('collapsed')"><i class="fa-solid fa-chevron-up"></i></button>
+            <button class="toc-toggle"><i class="fa-solid fa-chevron-up"></i></button>
         </div>
         <ul class="toc-list">
     `;
@@ -44,40 +88,20 @@ function initTableOfContents() {
     tocHTML += `</ul>`;
     tocCard.innerHTML = tocHTML;
 
-    // Tìm vị trí chèn: Sau đoạn Sapo (đoạn thẻ p đầu tiên sau thẻ H1)
-    const h1 = articleBody.querySelector('h1');
-    if (h1 && h1.nextElementSibling) {
-        // Nếu thẻ tiếp theo là ảnh tải bìa, thì chèn sau ảnh
-        let insertNode = h1.nextElementSibling;
-        if (insertNode.tagName.toLowerCase() === 'div' && insertNode.querySelector('img')) {
-            insertNode = insertNode.nextElementSibling;
-        }
-        if (insertNode) {
-            articleBody.insertBefore(tocCard, insertNode.nextSibling);
-        } else {
-            articleBody.insertBefore(tocCard, h1.nextSibling);
-        }
+    // Tìm vị trí chèn: Sau thẻ figure ảnh bìa hoặc sau H1
+    const figure = articleBody.querySelector('figure.article-cover-figure') || articleBody.querySelector('figure');
+    if (figure && figure.nextSibling) {
+        articleBody.insertBefore(tocCard, figure.nextSibling);
     } else {
-        articleBody.prepend(tocCard);
+        const h1 = articleBody.querySelector('h1');
+        if (h1 && h1.nextElementSibling) {
+            articleBody.insertBefore(tocCard, h1.nextElementSibling.nextSibling || h1.nextElementSibling);
+        } else {
+            articleBody.prepend(tocCard);
+        }
     }
 
-    // Gắn click handler cho từng link TOC để cuộn trang chính xác (tránh bị thanh menu che)
-    tocCard.querySelectorAll('.toc-list a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            const targetEl = document.getElementById(targetId);
-            if (targetEl) {
-                const headerOffset = 100; // Chiều cao thanh menu cố định + padding an toàn
-                const elementPosition = targetEl.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
+    bindTocInteractions(tocCard);
 
     // Tiêm CSS động cho Mục Lục
     const style = document.createElement('style');
