@@ -2005,6 +2005,58 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
             } catch(e) { /* Bỏ qua lỗi */ }
         }
         
+        // QUÉT THƯ MỤC GITHUB ĐỂ BỔ SUNG BÀI VIẾT THIẾU VÀO CATALOG
+        async function backfillCatalog(owner, repo, token, category, catalog) {
+            try {
+                const dirRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${category}`, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if(!dirRes.ok) return catalog;
+                const files = await dirRes.json();
+                if (!Array.isArray(files)) return catalog;
+                const htmlFiles = files.filter(f => f.name.endsWith('.html') && f.name !== 'index.html');
+                
+                const catalogSlugs = catalog.map(a => a.slug);
+                
+                for(const file of htmlFiles) {
+                    const fileSlug = file.name.replace('.html', '');
+                    if(catalogSlugs.includes(fileSlug)) continue;
+                    
+                    // Bài chưa có trong catalog → fetch để lấy title
+                    let realTitle = fileSlug.replace(/-/g, ' ');
+                    realTitle = realTitle.charAt(0).toUpperCase() + realTitle.slice(1);
+                    let extractedDesc = '';
+                    try {
+                        const fileRes = await fetch(file.url, {
+                            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                        });
+                        if(fileRes.ok) {
+                            const fileData = await fileRes.json();
+                            const content = decodeURIComponent(escape(atob(fileData.content.replace(/\n/g, ''))));
+                            // Lấy <title>
+                            const titleMatch = content.match(/<title>([^<|]+)/i);
+                            if(titleMatch) realTitle = titleMatch[1].trim();
+                            // Lấy <h1>
+                            const h1Match = content.match(/<h1>([^<]+)/i);
+                            if(h1Match) realTitle = h1Match[1].trim();
+                            // Lấy meta description
+                            const descMatch = content.match(/meta\s+name=["']description["']\s+content=["']([^"']+)/i);
+                            if(descMatch) extractedDesc = descMatch[1].trim();
+                        }
+                    } catch(e) {}
+                    
+                    catalog.push({
+                        title: realTitle,
+                        slug: fileSlug,
+                        desc: extractedDesc || '',
+                        date: '',
+                        category: category
+                    });
+                }
+            } catch(e) {}
+            return catalog;
+        }
+
         // TẠO TRANG DANH SÁCH TỪ CATALOG
         async function generateListingFromCatalog(owner, repo, token, category, catalog) {
             const catTitle = category === 'market' ? 'Thị trường chứng khoán' : 'Bài viết & Phân tích';
