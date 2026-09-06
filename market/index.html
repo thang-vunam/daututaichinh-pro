@@ -1,29 +1,51 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"></script>
-  <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-RJZJX69KDM');</script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RJZJX69KDM');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thị trường chứng khoán | daututaichinh.pro</title>
+  <meta name="description" content="Tổng hợp nhận định thị trường, phân tích kỹ thuật và tin tức chứng khoán Việt Nam.">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+  <link rel="shortcut icon" href="/favicon.ico">
   <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../lead-form.css">
+  <link rel="stylesheet" href="../chatbot.css">
 </head>
-<body>
+<body data-lead-popup>
 <header class="top-bar">
   <div class="container nav">
-    <a href="/" class="brand">Đầu tư & Tài chính chuyên sâu</a>
+    <a href="/" class="brand">
+      <img src="../logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
+      <div class="brand-text">
+        <span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
+        <span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
+      </div>
+    </a>
     <nav class="nav-links">
       <a href="/">Trang chủ</a>
       <a href="/market/">Thị trường</a>
       <a href="/blog/">Bài viết</a>
+      <a href="/#tai-lieu">Tài liệu</a>
+      <a href="/#contact">Liên hệ</a>
     </nav>
   </div>
+  <!-- THANH TÌM KIẾM CỐ ĐỊNH CHUNG VỚI MENU (STICKY HEADER) -->
   <div class="header-search-bar">
     <div class="container">
       <div class="search-filter-box header-search-box">
         <div class="search-input-wrapper">
           <span class="search-input-icon">🔍</span>
-          <input type="text" id="article-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu (VD: SSI, VN-Index, HPG, PVS...)..." autocomplete="off" />
+          <input type="text" id="article-search-input" class="search-input-field" placeholder="Tìm kiếm bài viết, mã cổ phiếu (VD: SSI, VN-Index, HPG, PVS, lãi suất...)..." autocomplete="off" />
         </div>
       </div>
     </div>
@@ -291,10 +313,13 @@
         <p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">Nhận định thị trường chứng khoán Việt Nam tuần 16/03 – 20/03/2026. Phân tích VN-Index, dòng tiền và các nhóm ngành nổi bật.</p>
         <a href="nhan-dinh-thi-truong-16-03-20-03-2026.html" class="link-inline">Đọc bài viết →</a>
       </article>
-
     </div>
   </section>
 </main>
+<footer class="footer">
+  <div class="container"><p>© <span id="year">2026</span> daututaichinh.pro</p></div>
+</footer>
+<script src="../lead-form.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('article-search-input');
