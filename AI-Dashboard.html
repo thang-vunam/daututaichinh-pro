@@ -1343,9 +1343,11 @@ ${content.substring(0, 3000)}`;
                 return { tag: 'h2', text: cleanLine };
             }
             
-            // Dòng chữ in hoa ngắn hoặc tiêu đề ngắn đứng riêng (không có dấu chấm cuối câu)
-            if (cleanLine.length > 5 && cleanLine.length < 80 && !cleanLine.endsWith('.') && !cleanLine.includes(',') && !cleanLine.startsWith('-') && !cleanLine.startsWith('•')) {
-                if (cleanLine === cleanLine.toUpperCase()) {
+            // Dòng chữ in hoa ngắn hoặc tiêu đề ngắn đứng riêng (không có dấu chấm câu ở cuối)
+            if (cleanLine.length >= 4 && cleanLine.length < 80 && !/[.,;!?…]$/.test(cleanLine) && !cleanLine.startsWith('-') && !cleanLine.startsWith('•') && !cleanLine.startsWith('*')) {
+                const isHeadingKeyword = /^(Tổng quan|Bối cảnh|Thực trạng|Nguyên nhân|Giải pháp|Đánh giá|Phân tích|Nhận định|Triển vọng|Khuyến nghị|Chiến lược|Kết luận|Tóm lại|Bài học|Điểm cần lưu ý|Rủi ro)/i.test(cleanLine);
+                const isShortTitle = cleanLine.split(/\s+/).length <= 9 && !cleanLine.includes(':');
+                if (cleanLine === cleanLine.toUpperCase() || isHeadingKeyword || isShortTitle) {
                     return { tag: 'h2', text: cleanLine };
                 }
             }
