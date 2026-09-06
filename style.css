@@ -198,6 +198,10 @@ main {
 }
 
 @media (max-width: 768px) {
+  h1, h2, h3, h4, h5, h6 {
+    scroll-margin-top: 140px !important;
+  }
+
   .top-bar {
     height: auto;
     padding: 10px 0;
@@ -1054,5 +1058,165 @@ main {
   backdrop-filter: blur(16px);
   z-index: 1050;
 }
+
+/* ================= TABLE OF CONTENTS (TOC) ================= */
+.seo-toc-container {
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.22);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin: 28px 0;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.toc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.toc-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #a5b4fc;
+}
+
+.toc-toggle {
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: 0.25s;
+}
+
+.toc-toggle:hover {
+  color: #38bdf8;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.toc-list {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.toc-list li {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.toc-h2 {
+  font-weight: 600;
+}
+
+.toc-h3 {
+  padding-left: 18px;
+  font-size: 0.95em;
+  color: #94a3b8;
+}
+
+/* Tối ưu 1 & 2: Vùng bấm rộng (Touch Target) & Phản hồi thị giác khi chạm (:active) */
+.toc-list a {
+  text-decoration: none;
+  color: #cbd5e1;
+  display: block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toc-list a:hover {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.2);
+}
+
+.toc-list a:active {
+  color: #60a5fa !important;
+  background: rgba(99, 102, 241, 0.25) !important;
+  border-color: rgba(99, 102, 241, 0.5) !important;
+  transform: scale(0.985);
+}
+
+.seo-toc-container.collapsed .toc-list {
+  display: none;
+}
+
+.seo-toc-container.collapsed .toc-toggle {
+  transform: rotate(180deg);
+  color: #38bdf8;
+}
+
+/* Tối ưu 4: Nút nổi Quay lại Mục lục */
+.back-to-toc-btn {
+  position: fixed;
+  bottom: 96px;
+  right: 24px;
+  z-index: 9980;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(99, 102, 241, 0.45);
+  border-radius: 30px;
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(99, 102, 241, 0.25);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s, background 0.2s, border-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back-to-toc-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-toc-btn:hover {
+  background: rgba(30, 41, 59, 0.98);
+  border-color: #60a5fa;
+  color: #ffffff;
+  box-shadow: 0 6px 22px rgba(37, 99, 235, 0.45);
+}
+
+.back-to-toc-btn:active {
+  transform: scale(0.95);
+  background: rgba(99, 102, 241, 0.35);
+}
+
+@media screen and (max-width: 768px) {
+  .seo-toc-container {
+    padding: 15px;
+    margin: 20px 0;
+  }
+  .toc-title {
+    font-size: 1rem;
+  }
+  .toc-h3 {
+    padding-left: 14px;
+    font-size: 0.9em;
+  }
+  .back-to-toc-btn {
+    bottom: 82px;
+    right: 16px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
 
 
