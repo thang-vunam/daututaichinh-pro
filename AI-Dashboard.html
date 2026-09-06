@@ -1109,16 +1109,39 @@ Bạn có thể viết:
                 const today = new Date().toLocaleDateString('vi-VN', {day:'2-digit', month:'2-digit', year:'numeric'});
                 const lsiContext = secManualKw ? ` và bộ từ khóa phụ: "${secManualKw}"` : '';
                 
-                const isRawText = !content.includes('<p>') && !content.includes('<h2>') && !content.includes('<div>');
-                let htmlBody = isRawText ? formatRawTextToHtml(content) : content;
+                // Tự động nhận diện Tiêu đề bài viết từ dòng đầu tiên (nếu có)
+                const rawLines = content.split('\n');
+                const nonEmptyLines = rawLines.map(l => l.trim()).filter(Boolean);
+                let detectedTitle = '';
+                let contentForBody = content;
+
+                if (nonEmptyLines.length > 0) {
+                    let firstLine = nonEmptyLines[0];
+                    let cleanFirst = firstLine.replace(/^\*+|\*+$/g, '').trim();
+                    if ((cleanFirst.startsWith('"') && cleanFirst.endsWith('"')) || (cleanFirst.startsWith('“') && cleanFirst.endsWith('”'))) {
+                        cleanFirst = cleanFirst.substring(1, cleanFirst.length - 1).trim();
+                    }
+                    // Nếu dòng đầu ngắn (dưới 150 ký tự), không kết thúc bằng dấu chấm câu đoạn văn
+                    if (cleanFirst.length >= 5 && cleanFirst.length < 150 && !/[.,;!?…]$/.test(cleanFirst) && cleanFirst.split(/\s+/).length <= 22) {
+                        detectedTitle = cleanFirst;
+                        // Tách bỏ dòng tiêu đề này khỏi nội dung body để không bị trùng lặp thành một thẻ <p>
+                        const firstLineIdx = content.indexOf(firstLine);
+                        if (firstLineIdx !== -1) {
+                            contentForBody = content.substring(firstLineIdx + firstLine.length).trim();
+                        }
+                    }
+                }
+
+                const isRawText = !contentForBody.includes('<p>') && !contentForBody.includes('<h2>') && !contentForBody.includes('<div>');
+                let htmlBody = isRawText ? formatRawTextToHtml(contentForBody) : contentForBody;
                 htmlBody = ensureSemanticHeadings(htmlBody);
 
                 // Prompt SEO Metadata siêu tốc (chỉ phân tích 3000 ký tự đầu, không nhồi full HTML vào JSON để AI trả về trong 2-4 giây)
-                const seoPrompt = `Hôm nay là ngày ${today}. Tôi có một bài viết về tài chính chứng khoán${keyword ? ' với từ khóa chính: "' + keyword + '"' : ''}${lsiContext}.
-Hãy phân tích nội dung, chèn từ khóa chính vào Tiêu đề và Mô tả tự nhiên chuẩn RankMath SEO.
+                const seoPrompt = `Hôm nay là ngày ${today}. Tôi có một bài viết về tài chính chứng khoán${keyword ? ' với từ khóa chính: "' + keyword + '"' : ''}${detectedTitle ? ' và Tiêu đề gốc của tác giả: "' + detectedTitle + '"' : ''}${lsiContext}.
+Hãy phân tích nội dung, chèn từ khóa chính vào Tiêu đề và Mô tả tự nhiên chuẩn RankMath SEO.${detectedTitle ? ' ƯU TIÊN GIỮ NGUYÊN hoặc hoàn thiện Tiêu đề gốc của tác giả sao cho hấp dẫn chuẩn SEO.' : ''}
 Trả về ĐÚNG MỘT KHỐI JSON:
 {
-  "title": "Tiêu đề hấp dẫn chuẩn SEO, chứa từ khóa chính, độ dài 35-55 ký tự",
+  "title": "${(detectedTitle || 'Tiêu đề hấp dẫn chuẩn SEO, chứa từ khóa chính, độ dài 35-65 ký tự').replace(/"/g, '\\"')}",
   "slug": "url-slug-khong-dau-ngan-gon",
   "metaDescription": "Mô tả SEO tóm tắt nội dung bài viết, độ dài 120-155 ký tự",
   "imagePrompt": "10 English keywords for abstract professional finance cover image on Unsplash (e.g. stock market growth chart, modern trading office, financial district skyline, bull statue... NO text or foreign tickers)",
@@ -1127,7 +1150,7 @@ Trả về ĐÚNG MỘT KHỐI JSON:
 }
 CHỈ TRẢ VỀ JSON, TUYỆT ĐỐI KHÔNG GIẢI THÍCH THÊM.
 Nội dung bài viết (trích đoạn):
-${content.substring(0, 3000)}`;
+${contentForBody.substring(0, 3000)}`;
 
                 let seo;
                 try {
@@ -1135,12 +1158,11 @@ ${content.substring(0, 3000)}`;
                     let cleaned = resp.replace(/```json/g, '').replace(/```html/g, '').replace(/```/g, '').trim();
                     cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ' ' : '');
                     seo = JSON.parse(cleaned);
+                    if (detectedTitle && !seo.title) seo.title = detectedTitle;
                 } catch(aiErr) {
                     console.warn("AI Busy / Error -> Using smart local extraction:", aiErr);
                     // Tự động lấy dòng đầu tiên hoặc keyword làm tiêu đề (không cắt cụt từ)
-                    const lines = content.split('\n').map(l => l.trim()).filter(l => l.length > 5);
-                    const firstLine = lines[0] || keyword || 'Nhận định & Phân tích thị trường';
-                    const cleanTitle = firstLine.replace(/^#+\s*/, '').replace(/^\d+[\.\)]\s*/, '').substring(0, 120);
+                    const cleanTitle = detectedTitle || keyword || 'Nhận định & Phân tích thị trường';
                     const cleanSlug = cleanTitle.toLowerCase()
                         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
                         .replace(/[đĐ]/g, 'd')
@@ -1151,22 +1173,35 @@ ${content.substring(0, 3000)}`;
                     seo = {
                         title: cleanTitle,
                         slug: cleanSlug || ('bai-viet-' + Date.now()),
-                        metaDescription: content.substring(0, 155).replace(/\n/g, ' ').trim(),
+                        metaDescription: contentForBody.substring(0, 155).replace(/\n/g, ' ').trim(),
                         imagePrompt: keyword ? `${keyword} stock market finance` : 'finance investment stock market chart',
                         tags: [keyword || 'Chứng khoán', 'Đầu tư tài chính', 'Thị trường'],
                         hashtags: ['#chungkhoan', '#dautu']
                     };
                 }
 
-                // Loại bỏ tiêu đề bị lặp ở dòng đầu tiên của body để tránh trùng với <h1>
-                if (seo.title && htmlBody) {
-                    const escTitle = seo.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                // Đảm bảo không còn tiêu đề bị lặp ở đầu body
+                const finalTitle = detectedTitle || seo.title || keyword || 'Nhận định & Phân tích thị trường';
+                seo.title = finalTitle;
+                
+                // Nếu chưa có slug hợp lệ thì sinh tự động từ finalTitle
+                if (!seo.slug || seo.slug.length < 4) {
+                    seo.slug = finalTitle.toLowerCase()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[đĐ]/g, 'd')
+                        .replace(/[^a-z0-9\s-]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-');
+                }
+
+                if (finalTitle && htmlBody) {
+                    const escTitle = finalTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                     htmlBody = htmlBody.replace(new RegExp(`^\\s*<h[12]>${escTitle}<\\/h[12]>\\s*`, 'i'), '');
                     htmlBody = htmlBody.replace(new RegExp(`^\\s*<p>${escTitle}<\\/p>\\s*`, 'i'), '');
                 }
 
                 // Điền vào review panel
-                document.getElementById('review-title').value = seo.title || '';
+                document.getElementById('review-title').value = finalTitle;
                 document.getElementById('review-slug').value = seo.slug || '';
                 document.getElementById('review-desc').value = seo.metaDescription || '';
 
@@ -1175,7 +1210,7 @@ ${content.substring(0, 3000)}`;
 
                 // Update global state
                 currentArticleData = {
-                    title: seo.title || '',
+                    title: finalTitle,
                     metaDescription: seo.metaDescription || '',
                     category: category,
                     htmlContent: htmlBody,
@@ -1189,7 +1224,7 @@ ${content.substring(0, 3000)}`;
                 };
 
                 // Resolve Unsplash cover image
-                const resolvedImage = await resolveUnsplashImage(seo.imagePrompt, seo.title, category);
+                const resolvedImage = await resolveUnsplashImage(seo.imagePrompt, finalTitle, category);
                 currentArticleData.imageUrl = resolvedImage.url;
                 currentArticleData.authorName = resolvedImage.authorName;
                 currentArticleData.authorLink = resolvedImage.authorLink;
@@ -1245,6 +1280,13 @@ ${content.substring(0, 3000)}`;
             const mainPattern = '(\\d+[\\.\\)\\/:\\-](?!\\d)|[IVXLCDM]+[\\.\\)\\/:\\-]|Phần\\s+\\d+|Điểm\\s+nhấn\\s+\\d+|Mục\\s+\\d+|Bước\\s+\\d+|Bài\\s+học\\s+\\d+|Chương\\s+\\d+)';
             res = res.replace(new RegExp('<p>\\s*<(?:strong|b)>\\s*(' + mainPattern + '[^<]+)<\\/(?:strong|b)>\\s*<\\/p>', 'gi'), '<h2>$1</h2>');
             res = res.replace(new RegExp('<p>\\s*(' + mainPattern + '\\s+[^\n<]{3,120})<\\/p>', 'gi'), '<h2>$1</h2>');
+            
+            // 4. Đoạn văn bọc in đậm ngắn đứng riêng không có dấu chấm kết thúc (copy từ Word/Docs)
+            res = res.replace(/<p>\s*<(?:strong|b)>\s*([^<.,;!?…]{3,95})\s*<\/(?:strong|b)>\s*<\/p>/gi, (match, inner) => {
+                const trimmedInner = inner.trim();
+                if (trimmedInner.endsWith(':') || trimmedInner.startsWith('-') || trimmedInner.startsWith('•')) return match;
+                return `<h2>${trimmedInner}</h2>`;
+            });
             
             return res;
         }
@@ -1331,23 +1373,29 @@ ${content.substring(0, 3000)}`;
             if (/^#\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^#\s+/, '') };
             
             // Loại bỏ bọc in đậm markdown nếu có: **1. Tiêu đề** -> 1. Tiêu đề
-            const cleanLine = trimmed.replace(/^\*+|\*+$/g, '').trim();
+            let cleanLine = trimmed.replace(/^\*+|\*+$/g, '').trim();
+            if ((cleanLine.startsWith('"') && cleanLine.endsWith('"')) || (cleanLine.startsWith('“') && cleanLine.endsWith('”'))) {
+                cleanLine = cleanLine.substring(1, cleanLine.length - 1).trim();
+            }
             
-            // Tiêu đề phụ (1.1, 1.2, 2.1, a), b)...)
+            // 1. Tiêu đề phụ (1.1, 1.2, 2.1, a), b)...)
             if (/^(\d+(\.\d+)+[\.\)\/:\\-]?|[a-d]\))\s*/i.test(cleanLine) && cleanLine.length < 130) {
                 return { tag: 'h3', text: cleanLine };
             }
             
-            // Tiêu đề chính mục (1., 2., 3., 1/, 1-, 1:, I., II., III., Phần 1, Điểm nhấn 1, Mục 1, Bước 1, Bài học 1, Chương 1...)
+            // 2. Tiêu đề chính mục (1., 2., 3., 1/, 1-, 1:, I., II., III., Phần 1, Điểm nhấn 1, Mục 1, Bước 1, Bài học 1, Chương 1...)
             if (/^((\d+[\.\)\/:\\-](?!\d)|[IVXLCDM]+[\.\)\/:\\-]|Phần\s+\d+|Điểm\s+nhấn\s+\d+|Mục\s+\d+|Bước\s+\d+|Bài\s+học\s+\d+|Chương\s+\d+)\s*)/i.test(cleanLine) && cleanLine.length < 160) {
                 return { tag: 'h2', text: cleanLine };
             }
             
-            // Dòng chữ in hoa ngắn hoặc tiêu đề ngắn đứng riêng (không có dấu chấm câu ở cuối)
-            if (cleanLine.length >= 4 && cleanLine.length < 80 && !/[.,;!?…]$/.test(cleanLine) && !cleanLine.startsWith('-') && !cleanLine.startsWith('•') && !cleanLine.startsWith('*')) {
-                const isHeadingKeyword = /^(Tổng quan|Bối cảnh|Thực trạng|Nguyên nhân|Giải pháp|Đánh giá|Phân tích|Nhận định|Triển vọng|Khuyến nghị|Chiến lược|Kết luận|Tóm lại|Bài học|Điểm cần lưu ý|Rủi ro)/i.test(cleanLine);
-                const isShortTitle = cleanLine.split(/\s+/).length <= 9 && !cleanLine.includes(':');
-                if (cleanLine === cleanLine.toUpperCase() || isHeadingKeyword || isShortTitle) {
+            // 3. Tiêu đề H2 tự do (dòng ngắn đứng riêng, không phải gạch đầu dòng, không có dấu chấm câu kết thúc)
+            if (!cleanLine.startsWith('-') && !cleanLine.startsWith('•') && !cleanLine.startsWith('*') && !cleanLine.startsWith('+')) {
+                const words = cleanLine.split(/\s+/).length;
+                const endsPunc = /[.,;!?…]$/.test(cleanLine);
+                const endsColon = cleanLine.endsWith(':');
+                
+                // Dòng tiêu đề độc lập: từ 1 đến 18 từ, độ dài 3-110 ký tự, không kết thúc bằng dấu ngắt câu hoặc dấu hai chấm
+                if (!endsPunc && !endsColon && words >= 1 && words <= 18 && cleanLine.length >= 3 && cleanLine.length < 110) {
                     return { tag: 'h2', text: cleanLine };
                 }
             }
