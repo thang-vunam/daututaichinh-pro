@@ -149,24 +149,37 @@ export default async function handler(request, ctx) {
     let finalSystemPrompt = SYSTEM_PROMPT + injectedData + timeContext;
 
     // Call Gemini with multi-tier model fallback
-    const candidateModels = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+    const candidateModels = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-flash-latest'];
     let result = { ok: false };
+    const attempts = [];
     
     for (const model of candidateModels) {
       // 1. Try with Google Search tool enabled
       result = await callGemini(apiKey, history, finalSystemPrompt, true, model);
+      attempts.push({ model, search: true, status: result.status, error: result.errorText });
       if (result.ok) break;
 
-      // 2. Try without Search tool (fallback in case Search quota / tool error)
+      // 2. Try without Search tool
       result = await callGemini(apiKey, history, finalSystemPrompt, false, model);
+      attempts.push({ model, search: false, status: result.status, error: result.errorText });
       if (result.ok) break;
     }
 
     if (!result.ok) {
+      // Diagnostic check: Test API key and list available models directly
+      let keyDiagnostic = 'unknown';
+      try {
+        const diagRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        const diagData = await diagRes.json();
+        keyDiagnostic = { status: diagRes.status, body: diagData };
+      } catch (e) {
+        keyDiagnostic = e.message;
+      }
+
       return jsonResponse({
         error: 'Gemini API error',
-        details: result.status,
-        message: result.errorText || 'Upstream API error'
+        attempts: attempts,
+        keyDiagnostic: keyDiagnostic
       }, 502, request);
     }
 
