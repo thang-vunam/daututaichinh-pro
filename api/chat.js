@@ -148,14 +148,26 @@ export default async function handler(request, ctx) {
     const timeContext = `\n\n[ĐỒNG HỒ HỆ THỐNG] Hôm nay là: ${rn}. Bối cảnh: Năm 2026.\n1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 ra ví von.\n2. Phải kiểm tra tin tức vĩ mô trước khi nói.\n3. TUYỆT ĐỐI KHÔNG TỰ BỊA RA XU HƯỚNG.`;
     let finalSystemPrompt = SYSTEM_PROMPT + injectedData + timeContext;
 
-    // Call Gemini
-    let result = await callGemini(apiKey, history, finalSystemPrompt, true);
-    if (!result.ok) {
-      result = await callGemini(apiKey, history, finalSystemPrompt, false);
+    // Call Gemini with multi-tier model fallback
+    const candidateModels = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+    let result = { ok: false };
+    
+    for (const model of candidateModels) {
+      // 1. Try with Google Search tool enabled
+      result = await callGemini(apiKey, history, finalSystemPrompt, true, model);
+      if (result.ok) break;
+
+      // 2. Try without Search tool (fallback in case Search quota / tool error)
+      result = await callGemini(apiKey, history, finalSystemPrompt, false, model);
+      if (result.ok) break;
     }
 
     if (!result.ok) {
-      return jsonResponse({ error: 'Gemini API error', details: result.status }, 502, request);
+      return jsonResponse({
+        error: 'Gemini API error',
+        details: result.status,
+        message: result.errorText || 'Upstream API error'
+      }, 502, request);
     }
 
     // Log to Google Sheets (Background)
@@ -187,8 +199,8 @@ export default async function handler(request, ctx) {
 }
 
 // ─── Call Gemini API ────────────────────────────────────
-async function callGemini(apiKey, history, systemPrompt, useSearch) {
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent`;
+async function callGemini(apiKey, history, systemPrompt, useSearch, model = 'gemini-2.0-flash') {
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
   const geminiBody = {
     system_instruction: {
@@ -225,7 +237,9 @@ async function callGemini(apiKey, history, systemPrompt, useSearch) {
     });
 
     if (!response.ok) {
-      return { ok: false, status: response.status };
+      const errorText = await response.text().catch(() => '');
+      console.error(`Gemini API [${model}] error ${response.status}:`, errorText);
+      return { ok: false, status: response.status, errorText };
     }
 
     const data = await response.json();
