@@ -148,8 +148,8 @@ export default async function handler(request, ctx) {
     const timeContext = `\n\n[ĐỒNG HỒ HỆ THỐNG] Hôm nay là: ${rn}. Bối cảnh: Năm 2026.\n1. TUYỆT ĐỐI KHÔNG đem dịch bệnh COVID-19 ra ví von.\n2. Phải kiểm tra tin tức vĩ mô trước khi nói.\n3. TUYỆT ĐỐI KHÔNG TỰ BỊA RA XU HƯỚNG.`;
     let finalSystemPrompt = SYSTEM_PROMPT + injectedData + timeContext;
 
-    // Call Gemini with multi-tier model fallback
-    const candidateModels = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-flash-latest'];
+    // Call Gemini with multi-tier model fallback (Google 2026 recommended: gemini-3.8-flash)
+    const candidateModels = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-2.5-flash'];
     let result = { ok: false };
     const attempts = [];
     
@@ -212,7 +212,7 @@ export default async function handler(request, ctx) {
 }
 
 // ─── Call Gemini API ────────────────────────────────────
-async function callGemini(apiKey, history, systemPrompt, useSearch, model = 'gemini-2.0-flash') {
+async function callGemini(apiKey, history, systemPrompt, useSearch, model = 'gemini-3.8-flash') {
   const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
   const geminiBody = {
