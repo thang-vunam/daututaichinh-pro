@@ -1304,6 +1304,60 @@ ${contentForBody.substring(0, 3000)}`;
                     continue;
                 }
 
+                // 0. Bỏ qua dòng tiêu đề lặp lại ở đầu văn bản (nếu là chữ in hoa hoặc bắt đầu bằng 'BÁO CÁO PHÂN TÍCH...')
+                if (i === 0 && (/^(báo cáo phân tích|nhận định thị trường|bài viết phân tích|tổng hợp nhận định)/i.test(line) || (line === line.toUpperCase() && line.length > 25))) {
+                    i++;
+                    continue;
+                }
+
+                // 0.1. Dò tìm và định dạng Chuỗi Logic LaTeX (\text{...} \rightarrow ...) thành Sơ đồ quy trình đẹp mắt
+                if (line.includes('\\text{') && line.includes('\\rightarrow')) {
+                    const steps = line.split('\\rightarrow').map(s => s.replace(/\\text\{/g, '').replace(/\}/g, '').replace(/\\&/g, '&').replace(/"/g, '').trim()).filter(Boolean);
+                    if (steps.length > 1) {
+                        const stepItems = steps.map((st, idx) => {
+                            const isLast = idx === steps.length - 1;
+                            const borderCol = isLast ? '#ef4444' : (idx > 2 ? '#f97316' : '#6366f1');
+                            const bg = isLast ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255,255,255,0.03)';
+                            const badge = isLast ? '⛔' : (idx + 1);
+                            return `    <div style="display: flex; align-items: center; gap: 12px; background: ${bg}; padding: 10px 14px; border-radius: 8px; border-left: 3px solid ${borderCol};">\n      <span style="font-weight: 700; color: #a5b4fc; min-width: 24px;">${badge}</span>\n      <span>${st}</span>\n    </div>`;
+                        }).join('\n    <div style="text-align: center; color: #6366f1; line-height: 1;">↓</div>\n');
+
+                        resultHtml.push(`<div class="article-process-flow" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; margin: 25px 0;">\n  <div style="display: flex; flex-direction: column; gap: 8px;">\n${stepItems}\n  </div>\n</div>`);
+                        i++;
+                        continue;
+                    }
+                }
+
+                // 0.2. Dò tìm Sơ đồ ASCII (chứa ký tự vẽ hộp hoặc khối [ Bậc ... ]) để bọc vào khối hiển thị chuẩn
+                if (/[│─┌┐└┘├┤┬┴┼▼▲►◄═]/.test(line) || /^\s*\[.*\]/.test(line)) {
+                    let diagramLines = [];
+                    let j = i;
+                    while (j < lines.length) {
+                        const l = lines[j];
+                        const tr = l.trim();
+                        if (!tr) {
+                            if (j + 1 < lines.length && (/[│─┌┐└┘├┤┬┴┼▼▲►◄═]/.test(lines[j+1]) || /^\s*\[.*\]/.test(lines[j+1]))) {
+                                diagramLines.push(l);
+                                j++;
+                                continue;
+                            } else {
+                                break;
+                            }
+                        }
+                        if (/[│─┌┐└┘├┤┬┴┼▼▲►◄═]/.test(l) || /^\s*\[.*\]/.test(tr) || /^[│|▼▲\s]+$/.test(tr) || tr.startsWith('▼') || tr.startsWith('▲')) {
+                            diagramLines.push(l);
+                            j++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (diagramLines.length >= 2) {
+                        resultHtml.push(`<div class="article-diagram-wrap" style="background: #111827; border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 12px; padding: 18px 20px; margin: 25px 0; overflow-x: auto;">\n  <pre style="margin: 0; color: #cbd5e1; font-family: 'Consolas', 'Courier New', monospace; font-size: 0.88rem; line-height: 1.45; white-space: pre;">${diagramLines.join('\n')}</pre>\n</div>`);
+                        i = j;
+                        continue;
+                    }
+                }
+
                 // 1. Dò tìm Bảng Markdown chuẩn (chứa '|')
                 if (line.includes('|') && line.split('|').filter(c => c.trim()).length >= 2 && !line.startsWith('*') && !line.startsWith('-')) {
                     let tableLines = [];
@@ -1366,6 +1420,15 @@ ${contentForBody.substring(0, 3000)}`;
         function detectHeading(line) {
             if (!line) return null;
             let trimmed = line.trim();
+
+            // TUYỆT ĐỐI BỎ QUA: Ký tự vẽ sơ đồ ASCII, hộp box, ký hiệu mũi tên, chuỗi logic LaTeX
+            if (/[│─┌┐└┘├┤┬┴┼▼▲►◄═║╔╗╚╝╠╣╦╩╬]/.test(trimmed) || 
+                /^\s*\[.*\](\s*───.*|\s*<──.*)?$/.test(trimmed) || 
+                /^[│|▼▲\s]+$/.test(trimmed) ||
+                trimmed.includes('\\text{') || 
+                trimmed.includes('\\rightarrow')) {
+                return null;
+            }
             
             // Markdown Headings
             if (/^###\s+/.test(trimmed)) return { tag: 'h3', text: trimmed.replace(/^###\s+/, '') };
@@ -3509,6 +3572,22 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                 return `<${cleanTag}${attrs}>${inner}</${cleanTag}>`;
             });
 
+            // Lọc bỏ triệt để các tiêu đề rác / ASCII / khung chữ nhầm lẫn khỏi Mục lục TOC
+            headingsList = headingsList.filter(h => {
+                const t = h.text;
+                if (!t || t.length < 3) return false;
+                if (/[│─┌┐└┘├┤┬┴┼▼▲►◄═║]/.test(t)) return false;
+                if (/^\s*\[.*\]\s*$/.test(t)) return false;
+                if (/^(BÁO CÁO PHÂN TÍCH|BÀI VIẾT PHÂN TÍCH|TỔNG HỢP NHẬN ĐỊNH)/i.test(t)) return false;
+                return true;
+            });
+
+            // Tự động sinh Khối Tóm tắt Chiến lược (Key Takeaways) nếu bài viết chưa có
+            let keyTakeawaysHtml = '';
+            if (!processedBody.includes('key-takeaways') && !processedBody.includes('Tóm tắt Chiến lược') && desc) {
+                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(59, 130, 246, 0.08)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px;">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <h3 style="margin: 0; color: #a5b4fc; font-size: 1.1rem; font-weight: 700;">Tóm tắt Chiến lược (Key Takeaways)</h3>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${desc}</li>\n        </ul>\n      </div>\n\n`;
+            }
+
             // 3. Render HTML Mục lục nếu bài viết có từ 2 tiêu đề trở lên
             let tocHtml = '';
             if (headingsList.length >= 2) {
@@ -3746,7 +3825,7 @@ ${tocItems}
           </figcaption>
       </figure>
       
-${tocHtml}      ${processedBody}
+${keyTakeawaysHtml}${tocHtml}      ${processedBody}
 
       <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
           <div style="margin-bottom: 10px;"><strong>Tags: </strong> ${tagsHtml}</div>
