@@ -601,7 +601,7 @@ main {
 
   .blog-article {
     font-size: 20px;
-    padding: 40px 18px 60px;
+    padding: 24px 14px 40px;
   }
 
   .blog-article h1 {
@@ -813,17 +813,24 @@ main {
 }
 
 @media (max-width: 768px) {
+  .article-container {
+    padding: 0 10px;
+    margin-top: 130px; /* Clearance for stacked mobile header */
+  }
   .article-main {
-    padding: 24px;
+    padding: 20px 14px;
+    border-radius: 12px;
   }
   .article-main.blog-article {
-    padding: 24px;
+    padding: 20px 14px !important;
+    border-radius: 12px;
+  }
+  .sidebar-widget {
+    padding: 20px 14px;
+    border-radius: 12px;
   }
   .article-main h1 {
-    font-size: 1.7rem;
-  }
-  .article-container {
-    margin-top: 130px; /* Clearance for stacked mobile header */
+    font-size: 1.65rem;
   }
 }
 
