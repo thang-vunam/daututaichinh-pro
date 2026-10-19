@@ -3419,8 +3419,22 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             };
         }
 
-        function buildTemplate(title, desc, category, body, imageUrl, tags, hashtags, dateString, authorName, authorLink) {
+        function buildTemplate(title, desc, category, body, imageUrl, tags, hashtags, dateString, authorName, authorLink, customSlug) {
             const depth = category === 'market' ? '../' : '../'; 
+            
+            // Tự động tính toán Slug và Canonical URL chuẩn SEO
+            let articleSlug = customSlug;
+            if (!articleSlug && typeof currentArticleData !== 'undefined' && currentArticleData && currentArticleData.slug) {
+                articleSlug = currentArticleData.slug;
+            }
+            if (!articleSlug) {
+                const slugInput = document.getElementById('review-slug');
+                if (slugInput && slugInput.value) articleSlug = slugInput.value.trim();
+            }
+            if (!articleSlug && title) {
+                articleSlug = title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            }
+            const canonicalUrl = `https://daututaichinh.pro/${category}/${articleSlug}.html`;
             
             // 1. Chuẩn hóa toàn bộ thẻ Heading (H2, H3)
             let processedBody = ensureSemanticHeadings(body);
@@ -3502,6 +3516,24 @@ ${tocItems}
   <title>${title} | daututaichinh.pro</title>
   <meta name="description" content="${desc}">
   <meta name="keywords" content="${(tags || []).join(', ')}">
+  <link rel="canonical" href="${canonicalUrl}" />
+
+  <!-- Open Graph / Facebook / Zalo -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="${title.replace(/"/g, '&quot;')}" />
+  <meta property="og:description" content="${desc.replace(/"/g, '&quot;')}" />
+  <meta property="og:url" content="${canonicalUrl}" />
+  <meta property="og:image" content="${imageUrl}" />
+  <meta property="og:site_name" content="Đầu tư &amp; Tài chính chuyên sâu" />
+  <meta property="og:locale" content="vi_VN" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${title.replace(/"/g, '&quot;')}" />
+  <meta name="twitter:description" content="${desc.replace(/"/g, '&quot;')}" />
+  <meta name="twitter:image" content="${imageUrl}" />
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
@@ -3509,6 +3541,8 @@ ${tocItems}
   <link rel="stylesheet" href="${depth}style.css" />
   <link rel="stylesheet" href="${depth}lead-form.css" />
   <link rel="stylesheet" href="${depth}chatbot.css" />
+  
+  <!-- Schema.org Article Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -3517,11 +3551,40 @@ ${tocItems}
     "description": "${desc.replace(/"/g, '\\"')}",
     "image": "${imageUrl}",
     "datePublished": "${new Date().toISOString()}",
+    "mainEntityOfPage": "${canonicalUrl}",
     "author": {
       "@type": "Organization",
       "name": "Đầu tư Tài chính Pro",
       "url": "https://daututaichinh.pro/"
     }
+  }
+  <\/script>
+
+  <!-- Schema.org BreadcrumbList Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Trang chủ",
+        "item": "https://daututaichinh.pro/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "${categoryName}",
+        "item": "https://daututaichinh.pro/${category}/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "${title.replace(/"/g, '\\"')}",
+        "item": "${canonicalUrl}"
+      }
+    ]
   }
   <\/script>
   <style>
@@ -3575,6 +3638,19 @@ ${tocItems}
       .toc-title { font-size: 1rem; }
       .toc-h3 { padding-left: 14px; font-size: 0.9em; }
     }
+
+    /* CSS cho Breadcrumb Navigation */
+    .breadcrumb-nav { margin: 10px 0 16px 0; font-size: 0.88rem; }
+    .breadcrumb-list { display: flex; flex-wrap: wrap; align-items: center; list-style: none !important; padding: 0 !important; margin: 0 !important; gap: 8px; }
+    .breadcrumb-item { display: inline-flex; align-items: center; color: #94a3b8; }
+    .breadcrumb-item a { color: #94a3b8; text-decoration: none; transition: color 0.2s ease; display: inline-flex; align-items: center; gap: 5px; }
+    .breadcrumb-item a:hover { color: #60a5fa; text-decoration: underline; }
+    .breadcrumb-separator { color: #475569; font-size: 0.72rem; display: inline-flex; align-items: center; user-select: none; }
+    .breadcrumb-item.active { color: #cbd5e1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 480px; }
+    @media (max-width: 768px) {
+      .breadcrumb-nav { margin: 6px 0 12px 0; font-size: 0.82rem; }
+      .breadcrumb-item.active { max-width: 220px; }
+    }
   </style>
 </head>
 <body data-lead-popup>
@@ -3601,6 +3677,17 @@ ${tocItems}
 <main class="article-container">
   <div class="article-layout">
     <article class="blog-article article-main" style="padding-top: 0; padding-bottom: 0; margin: 0;">
+      <!-- Breadcrumb Navigation chuẩn SEO -->
+      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
+          <li class="breadcrumb-separator"><i class="fa-solid fa-chevron-right"></i></li>
+          <li class="breadcrumb-item"><a href="/${category}/">${categoryName}</a></li>
+          <li class="breadcrumb-separator"><i class="fa-solid fa-chevron-right"></i></li>
+          <li class="breadcrumb-item active" aria-current="page">${title}</li>
+        </ol>
+      </nav>
+
       <h1>${title}</h1>
       
       <div class="article-meta">
