@@ -2125,7 +2125,17 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
         }
 
         // TẠO TRANG DANH SÁCH TỪ CATALOG
-        async function generateListingFromCatalog(owner, repo, token, category, catalog) {
+        
+function formatVnDate(dStr) {
+  if (!dStr) return '';
+  const parts = dStr.split('-');
+  if (parts.length === 3 && parts[0].length === 4) {
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+  return dStr;
+}
+
+async function generateListingFromCatalog(owner, repo, token, category, catalog) {
             const catTitle = category === 'market' ? 'Thị trường chứng khoán' : 'Bài viết & Phân tích';
             const catDesc = category === 'market' 
                 ? 'Tổng hợp nhận định thị trường, phân tích kỹ thuật và tin tức chứng khoán Việt Nam.'
@@ -2141,7 +2151,7 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
             
             const cardsList = sorted.map((a, i) => {
                 const num = i + 1;
-                const dateStr = a.date || '';
+                const dateStr = formatVnDate(a.date);
                 return `      <article class="market-card" style="margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
           <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">${num}</span>
@@ -2306,7 +2316,7 @@ ${emptyMsg}
             sortedMarket.forEach((a, i) => {
                 const tag = i === 0 ? 'Mới nhất' : 'Bài trước';
                 const cls = i === 0 ? 'market-card featured' : 'market-card';
-                marketHtml += `      <article class="${cls}">\n        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">\n          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">${i+1}</span>\n          <span class="market-tag">${tag}</span>\n          <span style="font-size:0.8rem;color:#64748b;">${a.date||''}</span>\n        </div>\n        <h3>${a.title}</h3>\n        <p>${a.desc}</p>\n        <a href="/market/${a.slug}.html" class="link-inline">Đọc báo cáo chi tiết →</a>\n      </article>\n`;
+                marketHtml += `      <article class="${cls}">\n        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">\n          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">${i+1}</span>\n          <span class="market-tag">${tag}</span>\n          <span style="font-size:0.8rem;color:#64748b;">${formatVnDate(a.date)}</span>\n        </div>\n        <h3>${a.title}</h3>\n        <p>${a.desc}</p>\n        <a href="/market/${a.slug}.html" class="link-inline">Đọc báo cáo chi tiết →</a>\n      </article>\n`;
             });
             marketHtml += '    </div>';
 
@@ -2314,7 +2324,7 @@ ${emptyMsg}
             let blogHtml = '';
             sortedBlog.forEach((a, i) => {
                 const cls = i === 0 ? 'market-card featured' : 'market-card';
-                blogHtml += `    <article class="${cls}" style="margin-top:20px">\n        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">\n          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">${i+1}</span>\n          <span class="market-tag">Tâm điểm</span>\n          <span style="font-size:0.8rem;color:#64748b;">${a.date||''}</span>\n        </div>\n      <h3>${a.title}</h3>\n      <p>${a.desc}</p>\n      <a href="/blog/${a.slug}.html" class="link-inline">Đọc bài viết →</a>\n    </article>\n`;
+                blogHtml += `    <article class="${cls}" style="margin-top:20px">\n        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">\n          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">${i+1}</span>\n          <span class="market-tag">Tâm điểm</span>\n          <span style="font-size:0.8rem;color:#64748b;">${formatVnDate(a.date)}</span>\n        </div>\n      <h3>${a.title}</h3>\n      <p>${a.desc}</p>\n      <a href="/blog/${a.slug}.html" class="link-inline">Đọc bài viết →</a>\n    </article>\n`;
             });
 
             // 5. Replace an toàn bằng Regex (chống trùng lặp hoặc nhân đôi trang)
