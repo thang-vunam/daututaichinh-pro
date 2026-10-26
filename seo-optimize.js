@@ -427,7 +427,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? `${art.slug}.html` 
                     : `/${currentCategory}/${art.slug}.html`;
 
-                const formattedDate = art.date || '';
+                function formatVnDate(dStr) {
+      if (!dStr) return '';
+      const parts = dStr.split('-');
+      if (parts.length === 3 && parts[0].length === 4) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return dStr;
+    }
+    const formattedDate = formatVnDate(art.date);
 
                 return `
                     <a href="${linkUrl}" class="sidebar-item-card">
