@@ -1539,3 +1539,46 @@ main {
   line-height: 1.55;
   margin-bottom: 16px;
 }
+
+/* ================= CATALOG GRID (MARKET & BLOG LISTINGS) ================= */
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  margin-top: 24px;
+}
+@media (max-width: 850px) {
+  .catalog-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.catalog-card {
+  background: var(--ed-surface);
+  border: 1px solid var(--ed-border);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 0 !important;
+}
+.catalog-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.catalog-card h3 {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: #f8fafc;
+  line-height: 1.4;
+  margin: 10px 0;
+}
+.catalog-card p {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
