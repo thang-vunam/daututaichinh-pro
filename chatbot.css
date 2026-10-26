@@ -5,13 +5,13 @@
 
 /* ===== CSS VARIABLES ===== */
 :root {
-  --chat-primary: #2563eb;
-  --chat-primary-light: #3b82f6;
-  --chat-bg-dark: #0b1220;
-  --chat-bg-card: #0f172a;
-  --chat-bg-input: #111b2e;
+  --chat-primary: #f59e0b;
+  --chat-primary-light: #fbbf24;
+  --chat-bg-dark: #070a11;
+  --chat-bg-card: #0e1526;
+  --chat-bg-input: #131b2e;
   --chat-border: rgba(255,255,255,0.08);
-  --chat-text: #e5e7eb;
+  --chat-text: #f1f5f9;
   --chat-text-muted: #94a3b8;
   --chat-radius: 16px;
   --chat-width: 400px;
@@ -28,24 +28,25 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  border: none;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  color: #ffffff;
-  font-size: 28px;
+  border: 1.5px solid rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, #0e1526, #1a253c);
+  color: #fbbf24;
+  font-size: 26px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 4px 20px rgba(37, 99, 235, 0.4),
-    0 0 0 0 rgba(37, 99, 235, 0.3);
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 15px rgba(245, 158, 11, 0.15);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  animation: chatPulse 2.5s ease-in-out infinite;
+  animation: chatPulse 3s ease-in-out infinite;
 }
 
 .chatbot-toggle:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 28px rgba(37, 99, 235, 0.55);
+  border-color: #f59e0b;
+  box-shadow: 0 6px 28px rgba(245, 158, 11, 0.35);
   animation: none;
 }
 
@@ -72,8 +73,8 @@
 }
 
 @keyframes chatPulse {
-  0%, 100% { box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4), 0 0 0 0 rgba(37, 99, 235, 0.3); }
-  50%      { box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4), 0 0 0 12px rgba(37, 99, 235, 0); }
+  0%, 100% { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 0 0 rgba(245, 158, 11, 0.25); }
+  50%      { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 0 10px rgba(245, 158, 11, 0); }
 }
 
 /* Notification badge */
