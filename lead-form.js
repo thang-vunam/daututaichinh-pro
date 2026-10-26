@@ -25,35 +25,33 @@ function createFormHTML(formId) {
   return `
     <form class="lead-form" id="${formId}" autocomplete="on">
       <div class="form-group">
-        <label for="${formId}-name">Họ và Tên <span class="required">*</span></label>
-        <input type="text" id="${formId}-name" name="name" placeholder="Nguyễn Văn A" required autocomplete="name">
+        <label for="${formId}-phone">Số điện thoại <span class="required">*</span></label>
+        <input type="tel" id="${formId}-phone" name="phone" placeholder="0912 345 678" required autocomplete="tel">
       </div>
       <div class="form-group">
         <label for="${formId}-email">Email <span class="required">*</span></label>
         <input type="email" id="${formId}-email" name="email" placeholder="email@example.com" required autocomplete="email">
       </div>
       <div class="form-group">
-        <label for="${formId}-phone">Số điện thoại <span style="color:#64748b;font-weight:400">(không bắt buộc)</span></label>
-        <input type="tel" id="${formId}-phone" name="phone" placeholder="0912 345 678" autocomplete="tel">
+        <label for="${formId}-name">Họ và Tên</label>
+        <input type="text" id="${formId}-name" name="name" placeholder="Nguyễn Văn A" autocomplete="name">
       </div>
       <div class="form-group">
-        <label for="${formId}-interest">Bạn quan tâm đến <span class="required">*</span></label>
-        <select id="${formId}-interest" name="interest" required>
-          <option value="" disabled selected>— Chọn lĩnh vực —</option>
-          <option value="Chứng khoán">📈 Chứng khoán</option>
-          <option value="Bảo hiểm nhân thọ">🛡️ Bảo hiểm nhân thọ</option>
-          <option value="Cả hai">📊 Cả hai (Chứng khoán & Bảo hiểm)</option>
-          <option value="Khác">📂 Lĩnh vực khác</option>
+        <label for="${formId}-interest">Lĩnh vực bạn quan tâm</label>
+        <select id="${formId}-interest" name="interest">
+          <option value="Chứng khoán" selected>📈 Chứng khoán</option>
+          <option value="Tài chính cá nhân">💰 Tài chính cá nhân</option>
+          <option value="Cả hai">📊 Cả hai</option>
+          <option value="Khác">📂 Khác</option>
         </select>
       </div>
       <button type="submit" class="btn-submit">
-        <span class="btn-text">📥 Nhận tài liệu miễn phí</span>
+        <span class="btn-text">📥 Mở khóa & Tải tài liệu ngay</span>
         <span class="spinner"></span>
       </button>
       <div class="form-message" id="${formId}-message"></div>
       <p class="form-privacy">
-        🔒 Thông tin của bạn được bảo mật và chỉ dùng để gửi tài liệu.
-        Chúng tôi cam kết không chia sẻ cho bên thứ ba.
+        🔒 Thông tin của bạn được bảo mật tuyệt đối và chỉ dùng để gửi tài liệu.
       </p>
     </form>
   `;
@@ -161,8 +159,8 @@ function handleFormSubmit(form) {
     const interest = form.querySelector(`#${formId}-interest`).value;
 
     // Validate
-    if (!name || !email || !interest) {
-      showMessage(msgEl, 'error', '⚠️ Vui lòng điền đầy đủ thông tin bắt buộc.');
+    if (!phone || !email) {
+      showMessage(msgEl, 'error', '⚠️ Vui lòng nhập đầy đủ Số điện thoại và Email.');
       return;
     }
     if (!isValidEmail(email)) {
@@ -315,12 +313,10 @@ function createInlineForm(containerId) {
 document.addEventListener('DOMContentLoaded', function() {
   const hasSubmitted = localStorage.getItem('formSubmitted') === 'yes';
 
-  // === POPUP ===
+  // === POPUP (Đã tắt tính năng tự động bật sau 5s theo yêu cầu UX) ===
+  // Popup chỉ tạo sẵn DOM nếu người dùng click nút kích hoạt có chủ đích
   if (document.querySelector('[data-lead-popup]')) {
     createPopup();
-    if (!hasSubmitted && sessionStorage.getItem('popupClosed') !== 'yes') {
-      setTimeout(() => openPopup(), 5000);
-    }
   }
 
   // === CTA BUTTON ===
@@ -328,11 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (ctaBtn) {
     ctaBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      if (localStorage.getItem('formSubmitted') === 'yes') {
-        window.location.href = '/download/';
-      } else {
-        openPopup();
-      }
+      window.location.href = '/download/';
     });
   }
 
