@@ -103,7 +103,7 @@ body {
 
 /* ================= MAIN ================= */
 main {
-  padding-top: 175px;
+  padding-top: 125px;
 }
 
 .container {
@@ -296,7 +296,7 @@ main {
   }
 
   main {
-    padding-top: 200px; /* Spacing for the sticky header with search */
+    padding-top: 145px; /* Spacing for the sticky header with search */
   }
 
   .hero {
@@ -1581,4 +1581,73 @@ main {
   font-size: 0.88rem;
   line-height: 1.55;
   margin-bottom: 16px;
+}
+
+/* ================= SIMPLIZE-STYLE 1-ROW MARKET TICKER ================= */
+.simplize-ticker-bar {
+  background: #040711;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  width: 100%;
+}
+.simplize-ticker-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  animation: simplizeTicker 35s linear infinite;
+}
+.simplize-ticker-track:hover {
+  animation-play-state: paused;
+}
+@keyframes simplizeTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.s-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.s-icon {
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+}
+.s-name {
+  color: #cbd5e1;
+  font-weight: 500;
+}
+.s-val {
+  color: #ffffff;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.s-badge-down {
+  background: #e11d48;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.s-badge-up {
+  background: #10b981;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
