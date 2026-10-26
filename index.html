@@ -95,85 +95,105 @@
       </div>
     </div>
   </div>
-    <!-- TRADINGVIEW LIVE MARKET TICKER TAPE -->
-  <div class="tradingview-widget-container" style="background: #03050a; border-bottom: 1px solid rgba(255,255,255,0.08);">
-    <div class="tradingview-widget-container__widget"></div>
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-    {
-      "symbols": [
-        {
-          "proName": "HOSE:VNINDEX",
-          "title": "VN-Index"
-        },
-        {
-          "proName": "HOSE:VN30",
-          "title": "VN30"
-        },
-        {
-          "description": "Vàng Thế Giới (USD/oz)",
-          "proName": "OANDA:XAUUSD"
-        },
-        {
-          "description": "Chỉ Số DXY",
-          "proName": "CAPITALCOM:DXY"
-        },
-        {
-          "description": "Dầu Brent",
-          "proName": "TVC:UKOIL"
-        },
-        {
-          "description": "Tỷ giá USD/VND",
-          "proName": "FX_IDC:USDVND"
-        },
-        {
-          "proName": "FOREXCOM:SPXUSD",
-          "title": "S&P 500"
-        }
-      ],
-      "showSymbolLogo": true,
-      "isTransparent": true,
-      "displayMode": "adaptive",
-      "colorTheme": "dark",
-      "locale": "vi_VN"
-    }
-    </script>
-  </div>
-</header>
-
-<main>
-
-<!-- ================= HERO ================= -->
-<section id="hero" class="hero">
-  <div class="container hero-grid">
-    <div class="hero-text">
-      <p class="tagline">Kênh YouTube: Đầu tư & Tài chính chuyên sâu</p>
-      <h1>Hiểu sâu về tài chính để đầu tư tự tin và bền vững</h1>
-      <p class="hero-desc">
-        Website chính thức của kênh Đầu tư & Tài chính chuyên sâu — nơi tổng hợp video phân tích thị trường,
-        kiến thức đầu tư, tài chính cá nhân và các bài viết chuyên sâu cho nhà đầu tư Việt Nam.
-      </p>
-      <!-- CTA BUTTON -->
-      <a href="#" id="cta-open-popup" class="hero-cta">
-        📥 Nhận tài liệu đầu tư miễn phí
-      </a>
-    </div>
-
-    <div class="hero-card">
-      <h2>Video nổi bật</h2>
-      <!-- 
-        ============================================================
-        [HƯỚNG DẪN THAY ĐỔI VIDEO NỔI BẬT]
-        Khi bạn muốn đổi video khác, chỉ cần tìm mã ID của video cũ (hiện tại là: Tev2fPGVMas) 
-        và thay bằng mã ID của video mới. 
-        Lưu ý: Bạn cần thay ở 3 chỗ:
-        1. Dòng <link rel="preload"> trên cùng của file (thẻ <head>)
-        2. Dòng background-image bên dưới
-        3. Dòng link iframe src bên dưới
-        ============================================================
-      -->
-      <div class="lite-youtu-facade" style="background-image: url('https://i.ytimg.com/vi/Tev2fPGVMas/hqdefault.jpg');" onclick="this.innerHTML='<iframe src=\'https://www.youtube.com/embed/Tev2fPGVMas?autoplay=1\' frameborder=\'0\' allow=\'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\' allowfullscreen style=\'width:100%;height:100%;\'></iframe>'">
-        <div class="lite-play-btn"></div>
+      <!-- SIMPLIZE-STYLE 1-ROW MARKET TICKER -->
+  <div class="simplize-ticker-bar">
+    <div class="simplize-ticker-track">
+      <!-- Item: Dầu thô -->
+      <div class="s-item">
+        <span class="s-icon">💧</span>
+        <span class="s-name">Dầu thô (WTI)</span>
+        <span class="s-val">101.33</span>
+        <span class="s-badge-down">▼ 1.88%</span>
       </div>
+      <!-- Item: Vàng -->
+      <div class="s-item">
+        <span class="s-icon">🪙</span>
+        <span class="s-name">Vàng</span>
+        <span class="s-val">4,016.00</span>
+        <span class="s-badge-up">▲ 0.20%</span>
+      </div>
+      <!-- Item: Bitcoin -->
+      <div class="s-item">
+        <span class="s-icon">₿</span>
+        <span class="s-name">Bitcoin</span>
+        <span class="s-val">79,671.99</span>
+        <span class="s-badge-down">▼ 0.60%</span>
+      </div>
+      <!-- Item: VNINDEX -->
+      <div class="s-item">
+        <span class="s-icon">🇻🇳</span>
+        <span class="s-name">VNINDEX</span>
+        <span class="s-val">1,763.55</span>
+        <span class="s-badge-down">▼ 0.60%</span>
+      </div>
+      <!-- Item: VN30 -->
+      <div class="s-item">
+        <span class="s-icon">🇻🇳</span>
+        <span class="s-name">VN30</span>
+        <span class="s-val">1,907.09</span>
+        <span class="s-badge-up">▲ 0.75%</span>
+      </div>
+      <!-- Item: Dow Jones -->
+      <div class="s-item">
+        <span class="s-icon">🇺🇸</span>
+        <span class="s-name">Dow Jones</span>
+        <span class="s-val">52,410.50</span>
+        <span class="s-badge-up">▲ 0.45%</span>
+      </div>
+      <!-- Item: S&P 500 -->
+      <div class="s-item">
+        <span class="s-icon">🇺🇸</span>
+        <span class="s-name">S&P 500</span>
+        <span class="s-val">5,815.20</span>
+        <span class="s-badge-up">▲ 0.35%</span>
+      </div>
+      <!-- Item: USD/VND -->
+      <div class="s-item">
+        <span class="s-icon">💵</span>
+        <span class="s-name">USD/VND</span>
+        <span class="s-val">25,460</span>
+        <span class="s-badge-up">▲ 0.05%</span>
+      </div>
+
+      <!-- DUPLICATE FOR INFINITE SEAMLESS LOOP -->
+      <div class="s-item">
+        <span class="s-icon">💧</span>
+        <span class="s-name">Dầu thô (WTI)</span>
+        <span class="s-val">101.33</span>
+        <span class="s-badge-down">▼ 1.88%</span>
+      </div>
+      <div class="s-item">
+        <span class="s-icon">🪙</span>
+        <span class="s-name">Vàng</span>
+        <span class="s-val">4,016.00</span>
+        <span class="s-badge-up">▲ 0.20%</span>
+      </div>
+      <div class="s-item">
+        <span class="s-icon">₿</span>
+        <span class="s-name">Bitcoin</span>
+        <span class="s-val">79,671.99</span>
+        <span class="s-badge-down">▼ 0.60%</span>
+      </div>
+      <div class="s-item">
+        <span class="s-icon">🇻🇳</span>
+        <span class="s-name">VNINDEX</span>
+        <span class="s-val">1,763.55</span>
+        <span class="s-badge-down">▼ 0.60%</span>
+      </div>
+      <div class="s-item">
+        <span class="s-icon">🇻🇳</span>
+        <span class="s-name">VN30</span>
+        <span class="s-val">1,907.09</span>
+        <span class="s-badge-up">▲ 0.75%</span>
+      </div>
+      <div class="s-item">
+        <span class="s-icon">🇺🇸</span>
+        <span class="s-name">Dow Jones</span>
+        <span class="s-val">52,410.50</span>
+        <span class="s-badge-up">▲ 0.45%</span>
+      </div>
+    </div>
+  </div>
       <a class="link-inline" href="https://www.youtube.com/@dautuvataichinhchuyensau" target="_blank" rel="noopener">
         Xem thêm video trên YouTube →
       </a>
