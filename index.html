@@ -73,7 +73,7 @@
       <a href="/">Trang chủ</a>
       <a href="/market/">Thị trường</a>
       <a href="/blog/">Bài viết</a>
-      <a href="/#tai-lieu">Tài liệu</a>
+      <a href="/download/">Tài liệu</a>
       <a href="/#contact">Liên hệ</a>
     </nav>
   </div>
@@ -93,6 +93,22 @@
           <div id="home-search-list" style="display:flex; flex-direction:column; gap:8px; max-height: 350px; overflow-y: auto;"></div>
         </div>
       </div>
+    </div>
+  </div>
+  <!-- LIVE MARKET TICKER BAR -->
+  <div class="market-ticker-bar">
+    <div class="ticker-track">
+      <div class="ticker-item"><span class="ticker-name">VN-INDEX</span><span class="ticker-val">1,852.40</span><span class="ticker-up">▲ +14.65 (+0.80%)</span></div>
+      <div class="ticker-item"><span class="ticker-name">VN30</span><span class="ticker-val">1,918.20</span><span class="ticker-up">▲ +18.20 (+0.96%)</span></div>
+      <div class="ticker-item"><span class="ticker-name">VIC</span><span class="ticker-val">84.50</span><span class="ticker-up">▲ +4.20 (+5.2%)</span></div>
+      <div class="ticker-item"><span class="ticker-name">PNJ</span><span class="ticker-val">96.80</span><span class="ticker-down">▼ -2.10 (-2.1%)</span></div>
+      <div class="ticker-item"><span class="ticker-name">DXY</span><span class="ticker-val">103.42</span><span class="ticker-down">▼ -0.28 (-0.27%)</span></div>
+      <div class="ticker-item"><span class="ticker-name">VÀNG SJC</span><span class="ticker-val">89.5 Tr</span><span class="ticker-up">▲ +500K</span></div>
+      <div class="ticker-item"><span class="ticker-name">US 10Y</span><span class="ticker-val">4.08%</span><span class="ticker-down">▼ -0.04%</span></div>
+      <!-- Duplicate for seamless infinite scroll -->
+      <div class="ticker-item"><span class="ticker-name">VN-INDEX</span><span class="ticker-val">1,852.40</span><span class="ticker-up">▲ +14.65 (+0.80%)</span></div>
+      <div class="ticker-item"><span class="ticker-name">VN30</span><span class="ticker-val">1,918.20</span><span class="ticker-up">▲ +18.20 (+0.96%)</span></div>
+      <div class="ticker-item"><span class="ticker-name">VIC</span><span class="ticker-val">84.50</span><span class="ticker-up">▲ +4.20 (+5.2%)</span></div>
     </div>
   </div>
 </header>
@@ -149,27 +165,29 @@
       </p>
     </div>
     <!-- DYNAMIC_MARKET_START -->
-    <div class="market-grid">
-      <article class="market-card featured">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">1</span>
-          <span class="market-tag">Mới nhất</span>
-          <span style="font-size:0.8rem;color:#64748b;">06/09/2026</span>
+    <div class="editorial-market-grid">
+      <article class="card-hero">
+        <div>
+          <div class="card-meta-row">
+            <span class="badge-gold">Báo Cáo Mới Nhất</span>
+            <span class="card-date">2026-09-06</span>
+          </div>
+          <h3 class="card-hero-title">VN-Index 1,850 Điểm: Khi "Gã Khổng Lồ" Gánh Cả Một Thị Trường</h3>
+          <p class="card-hero-desc">VN-Index vượt 1,850 điểm nhờ VIC và VHM, nhưng thị trường đang đối mặt với nghịch lý "xanh vỏ đỏ lòng". Đánh giá rủi ro và xu hướng chứng khoán năm 2026.</p>
         </div>
-        <h3>VN-Index 1,850 Điểm: Khi "Gã Khổng Lồ" Gánh Cả Một Thị Trường</h3>
-        <p>VN-Index vượt 1,850 điểm nhờ VIC và VHM, nhưng thị trường đang đối mặt với nghịch lý "xanh vỏ đỏ lòng". Đánh giá rủi ro và xu hướng chứng khoán năm 2026.</p>
-        <a href="/market/vn-index-1850-diem-thi-truong-chung-khoan.html" class="link-inline">Đọc báo cáo chi tiết →</a>
+        <a href="/market/vn-index-1850-diem-thi-truong-chung-khoan.html" class="card-link-gold">Đọc báo cáo chi tiết →</a>
       </article>
-      <article class="market-card">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">2</span>
-          <span class="market-tag">Bài trước</span>
-          <span style="font-size:0.8rem;color:#64748b;">10/08/2026</span>
-        </div>
-        <h3>VN-Index đối mặt thử thách 1.770 - 1.800 điểm</h3>
-        <p>VN-Index đang đứng trước ngưỡng cản 1.770-1.800 điểm. Liệu dòng tiền có đủ mạnh để bứt phá hay thị trường sẽ tiếp tục giằng co? Xem nhận định ngay.</p>
-        <a href="/market/vn-index-truoc-cua-ai-1770-1800-diem.html" class="link-inline">Đọc báo cáo chi tiết →</a>
-      </article>
+      <div class="sub-cards-col">
+        <article class="card-sub">
+          <div class="card-meta-row">
+            <span style="font-size:0.75rem; color:#64748b; font-weight:600;">BÁO CÁO KỲ TRƯỚC</span>
+            <span class="card-date">2026-08-10</span>
+          </div>
+          <h4 class="card-sub-title">VN-Index đối mặt thử thách 1.770 - 1.800 điểm</h4>
+          <p class="card-sub-desc">VN-Index đang đứng trước ngưỡng cản 1.770-1.800 điểm. Liệu dòng tiền có đủ mạnh để bứt phá hay thị trường sẽ tiếp tục giằng co? Xem nhận định ngay.</p>
+          <a href="/market/vn-index-truoc-cua-ai-1770-1800-diem.html" class="card-link-gold" style="font-size:0.82rem;">Đọc báo cáo chi tiết →</a>
+        </article>
+      </div>
     </div>
     <!-- DYNAMIC_MARKET_END -->
     <a href="/market/" class="link-inline" style="margin-top:20px;display:inline-block">
@@ -188,37 +206,41 @@
       </p>
     </div>
     <!-- DYNAMIC_BLOG_START -->
-    <article class="market-card featured" style="margin-top:20px">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">1</span>
-          <span class="market-tag">Tâm điểm</span>
-          <span style="font-size:0.8rem;color:#64748b;">28/09/2026</span>
+    <div class="blog-cards-grid" style="margin-top:24px">
+      <article class="blog-card-item">
+        <div>
+          <div class="card-meta-row">
+            <span class="badge-gold">Tâm Điểm</span>
+            <span class="card-date">2026-10-19</span>
+          </div>
+          <h3 class="blog-card-title">MSCI hạ xếp hạng Indonesia: Tác động tới Việt Nam</h3>
+          <p class="blog-card-desc">Phân tích biến cố MSCI hạ xếp hạng chứng khoán Indonesia năm 2026 và tác động chiến lược, dòng vốn ngoại đối với thị trường chứng khoán Việt Nam.</p>
         </div>
-      <h3>Cổ phiếu PNJ: Vì sao chấp nhận kế hoạch lỗ kỷ lục?</h3>
-      <p>Cổ phiếu PNJ đối mặt sóng gió khi trình kế hoạch lỗ kỷ lục hơn 6.200 tỷ đồng năm 2026. Phân tích nguyên nhân dự phòng và giải pháp dòng tiền.</p>
-      <a href="/blog/co-phieu-pnj-ke-hoach-lo-ky-luc.html" class="link-inline">Đọc bài viết →</a>
-    </article>
-    <article class="market-card" style="margin-top:20px">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">2</span>
-          <span class="market-tag">Tâm điểm</span>
-          <span style="font-size:0.8rem;color:#64748b;">23/09/2026</span>
+        <a href="/blog/msci-ha-xep-hang-indonesia-tac-dong-viet-nam.html" class="card-link-gold">Đọc bài viết →</a>
+      </article>
+      <article class="blog-card-item">
+        <div>
+          <div class="card-meta-row">
+            <span class="badge-gold">Tâm Điểm</span>
+            <span class="card-date">2026-09-28</span>
+          </div>
+          <h3 class="blog-card-title">Cổ phiếu PNJ: Vì sao chấp nhận kế hoạch lỗ kỷ lục?</h3>
+          <p class="blog-card-desc">Cổ phiếu PNJ đối mặt sóng gió khi trình kế hoạch lỗ kỷ lục hơn 6.200 tỷ đồng năm 2026. Phân tích nguyên nhân dự phòng và giải pháp dòng tiền.</p>
         </div>
-      <h3>Nâng hạng thị trường: Nghịch lý VN-Index giảm điểm</h3>
-      <p>Giải mã nghịch lý nâng hạng thị trường khiến VN-Index giảm điểm và 5 bài học thực tế giúp nhà đầu tư nắm bắt cơ hội dòng vốn mới hiệu quả.</p>
-      <a href="/blog/nang-hang-thi-truong-vnindex-giam-diem.html" class="link-inline">Đọc bài viết →</a>
-    </article>
-    <article class="market-card" style="margin-top:20px">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">3</span>
-          <span class="market-tag">Tâm điểm</span>
-          <span style="font-size:0.8rem;color:#64748b;">25/08/2026</span>
+        <a href="/blog/co-phieu-pnj-ke-hoach-lo-ky-luc.html" class="card-link-gold">Đọc bài viết →</a>
+      </article>
+      <article class="blog-card-item">
+        <div>
+          <div class="card-meta-row">
+            <span class="badge-gold">Tâm Điểm</span>
+            <span class="card-date">2026-09-23</span>
+          </div>
+          <h3 class="blog-card-title">Nâng hạng thị trường: Nghịch lý VN-Index giảm điểm</h3>
+          <p class="blog-card-desc">Giải mã nghịch lý nâng hạng thị trường khiến VN-Index giảm điểm và 5 bài học thực tế giúp nhà đầu tư nắm bắt cơ hội dòng vốn mới hiệu quả.</p>
         </div>
-      <h3>"Cơn mưa tiền" 1,5 tỷ USD: 4 sự thật về lộ trình nâng hạng FTSE của 35 cổ phiếu Việt Nam</h3>
-      <p>"Cơn mưa tiền" 1,5 tỷ USD: 4 sự thật về lộ trình nâng hạng FTSE của 35 cổ phiếu Việt Nam  1. Lời mở đầu: Cánh cửa "Thị trường mới nổi" đã thực sự mở ra?  T</p>
-      <a href="/blog/con-mua-tien-15-ty-usd-4-su-that-ve-lo-trinh-nang-hang-ftse-cua-35-co-phieu-viet-nam.html" class="link-inline">Đọc bài viết →</a>
-    </article>
-
+        <a href="/blog/nang-hang-thi-truong-vnindex-giam-diem.html" class="card-link-gold">Đọc bài viết →</a>
+      </article>
+    </div>
     <!-- DYNAMIC_BLOG_END -->
     <a href="/blog/" class="link-inline" style="margin-top:20px;display:inline-block">
       Xem toàn bộ bài viết →
