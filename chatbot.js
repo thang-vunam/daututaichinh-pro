@@ -169,9 +169,35 @@ function toggleChat() {
       welcomeShown = true;
       showWelcomeMessage();
     }
-    document.getElementById('chatbot-input').focus();
+    if (window.innerWidth <= 640) {
+      document.documentElement.classList.add('chatbot-open');
+      document.body.classList.add('chatbot-open');
+    }
+    // Only auto-focus on desktop to avoid triggering keyboard zoom on mobile
+    if (window.innerWidth > 640) {
+      document.getElementById('chatbot-input').focus();
+    }
     scrollToBottom();
+  } else {
+    document.documentElement.classList.remove('chatbot-open');
+    document.body.classList.remove('chatbot-open');
+    if (chatWindow) {
+      chatWindow.style.height = '';
+      chatWindow.style.top = '';
+    }
   }
+}
+
+// Keep mobile chat window pinned cleanly inside visual viewport when iOS keyboard appears
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    const chatWindow = document.getElementById('chatbot-window');
+    if (chatWindow && chatWindow.classList.contains('open') && window.innerWidth <= 640) {
+      chatWindow.style.height = `${window.visualViewport.height}px`;
+      chatWindow.style.top = `${window.visualViewport.offsetTop}px`;
+      scrollToBottom();
+    }
+  });
 }
 
 
