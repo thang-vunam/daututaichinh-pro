@@ -90,7 +90,7 @@
   width: 100%;
   padding: 14px 20px;
   margin-top: 8px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #070a11 !important; font-weight: 700;
   color: #ffffff;
   font-size: 15px;
   font-weight: 600;
@@ -103,7 +103,7 @@
 .lead-form .btn-submit:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #fbbf24, #f59e0b); box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
 }
 
 .lead-form .btn-submit:active {
