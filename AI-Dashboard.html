@@ -2343,27 +2343,62 @@ ${emptyMsg}
             const sha = getData.sha;
             let content = decodeURIComponent(escape(atob(getData.content.replace(/\n/g, ''))));
 
-            const sortedMarket = [...marketCat].sort((a,b)=> (b.date||'').localeCompare(a.date||'')).slice(0, 2);
-            let marketHtml = '<div class="market-grid">\n';
-            sortedMarket.forEach((a, i) => {
-                const tag = i === 0 ? 'Mới nhất' : 'Bài trước';
-                const cls = i === 0 ? 'market-card featured' : 'market-card';
-                marketHtml += `      <article class="${cls}">\n        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">\n          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">${i+1}</span>\n          <span class="market-tag">${tag}</span>\n          <span style="font-size:0.8rem;color:#64748b;">${formatVnDate(a.date)}</span>\n        </div>\n        <h3>${a.title}</h3>\n        <p>${a.desc}</p>\n        <a href="/market/${a.slug}.html" class="link-inline">Đọc báo cáo chi tiết →</a>\n      </article>\n`;
-            });
-            marketHtml += '    </div>';
+            const sortedMarket = [...marketCat].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+            const latestMarket = sortedMarket[0] || {};
+            const subMarket = sortedMarket[1] || {};
+
+            let subCardsHtml = '';
+            if (subMarket && subMarket.slug) {
+                subCardsHtml = `      <div class="sub-cards-col">
+        <article class="card-sub">
+          <div class="card-meta-row">
+            <span style="font-size:0.75rem; color:#64748b; font-weight:600;">BÁO CÁO KỲ TRƯỚC</span>
+            <span class="card-date">${formatVnDate(subMarket.date)}</span>
+          </div>
+          <h4 class="card-sub-title">${subMarket.title}</h4>
+          <p class="card-sub-desc">${subMarket.desc}</p>
+          <a href="/market/${subMarket.slug}.html" class="card-link-gold" style="font-size:0.82rem;">Đọc báo cáo chi tiết →</a>
+        </article>
+      </div>`;
+            }
+
+            let marketHtml = `    <div class="editorial-market-grid">
+      <article class="card-hero">
+        <div>
+          <div class="card-meta-row">
+            <span class="badge-gold">Báo Cáo Mới Nhất</span>
+            <span class="card-date">${formatVnDate(latestMarket.date)}</span>
+          </div>
+          <h3 class="card-hero-title">${latestMarket.title}</h3>
+          <p class="card-hero-desc">${latestMarket.desc}</p>
+        </div>
+        <a href="/market/${latestMarket.slug}.html" class="card-link-gold">Đọc báo cáo chi tiết →</a>
+      </article>
+${subCardsHtml}
+    </div>`;
 
             const sortedBlog = [...blogCat].sort((a,b)=> (b.date||'').localeCompare(a.date||'')).slice(0, 3);
-            let blogHtml = '';
-            sortedBlog.forEach((a, i) => {
-                const cls = i === 0 ? 'market-card featured' : 'market-card';
-                blogHtml += `    <article class="${cls}" style="margin-top:20px">\n        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">\n          <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.8rem;flex-shrink:0;">${i+1}</span>\n          <span class="market-tag">Tâm điểm</span>\n          <span style="font-size:0.8rem;color:#64748b;">${formatVnDate(a.date)}</span>\n        </div>\n      <h3>${a.title}</h3>\n      <p>${a.desc}</p>\n      <a href="/blog/${a.slug}.html" class="link-inline">Đọc bài viết →</a>\n    </article>\n`;
+            let blogCardsHtml = '';
+            sortedBlog.forEach(a => {
+                blogCardsHtml += `      <article class="blog-card-item">
+        <div>
+          <div class="card-meta-row">
+            <span class="badge-gold">Tâm Điểm</span>
+            <span class="card-date">${formatVnDate(a.date)}</span>
+          </div>
+          <h3 class="blog-card-title">${a.title}</h3>
+          <p class="blog-card-desc">${a.desc}</p>
+        </div>
+        <a href="/blog/${a.slug}.html" class="card-link-gold">Đọc bài viết →</a>
+      </article>\n`;
             });
+            let blogHtml = `    <div class="blog-cards-grid" style="margin-top:24px">\n${blogCardsHtml}    </div>`;
 
             // 5. Replace an toàn bằng Regex (chống trùng lặp hoặc nhân đôi trang)
             if (content.includes('<!-- DYNAMIC_MARKET_START -->') && content.includes('<!-- DYNAMIC_MARKET_END -->')) {
                 content = content.replace(
                     /<!-- DYNAMIC_MARKET_START -->[\s\S]*?<!-- DYNAMIC_MARKET_END -->/,
-                    `<!-- DYNAMIC_MARKET_START -->\n    ${marketHtml}\n    <!-- DYNAMIC_MARKET_END -->`
+                    `<!-- DYNAMIC_MARKET_START -->\n${marketHtml}\n    <!-- DYNAMIC_MARKET_END -->`
                 );
             }
 
