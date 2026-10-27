@@ -627,8 +627,17 @@ Bạn có thể viết:
                         </div>
                         
                         <div style="margin-top: 8px;">
-                            <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 4px;">Hoặc dán URL ảnh trực tiếp</label>
-                            <input type="text" id="review-image-url" placeholder="https://images.unsplash.com/..." style="font-size: 0.85rem; width: 100%; padding: 8px; background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 6px; color: var(--text-color);" />
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <label style="font-size: 0.8rem; color: #94a3b8; display: block; margin-bottom: 0;">Hoặc dán URL ảnh trực tiếp</label>
+                                <span style="font-size: 0.72rem; color: #4ade80;"><i class="fa-solid fa-bolt"></i> Tự đổi ngay khi dán</span>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="review-image-url" oninput="syncCoverImageChange()" onchange="handleCoverUrlChange()" onkeydown="if(event.key==='Enter'){event.preventDefault();manualReloadCoverImage(event);}" placeholder="https://images.unsplash.com/... hoặc link ảnh bất kỳ" style="flex: 1; font-size: 0.85rem; padding: 8px; background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 6px; color: var(--text-color);" />
+                                <button type="button" class="btn" onclick="clearCoverImageUrl()" title="Xóa URL để tìm lại bằng từ khóa" style="padding: 0 10px; background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); font-size: 0.8rem;">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                            <span style="font-size: 0.72rem; color: #64748b; display: block; margin-top: 3px;">Hỗ trợ cả link ảnh trực tiếp lẫn link trang Unsplash</span>
                         </div>
                         
                         <button class="btn" id="btn-reload-cover" onclick="manualReloadCoverImage(event)" style="width: 100%; justify-content: center; margin-top: 10px; background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3);">
@@ -3291,14 +3300,131 @@ ${emptyMsg}
             }
         }
 
-        async function manualReloadCoverImage(event) {
-            const promptVal = document.getElementById('review-image-prompt').value.trim();
-            const urlVal = document.getElementById('review-image-url').value.trim();
+        // CẬP NHẬT ẢNH BÌA TRỰC TIẾP VÀO NỘI DUNG HTML MÀ KHÔNG LÀM MẤT NỘI DUNG ĐÃ SỬA
+        function applyCoverImageToHtml(imageUrl, authorName, authorLink) {
+            const textarea = document.getElementById('review-html');
+            if (!textarea) return;
+            let html = textarea.value;
+            if (!html) return;
+
+            const title = (document.getElementById('review-title')?.value || (typeof currentArticleData !== 'undefined' && currentArticleData?.title) || '').trim();
+            const desc = (document.getElementById('review-desc')?.value || (typeof currentArticleData !== 'undefined' && currentArticleData?.metaDescription) || '').trim();
+            const finalAuthorName = authorName || (typeof currentArticleData !== 'undefined' && currentArticleData?.authorName) || 'Unsplash';
+            const finalAuthorLink = authorLink || (typeof currentArticleData !== 'undefined' && currentArticleData?.authorLink) || 'https://unsplash.com';
+
+            const captionCredit = finalAuthorName 
+                ? ` | <em>Ảnh bởi <a href="${finalAuthorLink}" target="_blank" rel="noopener noreferrer nofollow">${finalAuthorName}</a> trên Unsplash</em>`
+                : '';
+
+            const newFigure = `<figure class="article-cover-figure">
+          <img src="${imageUrl}" alt="${title.replace(/"/g, '&quot;')}" loading="lazy">
+          <figcaption class="article-cover-caption">
+              ${desc}${captionCredit}
+          </figcaption>
+      </figure>`;
+
+            // 1. Cập nhật <figure class="article-cover-figure">...</figure>
+            if (/<figure\s+class=["']article-cover-figure["'][^>]*>[\s\S]*?<\/figure>/i.test(html)) {
+                html = html.replace(/<figure\s+class=["']article-cover-figure["'][^>]*>[\s\S]*?<\/figure>/i, newFigure);
+            } else if (/<figure[^>]*>[\s\S]*?<img[^>]*>[\s\S]*?<\/figure>/i.test(html)) {
+                html = html.replace(/<figure[^>]*>[\s\S]*?<img[^>]*>[\s\S]*?<\/figure>/i, newFigure);
+            } else if (html.includes('class="article-meta"')) {
+                html = html.replace(/(class="article-meta"[\s\S]*?<\/div>)/i, `$1\n      \n      ${newFigure}`);
+            } else if (html.includes('</h1>')) {
+                html = html.replace(/(<\/h1>)/i, `$1\n      \n      ${newFigure}`);
+            }
+
+            // 2. Cập nhật OpenGraph image
+            if (/<meta\s+property=["']og:image["']/i.test(html)) {
+                html = html.replace(/(<meta\s+property=["']og:image["']\s+content=["'])[^"']*(")/i, `$1${imageUrl}$2`);
+            }
+
+            // 3. Cập nhật Twitter image
+            if (/<meta\s+name=["']twitter:image["']/i.test(html)) {
+                html = html.replace(/(<meta\s+name=["']twitter:image["']\s+content=["'])[^"']*(")/i, `$1${imageUrl}$2`);
+            }
+
+            // 4. Cập nhật Schema.org Article image
+            if (/"image":\s*"[^"]*"/i.test(html)) {
+                html = html.replace(/("image":\s*")[^"]*(")/i, `$1${imageUrl}$2`);
+            }
+
+            textarea.value = html;
             
+            // Cập nhật state
+            if (typeof currentArticleData !== 'undefined' && currentArticleData) {
+                currentArticleData.imageUrl = imageUrl;
+                if (authorName) currentArticleData.authorName = authorName;
+                if (authorLink) currentArticleData.authorLink = authorLink;
+            }
+
+            refreshPreview();
+        }
+
+        // ĐỒNG BỘ ẢNH BÌA REAL-TIME KHI GÕ HOẶC DÁN LINK VÀO INPUT
+        function syncCoverImageChange() {
+            const urlInput = document.getElementById('review-image-url');
+            let urlVal = urlInput ? urlInput.value.trim() : '';
+            if (!urlVal) return;
+
+            // Nếu là direct image URL hoặc images.unsplash.com
+            if (urlVal.startsWith('http')) {
+                if (urlVal.includes('images.unsplash.com') || /\.(jpeg|jpg|png|webp|gif|svg)(\?.*)?$/i.test(urlVal)) {
+                    applyCoverImageToHtml(urlVal, currentArticleData?.authorName || 'Unsplash', currentArticleData?.authorLink || 'https://unsplash.com');
+                }
+            }
+        }
+
+        // TỰ ĐỘNG PHÂN GIẢI KHI DÁN LINK HOẶC RỜI Ô INPUT
+        async function handleCoverUrlChange() {
+            const urlInput = document.getElementById('review-image-url');
+            let urlVal = urlInput ? urlInput.value.trim() : '';
+            if (!urlVal) return;
+
+            // Nếu là trang web Unsplash photo (ví dụ: https://unsplash.com/photos/xyz hoặc https://unsplash.com/photos/name-xyz)
+            const unsplashPageMatch = urlVal.match(/unsplash\.com\/photos\/(?:[\w-]+-)?([a-zA-Z0-9_-]+)/i);
+            if (unsplashPageMatch && !urlVal.includes('images.unsplash.com')) {
+                const photoId = unsplashPageMatch[1];
+                try {
+                    const res = await fetch(`https://api.unsplash.com/photos/${photoId}?client_id=${UNSPLASH_ACCESS_KEY}`, {
+                        headers: { "Accept-Version": "v1" }
+                    });
+                    if (res.ok) {
+                        const photoData = await res.json();
+                        const finalImageUrl = photoData.urls.regular || photoData.urls.full;
+                        const finalAuthorName = photoData.user?.name || 'Unsplash';
+                        const finalAuthorLink = photoData.user?.links?.html || 'https://unsplash.com';
+                        urlInput.value = finalImageUrl;
+                        applyCoverImageToHtml(finalImageUrl, finalAuthorName, finalAuthorLink);
+                        return;
+                    }
+                } catch(e) {}
+            }
+            
+            // Link trực tiếp khác
+            applyCoverImageToHtml(urlVal, currentArticleData?.authorName || 'Unsplash', currentArticleData?.authorLink || 'https://unsplash.com');
+        }
+
+        // XÓA LINK ẢNH ĐỂ TÌM THEO TỪ KHÓA
+        function clearCoverImageUrl() {
+            const urlInput = document.getElementById('review-image-url');
+            if (urlInput) {
+                urlInput.value = '';
+                urlInput.focus();
+            }
+        }
+
+        // XỬ LÝ KHI BẤM NÚT "CẬP NHẬT & TẢI LẠI ẢNH BÌA"
+        async function manualReloadCoverImage(event) {
+            const promptInput = document.getElementById('review-image-prompt');
+            const urlInput = document.getElementById('review-image-url');
+            let promptVal = promptInput ? promptInput.value.trim() : '';
+            let urlVal = urlInput ? urlInput.value.trim() : '';
+
             if (!promptVal && !urlVal) {
                 return alert("Vui lòng nhập từ khóa tìm ảnh hoặc dán link ảnh trực tiếp!");
             }
-            
+
             const btn = event ? event.currentTarget : null;
             let originalHtml = "";
             if (btn) {
@@ -3306,36 +3432,60 @@ ${emptyMsg}
                 btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải...';
                 btn.disabled = true;
             }
-            
+
             try {
+                let finalImageUrl = "";
+                let finalAuthorName = "Unsplash";
+                let finalAuthorLink = "https://unsplash.com";
+
+                // TRƯỜNG HỢP 1: NGƯỜI DÙNG DÁN LINK TRỰC TIẾP
                 if (urlVal) {
-                    currentArticleData.imageUrl = urlVal;
-                    currentArticleData.authorName = '';
-                    currentArticleData.authorLink = '';
-                } else {
-                    currentArticleData.imagePrompt = promptVal;
-                    const resolvedImage = await resolveUnsplashImage(promptVal, currentArticleData.title, currentArticleData.category);
-                    currentArticleData.imageUrl = resolvedImage.url;
-                    currentArticleData.authorName = resolvedImage.authorName;
-                    currentArticleData.authorLink = resolvedImage.authorLink;
+                    const unsplashPageMatch = urlVal.match(/unsplash\.com\/photos\/(?:[\w-]+-)?([a-zA-Z0-9_-]+)/i);
+                    if (unsplashPageMatch && !urlVal.includes('images.unsplash.com')) {
+                        const photoId = unsplashPageMatch[1];
+                        try {
+                            const res = await fetch(`https://api.unsplash.com/photos/${photoId}?client_id=${UNSPLASH_ACCESS_KEY}`, {
+                                headers: { "Accept-Version": "v1" }
+                            });
+                            if (res.ok) {
+                                const photoData = await res.json();
+                                finalImageUrl = photoData.urls.regular || photoData.urls.full;
+                                finalAuthorName = photoData.user?.name || 'Unsplash';
+                                finalAuthorLink = photoData.user?.links?.html || 'https://unsplash.com';
+                                urlInput.value = finalImageUrl;
+                            } else {
+                                finalImageUrl = urlVal;
+                            }
+                        } catch(err) {
+                            finalImageUrl = urlVal;
+                        }
+                    } else {
+                        finalImageUrl = urlVal;
+                        if (urlVal.includes('images.unsplash.com')) {
+                            finalAuthorName = currentArticleData?.authorName || 'Unsplash';
+                            finalAuthorLink = currentArticleData?.authorLink || 'https://unsplash.com';
+                        } else {
+                            finalAuthorName = 'Nguồn tổng hợp';
+                            finalAuthorLink = '#';
+                        }
+                    }
+                } 
+                // TRƯỜNG HỢP 2: TÌM ẢNH MỚI THEO TỪ KHÓA
+                else {
+                    const articleTitle = document.getElementById('review-title')?.value || currentArticleData?.title || '';
+                    const articleCategory = document.getElementById('input-category')?.value || currentArticleData?.category || 'blog';
                     
-                    document.getElementById('review-image-url').value = resolvedImage.url;
+                    if (currentArticleData) currentArticleData.imagePrompt = promptVal;
+                    const resolvedImage = await resolveUnsplashImage(promptVal, articleTitle, articleCategory);
+                    finalImageUrl = resolvedImage.url;
+                    finalAuthorName = resolvedImage.authorName;
+                    finalAuthorLink = resolvedImage.authorLink;
+
+                    if (urlInput) urlInput.value = finalImageUrl;
                 }
-                
-                const fullHtml = buildTemplate(
-                    currentArticleData.title,
-                    currentArticleData.metaDescription,
-                    currentArticleData.category,
-                    currentArticleData.htmlContent,
-                    currentArticleData.imageUrl,
-                    currentArticleData.tags,
-                    currentArticleData.hashtags,
-                    currentArticleData.dateString,
-                    currentArticleData.authorName,
-                    currentArticleData.authorLink
-                );
-                document.getElementById('review-html').value = fullHtml;
-                refreshPreview();
+
+                // Áp dụng ảnh bìa trực tiếp vào mã HTML hiện tại
+                applyCoverImageToHtml(finalImageUrl, finalAuthorName, finalAuthorLink);
                 alert("Đã cập nhật ảnh bìa thành công!");
             } catch(e) {
                 alert("Lỗi tải ảnh bìa: " + e.message);
