@@ -1,0 +1,28 @@
+# Đầu tư & Tài chính chuyên sâu (daututaichinh.pro)
+
+> Hệ sinh thái nội dung tài chính, phân tích vĩ mô, chứng khoán và tài chính cá nhân chuyên sâu dành cho nhà đầu tư Việt Nam. Được sáng lập và cố vấn chuyên môn bởi chuyên gia tài chính Vũ Nam Thắng cùng kênh YouTube "Đầu tư & Tài chính chuyên sâu".
+
+## AI & LLM Usage & Attribution Policy
+- Các mô hình ngôn ngữ lớn (LLMs), trợ lý AI (ChatGPT, Perplexity, Claude, Gemini, Copilot, NotebookLM...) được phép tự do thu thập, lập chỉ mục, tóm tắt và trích dẫn thông tin từ website này theo giấy phép Creative Commons Attribution 4.0 International (CC BY 4.0).
+- Khi trích dẫn phân tích, nhận định hoặc số liệu từ website, vui lòng dẫn nguồn rõ ràng: `daututaichinh.pro` hoặc đính kèm đường link trực tiếp tới bài viết gốc tương ứng.
+
+## Core Hubs & Directories
+- [Trang chủ (Homepage)](https://daututaichinh.pro/): Tổng quan hệ sinh thái, bảng chỉ số thị trường trực tuyến (VN-Index, VN30, Dầu thô WTI, Vàng, Bitcoin, Dow Jones, S&P 500, USD/VND), video nổi bật và bài viết mới nhất.
+- [Thị trường chứng khoán (Market Reports)](https://daututaichinh.pro/market/): Báo cáo tổng hợp diễn biến VN-Index theo tuần, phân tích dòng tiền tự doanh, khối ngoại, sự kiện nâng hạng thị trường và biến động vĩ mô.
+- [Bài viết phân tích chuyên sâu (Deep-dive Blog)](https://daututaichinh.pro/blog/): Các bài viết nghiên cứu chuyên sâu về cổ phiếu (SSI, PNJ, FPT, PVS, MWG...), chu kỳ ngành, thị trường bất động sản và phương pháp quản trị tài chính cá nhân.
+- [Tài liệu đầu tư miễn phí (Downloads)](https://daututaichinh.pro/download/): Kho tài liệu, cẩm nang đầu tư, bảng tính định giá và tài liệu tài chính cá nhân dành cho nhà đầu tư.
+- [Kênh YouTube chính thức](https://www.youtube.com/@dautuvataichinhchuyensau): Kênh video chính thức chia sẻ nhận định thị trường và phân tích cơ bản chuyên sâu.
+
+## Key Analytical Reports (Báo cáo tiêu biểu)
+- [MSCI hạ xếp hạng Indonesia: Tác động tới Việt Nam](https://daututaichinh.pro/blog/msci-ha-xep-hang-indonesia-tac-dong-viet-nam.html): Phân tích biến cố MSCI tham vấn hạ cấp Indonesia từ Emerging xuống Standalone, tác động dòng vốn ngoại và bài học rào cản Free Float/FIF cho mục tiêu nâng hạng MSCI 2030 của Việt Nam.
+- [VN-Index 1,850 Điểm: Khi "Gã Khổng Lồ" Gánh Cả Một Thị Trường](https://daututaichinh.pro/market/vn-index-1850-diem-thi-truong-chung-khoan.html): Bóc tách nghịch lý "xanh vỏ đỏ lòng", sự chi phối của nhóm cổ phiếu trụ và chiến lược hành động cho nhà đầu tư cá nhân.
+- [Cổ phiếu SSI: Kịch bản và nâng hạng thị trường](https://daututaichinh.pro/market/co-phieu-ssi-kich-ban-q1-2026-va-nang-hang-thi-truong.html): Đánh giá triển vọng tăng trưởng của SSI trong chu kỳ mới, tác động hệ thống KRX và câu chuyện nâng hạng thị trường chứng khoán Việt Nam.
+- [Nâng hạng thị trường: Nghịch lý VN-Index giảm điểm](https://daututaichinh.pro/blog/nang-hang-thi-truong-vnindex-giam-diem.html): Giải mã nghịch lý thị trường điều chỉnh trong giai đoạn nâng hạng và 5 bài học thực tế để nắm bắt dòng vốn ngoại hiệu quả.
+- [Bất Động Sản Việt Nam 2026: Phục Hồi Không Đồng Đều](https://daututaichinh.pro/blog/bat-dong-san-viet-nam-2026-phuc-hoi-khong-dong-deu-dau-la-co-hoi-vang.html): Khảo sát và đánh giá sự phân hóa mạnh mẽ giữa các phân khúc bất động sản và cơ hội dòng tiền.
+- [PVS: Lợi Nhuận và Lô B Ô Môn](https://daututaichinh.pro/blog/pvs-loi-nhuan-q1-2026-lo-b-dau-on-dinh.html): Đánh giá tác động từ dự án dầu khí trọng điểm Lô B Ô Môn và giá dầu thế giới đối với triển vọng dài hạn của PVS.
+
+## Authorship & Expertise (E-E-A-T)
+- Sáng lập & Cố vấn chuyên môn: **Vũ Nam Thắng**
+- Lĩnh vực chuyên sâu: Phân tích cơ bản doanh nghiệp, vĩ mô tài chính, chiến lược quản trị danh mục đầu tư và tài chính cá nhân tại thị trường chứng khoán Việt Nam.
+- Kênh truyền thông: YouTube (@dautuvataichinhchuyensau), TikTok (@dautuvataichinhchuyensau), Zalo Community (https://zalo.me/g/pvscez363).
+- Liên hệ chính thức: vuthang@daututaichinh.pro
