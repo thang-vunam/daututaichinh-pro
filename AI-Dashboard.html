@@ -2184,14 +2184,15 @@ async function generateListingFromCatalog(owner, repo, token, category, catalog)
             const cardsList = sorted.map((a, i) => {
                 const num = i + 1;
                 const dateStr = formatVnDate(a.date);
-                return `      <article class="market-card" style="margin-bottom: 20px;">
+                const linkText = category === 'market' ? 'Đọc báo cáo chi tiết →' : 'Đọc bài viết →';
+                return `      <article class="market-card catalog-card">
         <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(99,102,241,0.2);color:#a5b4fc;font-weight:700;font-size:0.9rem;flex-shrink:0;">${num}</span>
+          <span class="badge-gold">#${num}</span>
           <span style="font-size:0.8rem;color:#94a3b8;">${dateStr}</span>
         </div>
         <h3>${a.title}</h3>
         ${a.desc ? '<p style="color:#94a3b8;font-size:0.9rem;margin:8px 0;">' + a.desc + '</p>' : ''}
-        <a href="${a.slug}.html" class="link-inline">Đọc bài viết →</a>
+        <a href="${a.slug}.html" class="link-inline">${linkText}</a>
       </article>`;
             }).join('\n');
             
@@ -2249,6 +2250,13 @@ async function generateListingFromCatalog(owner, repo, token, category, catalog)
       </div>
     </div>
   </div>
+  <!-- REAL-TIME MARKET TICKER BAR -->
+  <div class="simplize-ticker-bar">
+    <div class="simplize-ticker-track" id="market-ticker-track">
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VNINDEX</span><span class="s-val">1,763.55</span><span class="s-badge-down">▼ 0.60%</span></div>
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VN30</span><span class="s-val">1,907.09</span><span class="s-badge-up">▲ 0.75%</span></div>
+    </div>
+  </div>
 </header>
 <main>
   <section class="section" style="padding-top: 40px;">
@@ -2260,7 +2268,9 @@ async function generateListingFromCatalog(owner, repo, token, category, catalog)
         <div style="font-size: 2rem; margin-bottom: 10px;">🔎</div>
         <div style="font-weight: 600; color: #f8fafc; margin-bottom: 6px;">Không tìm thấy bài viết phù hợp</div>
       </div>
+      <div class="catalog-grid">
 ${cardsList}
+      </div>
 ${emptyMsg}
     </div>
   </section>
@@ -2269,6 +2279,7 @@ ${emptyMsg}
   <div class="container"><p>© <span id="year">2026</span> daututaichinh.pro</p></div>
 </footer>
 <script src="../lead-form.js"><\/script>
+<script src="/ticker-live.js" defer><\/script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('article-search-input');
