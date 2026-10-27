@@ -1866,6 +1866,25 @@ NHIỆM VỤ SEO BẮT BUỘC (Hybrid):
 • TUYỆT ĐỐI KHÔNG dùng <p><strong>1. Tiêu đề</strong></p> hoặc markdown ## thay cho thẻ <h2>/<h3>.
 5. Tuyệt đối giữ văn phong sắc sảo, tự nhiên, không nhồi nhét từ khóa (keyword stuffing).
 6. ĐỊNH DẠNG BÁO CHÍ (Tùy chọn): Nếu bài viết có trích dẫn lời phát biểu của chuyên gia, tổ chức uy tín, BẮT BUỘC dùng thẻ <blockquote> để bọc câu nói đó lại nhằm tăng độ uy tín. KHÔNG bịa ra trích dẫn giả mạo nếu ngữ cảnh không có thật.
+7. QUY TẮC LIÊN KẾT THÔNG MINH (BẮT BUỘC - SEO & GEO DUAL-LINKING):
+   A. LIÊN KẾT NỘI BỘ (INTERNAL LINKS - 1 ĐẾN 2 LINK TỰ NHIÊN):
+      • Tầng 1 (Cùng chủ đề): Nếu bài viết có điểm chạm chủ đề, hãy gắn link tự nhiên tới bài liên quan có thật, ví dụ:
+        - Thị trường & Vĩ mô: <a href="/market/vn-index-1850-diem-thi-truong-chung-khoan.html">VN-Index 1.850 điểm</a>, <a href="/blog/msci-ha-xep-hang-indonesia-tac-dong-viet-nam.html">MSCI hạ xếp hạng Indonesia</a>, <a href="/blog/nang-hang-thi-truong-vnindex-giam-diem.html">nghịch lý nâng hạng thị trường</a>.
+        - Cổ phiếu & Doanh nghiệp: <a href="/market/co-phieu-ssi-kich-ban-q1-2026-va-nang-hang-thi-truong.html">cổ phiếu SSI</a>, <a href="/blog/pvs-loi-nhuan-q1-2026-lo-b-dau-on-dinh.html">cổ phiếu PVS Lô B Ô Môn</a>, <a href="/blog/co-phieu-pnj-ke-hoach-lo-ky-luc.html">cổ phiếu PNJ</a>.
+        - Bất động sản: <a href="/blog/bat-dong-san-viet-nam-2026-phuc-hoi-khong-dong-deu-dau-la-co-hoi-vang.html">phục hồi bất động sản 2026</a>.
+      • Tầng 2 (Cầu nối dự phòng an toàn): Nếu bài viết hoàn toàn không liên quan đến bài cũ nào, BẮT BUỘC liên kết mượt mà về một trong các Trang Cột Trụ (Hub Pages):
+        - Trang nhận định: <a href="/market/">nhận định thị trường chứng khoán</a>
+        - Trang kiến thức: <a href="/blog/">kiến thức đầu tư chuyên sâu</a>
+        - Trang tài liệu: <a href="/download/">tài liệu đầu tư tài chính miễn phí</a>
+      • Tầng 3: TUYỆT ĐỐI KHÔNG tự bịa ra đường link hoặc slug không có thật (tránh lỗi 404).
+
+   B. LIÊN KẾT NGOÀI UY TÍN (OUTBOUND LINK - 1 LINK TRÍCH DẪN):
+      • BẮT BUỘC chèn 1 liên kết ngoài trích dẫn nguồn uy tín từ danh sách trắng (kèm target='_blank' rel='noopener'):
+        - Chứng khoán, doanh nghiệp: HOSE (https://www.hsx.vn), HNX (https://www.hnx.vn), UBCKNN (https://ssc.gov.vn)
+        - Lãi suất, tỷ giá, vàng, tiền tệ: Ngân hàng Nhà nước (https://sbv.gov.vn)
+        - Lạm phát, GDP, kinh tế vĩ mô: Tổng cục Thống kê (https://gso.gov.vn)
+        - Kinh tế toàn cầu: World Bank (https://www.worldbank.org), Bloomberg, Reuters.
+      • TUYỆT ĐỐI KHÔNG chèn link ngoài vào các trang rác, trang cờ bạc hay đối thủ bán khóa học lừa đảo.
 
 Trả về 1 chuỗi JSON duy nhất:
 {"title":"Chứa từ khóa chính. BẮT BUỘC 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. BẮT BUỘC 120-150 ký tự","htmlContent":"Nội dung HTML hoàn chỉnh gồm đoạn mở đầu <p>, tiếp theo là các phần <h2>, <h3>, <p>, <ul>, <li>, bảng <table> nếu có so sánh số liệu. CHÈN 1-2 Outbound link. (CHÚ Ý: LƯU Ý TỐI QUAN TRỌNG: Mọi dấu ngoặc kép bên trong HTML hoặc Blockquote phải được thay bằng dấu nháy đơn (\') hoặc escape (\\\") để KHÔNG LÀM VỠ định dạng JSON)","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa mang tính biểu trưng hoặc trừu tượng (ví dụ: finance abstract background, business workspace laptop, bull market statue, gold and money... KHÔNG tìm ảnh biểu đồ cận cảnh có chữ ngoại quốc hay ngày tháng cũ)","tags":["Chứng khoán","Cổ phiếu"],"hashtags":["#chungkhoan","#dautu"]}
