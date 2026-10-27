@@ -1985,10 +1985,14 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
                 await updateHomepage(owner, repo, token);
 
                 // BƯỚC 4: Tự động đồng bộ sitemap.xml
-                btn.innerHTML = '<div class="loader"></div> Bước 4/4: Đang cập nhật sitemap.xml...';
+                btn.innerHTML = '<div class="loader"></div> Bước 4/5: Đang cập nhật sitemap.xml...';
                 await updateSitemap(owner, repo, token, category, slug);
+
+                // BƯỚC 5: Tự động cập nhật llms.txt cho AI Bots (GEO)
+                btn.innerHTML = '<div class="loader"></div> Bước 5/5: Đang cập nhật llms.txt cho AI Bots...';
+                await updateLlmsTxt(owner, repo, token, category, slug, title, desc);
                 
-                alert("🎉 Xuất bản thành công!\n✅ Bài viết đã push\n✅ Cả 2 danh mục đã đồng bộ\n✅ Trang chủ đã cập nhật với số thứ tự\n✅ Sitemap.xml đã tự động bổ sung bài mới!");
+                alert("🎉 Xuất bản thành công!\n✅ Bài viết đã push\n✅ Cả 2 danh mục đã đồng bộ\n✅ Trang chủ đã cập nhật với số thứ tự\n✅ Sitemap.xml đã tự động bổ sung bài mới!\n✅ llms.txt đã cập nhật cho các Bot AI!");
             } catch(e) {
                 alert("Lỗi: " + e.message);
             } finally {
@@ -2394,6 +2398,40 @@ ${emptyMsg}
                 });
             } catch(e) {
                 console.error("Lỗi cập nhật sitemap:", e);
+            }
+        }
+
+        // CẬP NHẬT TỰ ĐỘNG LLMS.TXT (CHO BOT AI / GEO)
+        async function updateLlmsTxt(owner, repo, token, category, slug, title, desc) {
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/llms.txt`;
+            try {
+                const getRes = await fetch(apiUrl, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (!getRes.ok) return;
+                const getData = await getRes.json();
+                const sha = getData.sha;
+                let text = decodeURIComponent(escape(atob(getData.content.replace(/\n/g, ''))));
+                
+                const articleUrl = `https://daututaichinh.pro/${category}/${slug}.html`;
+                const entry = `- [${title}](${articleUrl}): ${desc}`;
+
+                if (!text.includes(articleUrl)) {
+                    const sectionMarker = '## Key Analytical Reports (Báo cáo tiêu biểu)\n';
+                    if (text.includes(sectionMarker)) {
+                        text = text.replace(sectionMarker, sectionMarker + entry + '\n');
+                    } else {
+                        text += '\n' + entry;
+                    }
+                    const b64 = btoa(unescape(encodeURIComponent(text)));
+                    await fetch(apiUrl, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Auto GEO: Thêm ${slug} vào llms.txt`, content: b64, sha: sha })
+                    });
+                }
+            } catch(e) {
+                console.error("Lỗi cập nhật llms.txt:", e);
             }
         }
 
