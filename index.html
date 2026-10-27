@@ -258,7 +258,7 @@
         <div>
           <div class="card-meta-row">
             <span class="badge-gold">Báo Cáo Mới Nhất</span>
-            <span class="card-date">2026-09-06</span>
+            <span class="card-date">06/09/2026</span>
           </div>
           <h3 class="card-hero-title">VN-Index 1,850 Điểm: Khi "Gã Khổng Lồ" Gánh Cả Một Thị Trường</h3>
           <p class="card-hero-desc">VN-Index vượt 1,850 điểm nhờ VIC và VHM, nhưng thị trường đang đối mặt với nghịch lý "xanh vỏ đỏ lòng". Đánh giá rủi ro và xu hướng chứng khoán năm 2026.</p>
@@ -269,7 +269,7 @@
         <article class="card-sub">
           <div class="card-meta-row">
             <span style="font-size:0.75rem; color:#64748b; font-weight:600;">BÁO CÁO KỲ TRƯỚC</span>
-            <span class="card-date">2026-08-10</span>
+            <span class="card-date">10/08/2026</span>
           </div>
           <h4 class="card-sub-title">VN-Index đối mặt thử thách 1.770 - 1.800 điểm</h4>
           <p class="card-sub-desc">VN-Index đang đứng trước ngưỡng cản 1.770-1.800 điểm. Liệu dòng tiền có đủ mạnh để bứt phá hay thị trường sẽ tiếp tục giằng co? Xem nhận định ngay.</p>
@@ -299,7 +299,7 @@
         <div>
           <div class="card-meta-row">
             <span class="badge-gold">Tâm Điểm</span>
-            <span class="card-date">2026-10-19</span>
+            <span class="card-date">19/10/2026</span>
           </div>
           <h3 class="blog-card-title">MSCI hạ xếp hạng Indonesia: Tác động tới Việt Nam</h3>
           <p class="blog-card-desc">Phân tích biến cố MSCI hạ xếp hạng chứng khoán Indonesia năm 2026 và tác động chiến lược, dòng vốn ngoại đối với thị trường chứng khoán Việt Nam.</p>
@@ -310,7 +310,7 @@
         <div>
           <div class="card-meta-row">
             <span class="badge-gold">Tâm Điểm</span>
-            <span class="card-date">2026-09-28</span>
+            <span class="card-date">28/09/2026</span>
           </div>
           <h3 class="blog-card-title">Cổ phiếu PNJ: Vì sao chấp nhận kế hoạch lỗ kỷ lục?</h3>
           <p class="blog-card-desc">Cổ phiếu PNJ đối mặt sóng gió khi trình kế hoạch lỗ kỷ lục hơn 6.200 tỷ đồng năm 2026. Phân tích nguyên nhân dự phòng và giải pháp dòng tiền.</p>
@@ -321,7 +321,7 @@
         <div>
           <div class="card-meta-row">
             <span class="badge-gold">Tâm Điểm</span>
-            <span class="card-date">2026-09-23</span>
+            <span class="card-date">23/09/2026</span>
           </div>
           <h3 class="blog-card-title">Nâng hạng thị trường: Nghịch lý VN-Index giảm điểm</h3>
           <p class="blog-card-desc">Giải mã nghịch lý nâng hạng thị trường khiến VN-Index giảm điểm và 5 bài học thực tế giúp nhà đầu tư nắm bắt cơ hội dòng vốn mới hiệu quả.</p>
@@ -415,6 +415,12 @@
     const listEl = document.getElementById('home-search-list');
     
     let allArticles = [];
+    function formatVN(d) {
+      if (!d) return '';
+      const p = d.split('-');
+      return p.length === 3 && p[0].length === 4 ? `${p[2]}/${p[1]}/${p[0]}` : d;
+    }
+
     let isLoaded = false;
 
     async function loadCatalogs() {
@@ -463,7 +469,7 @@
             <a href="/${a.category}/${a.slug}.html" style="display:block; padding:12px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:8px; text-decoration:none; transition:0.2s;" onmouseover="this.style.background='rgba(59,130,246,0.15)'; this.style.borderColor='#3b82f6'" onmouseout="this.style.background='rgba(255,255,255,0.03)'; this.style.borderColor='rgba(255,255,255,0.06)'">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                 <span style="font-size:0.75rem; padding:2px 8px; border-radius:10px; background:${a.category === 'market' ? 'rgba(99,102,241,0.2)' : 'rgba(16,185,129,0.2)'}; color:${a.category === 'market' ? '#a5b4fc' : '#6ee7b7'}; font-weight:600;">${a.catLabel}</span>
-                <span style="font-size:0.75rem; color:#94a3b8;">📅 ${a.date || ''}</span>
+                <span style="font-size:0.75rem; color:#94a3b8;">📅 ${formatVN(a.date)}</span>
               </div>
               <div style="font-size:0.95rem; font-weight:600; color:#f8fafc; line-height:1.4;">${a.title}</div>
             </a>
