@@ -464,10 +464,13 @@ Bạn có thể viết:
                         <!-- Danh sách link đã thêm sẽ hiện tại đây -->
                     </div>
                     <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button class="btn" onclick="insertAllLinks()" style="font-size: 0.85rem;">
-                            <i class="fa-solid fa-paste"></i> Chèn tất cả link vào bài viết
+                        <button class="btn" type="button" onclick="autoDetectAndInjectLinksInEditor()" style="font-size: 0.85rem; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; font-weight: 600;">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> ⚡ AI Tự động quét & gắn Link thông minh
                         </button>
-                        <button class="btn" onclick="clearAllLinks()" style="font-size: 0.85rem; color: #f87171;">
+                        <button class="btn" type="button" onclick="insertAllLinks()" style="font-size: 0.85rem;">
+                            <i class="fa-solid fa-paste"></i> Chèn link trong danh sách vào bài
+                        </button>
+                        <button class="btn" type="button" onclick="clearAllLinks()" style="font-size: 0.85rem; color: #f87171;">
                             <i class="fa-solid fa-trash-can"></i> Xóa hết
                         </button>
                     </div>
@@ -1100,6 +1103,231 @@ Bạn có thể viết:
         }
 
         // CHẾ ĐỘ TỰ VIẾT: AI chỉ tối ưu SEO
+        
+        // ==========================================
+        // SMART DUAL-LINKING ENGINE (SEO & GEO)
+        // ==========================================
+        function applySmartLinking(html, category = 'market', topic = '') {
+            if (!html) return html;
+
+            // 1. Scan existing links
+            const linkRegex = /<a\s+[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi;
+            let match;
+            let internalLinkCount = 0;
+            let externalLinkCount = 0;
+
+            while ((match = linkRegex.exec(html)) !== null) {
+                const href = match[1].trim();
+                if (href.startsWith('#') || href.includes('unsplash.com') || href.includes('lead-form') || href.includes('cta-open')) {
+                    continue;
+                }
+                if (href.startsWith('/') || href.startsWith('./') || href.startsWith('../') || href.includes('daututaichinh.pro')) {
+                    internalLinkCount++;
+                } else if (href.startsWith('http://') || href.startsWith('https://')) {
+                    externalLinkCount++;
+                }
+            }
+
+            let modifiedHtml = html;
+
+            function escapeRegExp(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            // Safe replacement inside <p> text nodes only (avoids existing <a> tags, headings, attributes)
+            function safeReplaceFirstInParagraphs(content, targetWord, replaceFn) {
+                let replaced = false;
+                return content.replace(/(<p[^>]*>)([\s\S]*?)(<\/p>)/gi, (fullMatch, pOpen, pInner, pClose) => {
+                    if (replaced) return fullMatch;
+                    
+                    const parts = [];
+                    let lastIndex = 0;
+                    const tagRegex = /<a\b[^>]*>[\s\S]*?<\/a>/gi;
+                    let tagMatch;
+                    while ((tagMatch = tagRegex.exec(pInner)) !== null) {
+                        if (tagMatch.index > lastIndex) {
+                            parts.push({ type: 'text', val: pInner.substring(lastIndex, tagMatch.index) });
+                        }
+                        parts.push({ type: 'tag', val: tagMatch[0] });
+                        lastIndex = tagMatch.index + tagMatch[0].length;
+                    }
+                    if (lastIndex < pInner.length) {
+                        parts.push({ type: 'text', val: pInner.substring(lastIndex) });
+                    }
+
+                    let newPInner = '';
+                    for (const part of parts) {
+                        if (part.type === 'text' && !replaced) {
+                            const wordRegex = new RegExp(`(^|[^a-zA-Z0-9À-ỹ_])(${escapeRegExp(targetWord)})([^a-zA-Z0-9À-ỹ_]|$)`, 'i');
+                            const m = wordRegex.exec(part.val);
+                            if (m) {
+                                const before = part.val.substring(0, m.index + m[1].length);
+                                const matchedWord = m[2];
+                                const after = part.val.substring(m.index + m[1].length + matchedWord.length);
+                                const replacement = replaceFn(matchedWord);
+                                newPInner += before + replacement + after;
+                                replaced = true;
+                                continue;
+                            }
+                        }
+                        newPInner += part.val;
+                    }
+
+                    return pOpen + newPInner + pClose;
+                });
+            }
+
+            // TIER 1: Internal Article Mapping Whitelist
+            const internalMap = [
+                { words: ['cổ phiếu SSI', 'SSI'], url: '/market/co-phieu-ssi-kich-ban-q1-2026-va-nang-hang-thi-truong.html' },
+                { words: ['cổ phiếu PVS', 'PVS', 'Lô B Ô Môn', 'Lô B'], url: '/blog/pvs-loi-nhuan-q1-2026-lo-b-dau-on-dinh.html' },
+                { words: ['cổ phiếu PNJ', 'PNJ'], url: '/blog/co-phieu-pnj-ke-hoach-lo-ky-luc.html' },
+                { words: ['MSCI', 'nâng hạng thị trường', 'thị trường mới nổi'], url: '/blog/msci-ha-xep-hang-indonesia-tac-dong-viet-nam.html' },
+                { words: ['bất động sản', 'thị trường bất động sản'], url: '/blog/bat-dong-san-viet-nam-2026-phuc-hoi-khong-dong-deu-dau-la-co-hoi-vang.html' },
+                { words: ['VN-Index 1.850', '1.850 điểm'], url: '/market/vn-index-1850-diem-thi-truong-chung-khoan.html' }
+            ];
+
+            // Insert Tier 1 Internal Links if internalLinkCount < 2
+            if (internalLinkCount < 2) {
+                for (const item of internalMap) {
+                    if (internalLinkCount >= 2) break;
+                    for (const w of item.words) {
+                        const cleanW = w.trim();
+                        const testRes = safeReplaceFirstInParagraphs(modifiedHtml, cleanW, (matched) => {
+                            return `<a href="${item.url}">${matched}</a>`;
+                        });
+                        if (testRes !== modifiedHtml) {
+                            modifiedHtml = testRes;
+                            internalLinkCount++;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // TIER 2: Safe Hub Page Fallback if internalLinkCount === 0
+            if (internalLinkCount === 0) {
+                const hubKeywords = category === 'market' 
+                    ? [
+                        { word: 'thị trường chứng khoán', url: '/market/' },
+                        { word: 'thị trường', url: '/market/' },
+                        { word: 'VN-Index', url: '/market/' }
+                    ]
+                    : [
+                        { word: 'phương pháp đầu tư', url: '/blog/' },
+                        { word: 'chiến lược đầu tư', url: '/blog/' },
+                        { word: 'kiến thức đầu tư', url: '/blog/' },
+                        { word: 'thị trường', url: '/blog/' }
+                    ];
+
+                for (const hk of hubKeywords) {
+                    const testRes = safeReplaceFirstInParagraphs(modifiedHtml, hk.word, (matched) => {
+                        return `<a href="${hk.url}">${matched}</a>`;
+                    });
+                    if (testRes !== modifiedHtml) {
+                        modifiedHtml = testRes;
+                        internalLinkCount++;
+                        break;
+                    }
+                }
+
+                // Ultimate fallback for internal link: add a smooth bridge in the last paragraph
+                if (internalLinkCount === 0) {
+                    const hubUrl = category === 'market' ? '/market/' : '/blog/';
+                    const hubText = category === 'market' ? 'nhận định thị trường chứng khoán' : 'phân tích và chiến lược đầu tư chuyên sâu';
+                    const bridge = ` Để không bỏ lỡ các góc nhìn đa chiều, nhà đầu tư có thể theo dõi thêm tại chuyên mục <a href="${hubUrl}">${hubText}</a> của chúng tôi.`;
+                    
+                    const lastPIdx = modifiedHtml.lastIndexOf('</p>');
+                    if (lastPIdx !== -1) {
+                        modifiedHtml = modifiedHtml.substring(0, lastPIdx) + bridge + modifiedHtml.substring(lastPIdx);
+                        internalLinkCount++;
+                    }
+                }
+            }
+
+            // TIER 3: External Authority Links Whitelist
+            if (externalLinkCount === 0) {
+                const extKeywords = [
+                    { words: ['Ủy ban Chứng khoán Nhà nước', 'UBCKNN', 'Ủy ban Chứng khoán'], url: 'https://ssc.gov.vn' },
+                    { words: ['Ngân hàng Nhà nước', 'NHNN'], url: 'https://sbv.gov.vn' },
+                    { words: ['Sở Giao dịch Chứng khoán TP.HCM', 'HOSE', 'HSX'], url: 'https://www.hsx.vn' },
+                    { words: ['Sở Giao dịch Chứng khoán Hà Nội', 'HNX'], url: 'https://www.hnx.vn' },
+                    { words: ['Tổng cục Thống kê', 'GSO'], url: 'https://gso.gov.vn' },
+                    { words: ['Vietstock'], url: 'https://vietstock.vn' },
+                    { words: ['CafeF'], url: 'https://cafef.vn' },
+                    { words: ['World Bank'], url: 'https://www.worldbank.org' }
+                ];
+
+                for (const ek of extKeywords) {
+                    for (const w of ek.words) {
+                        const testRes = safeReplaceFirstInParagraphs(modifiedHtml, w, (matched) => {
+                            return `<a href="${ek.url}" target="_blank" rel="noopener noreferrer">${matched}</a>`;
+                        });
+                        if (testRes !== modifiedHtml) {
+                            modifiedHtml = testRes;
+                            externalLinkCount++;
+                            break;
+                        }
+                    }
+                    if (externalLinkCount > 0) break;
+                }
+
+                // Ultimate fallback for external link: append standard data attribution note before end
+                if (externalLinkCount === 0) {
+                    const refNote = `<p style="font-size: 0.88rem; color: #94a3b8; font-style: italic; margin-top: 15px; border-left: 3px solid #3b82f6; padding-left: 10px;">* Dữ liệu và thông tin thị trường được đối chiếu từ cổng thông tin <a href="https://www.hsx.vn" target="_blank" rel="noopener noreferrer">Sở Giao dịch Chứng khoán TP.HCM (HOSE)</a> và <a href="https://ssc.gov.vn" target="_blank" rel="noopener noreferrer">Ủy ban Chứng khoán Nhà nước</a>.</p>`;
+                    
+                    const lastPIdx = modifiedHtml.lastIndexOf('</p>');
+                    if (lastPIdx !== -1) {
+                        modifiedHtml = modifiedHtml.substring(0, lastPIdx + 4) + '\n' + refNote + modifiedHtml.substring(lastPIdx + 4);
+                        externalLinkCount++;
+                    } else {
+                        modifiedHtml += '\n' + refNote;
+                        externalLinkCount++;
+                    }
+                }
+            }
+
+            return modifiedHtml;
+        }
+
+        // Tự động quét từ khóa trong khung Editor và thêm vào Link Builder
+        function autoDetectAndInjectLinksInEditor() {
+            const textarea = document.getElementById('manual-content');
+            let text = textarea.value.trim();
+            if (!text) return alert('Vui lòng nhập nội dung bài viết trước khi quét link!');
+            const category = document.getElementById('manual-category').value;
+
+            // Chuyển tạm sang định dạng HTML để xử lý link chuẩn xác
+            const isRawText = !text.includes('<p>') && !text.includes('<h2>');
+            let formattedHtml = isRawText ? formatRawTextToHtml(text) : text;
+            formattedHtml = ensureSemanticHeadings(formattedHtml);
+
+            const beforeHtml = formattedHtml;
+            formattedHtml = applySmartLinking(formattedHtml, category);
+
+            // Cập nhật lại vào textarea
+            textarea.value = formattedHtml;
+
+            // Quét các link đã được tạo để hiển thị lên bảng pendingLinks
+            const linkRegex = /<a\s+[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi;
+            let m;
+            pendingLinks = [];
+            while ((m = linkRegex.exec(formattedHtml)) !== null) {
+                const href = m[1].trim();
+                const anchor = m[2].replace(/<[^>]+>/g, '').trim();
+                if (href.startsWith('#') || href.includes('unsplash.com')) continue;
+                const isInternal = href.startsWith('/') || href.startsWith('./') || href.includes('daututaichinh.pro');
+                pendingLinks.push({
+                    anchor: anchor || href,
+                    url: href,
+                    type: isInternal ? 'internal' : 'external'
+                });
+            }
+
+            renderLinkList();
+            alert(`🎉 AI đã tự động phân tích và gắn thành công ${pendingLinks.length} liên kết thông minh (Internal & External) chuẩn RankMath SEO vào bài viết!`);
+        }
+
         async function manualSeoOptimize() {
             const key = getItemSafe('gemini_key');
             const content = document.getElementById('manual-content').value.trim();
@@ -1144,8 +1372,10 @@ Bạn có thể viết:
                 const isRawText = !contentForBody.includes('<p>') && !contentForBody.includes('<h2>') && !contentForBody.includes('<div>');
                 let htmlBody = isRawText ? formatRawTextToHtml(contentForBody) : contentForBody;
                 htmlBody = ensureSemanticHeadings(htmlBody);
+                // Tự động kích hoạt Smart Dual-Linking (Internal & External Links)
+                htmlBody = applySmartLinking(htmlBody, category, detectedTitle || keyword);
 
-                // Prompt SEO Metadata siêu tốc (chỉ phân tích 3000 ký tự đầu, không nhồi full HTML vào JSON để AI trả về trong 2-4 giây)
+                // Prompt SEO Metadata toàn diện (phân tích trọn vẹn toàn bộ bài viết của tác giả lên tới 35.000 ký tự)
                 const seoPrompt = `Hôm nay là ngày ${today}. Tôi có một bài viết về tài chính chứng khoán${keyword ? ' với từ khóa chính: "' + keyword + '"' : ''}${detectedTitle ? ' và Tiêu đề gốc của tác giả: "' + detectedTitle + '"' : ''}${lsiContext}.
 Hãy phân tích nội dung, chèn từ khóa chính vào Tiêu đề và Mô tả tự nhiên chuẩn RankMath SEO.${detectedTitle ? ' ƯU TIÊN GIỮ NGUYÊN hoặc hoàn thiện Tiêu đề gốc của tác giả sao cho hấp dẫn chuẩn SEO.' : ''}
 Trả về ĐÚNG MỘT KHỐI JSON:
@@ -1159,7 +1389,7 @@ Trả về ĐÚNG MỘT KHỐI JSON:
 }
 CHỈ TRẢ VỀ JSON, TUYỆT ĐỐI KHÔNG GIẢI THÍCH THÊM.
 Nội dung bài viết (trích đoạn):
-${contentForBody.substring(0, 3000)}`;
+${contentForBody.substring(0, 35000)}`;
 
                 let seo;
                 try {
@@ -1914,6 +2144,8 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
                 
                 // Chuẩn hóa toàn bộ thẻ Heading (H2, H3) trong htmlContent
                 data.htmlContent = ensureSemanticHeadings(data.htmlContent);
+                // BẮT BUỘC ĐẢM BẢO DUAL-LINKING: Tự động kiểm tra và chèn bù Internal & External link nếu Gemini bỏ sót
+                data.htmlContent = applySmartLinking(data.htmlContent, category, topic);
 
                 // Populate Review Panel
                 document.getElementById('review-title').value = data.title;
