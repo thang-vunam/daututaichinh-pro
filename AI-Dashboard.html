@@ -1518,7 +1518,12 @@ ${contentForBody.substring(0, 35000)}`;
             // 3. Main headings (1., 2., 3., 1/, 1-, I., II., Phần 1, Điểm nhấn 1...)
             const mainPattern = '(\\d+[\\.\\)\\/:\\-](?!\\d)|[IVXLCDM]+[\\.\\)\\/:\\-]|Phần\\s+\\d+|Điểm\\s+nhấn\\s+\\d+|Mục\\s+\\d+|Bước\\s+\\d+|Bài\\s+học\\s+\\d+|Chương\\s+\\d+)';
             res = res.replace(new RegExp('<p>\\s*<(?:strong|b)>\\s*(' + mainPattern + '[^<]+)<\\/(?:strong|b)>\\s*<\\/p>', 'gi'), '<h2>$1</h2>');
-            res = res.replace(new RegExp('<p>\\s*(' + mainPattern + '\\s+[^\n<]{3,120})<\\/p>', 'gi'), '<h2>$1</h2>');
+            res = res.replace(new RegExp('<p>\\s*(' + mainPattern + '\\s+[^\n<]{3,120})<\\/p>', 'gi'), (m, p1) => {
+                const textAfter = p1.trim();
+                // Không biến các danh sách ngắn dưới 25 ký tự không có dấu hai chấm/gạch ngang thành <h2> (tránh biến 1. PVcomBank thành heading)
+                if (textAfter.length < 25 && !/[:\-–—]/.test(textAfter)) return m;
+                return `<h2>${p1}</h2>`;
+            });
             
             // 4. Đoạn văn bọc in đậm ngắn đứng riêng không có dấu chấm kết thúc (copy từ Word/Docs)
             res = res.replace(/<p>\s*<(?:strong|b)>\s*([^<.,;!?…]{3,95})\s*<\/(?:strong|b)>\s*<\/p>/gi, (match, inner) => {
@@ -4074,13 +4079,25 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                 if (/[│─┌┐└┘├┤┬┴┼▼▲►◄═║]/.test(t)) return false;
                 if (/^\s*\[.*\]\s*$/.test(t)) return false;
                 if (/^(BÁO CÁO PHÂN TÍCH|BÀI VIẾT PHÂN TÍCH|TỔNG HỢP NHẬN ĐỊNH)/i.test(t)) return false;
+                // LOẠI TRỪ 100% TÓM TẮT CHIẾN LƯỢC / KEY TAKEAWAYS KHỎI MỤC LỤC
+                if (/Tóm tắt|Key Takeaways|Executive Summary|Điểm tin/i.test(t)) return false;
+                // LOẠI TRỪ 100% CÁC KHUNG CTA / LIÊN HỆ / POPUP
+                if (/người cầm lái|hành khách|đăng ký nhận|tài liệu miễn phí|bài viết cùng chủ đề/i.test(t)) return false;
+                // LOẠI TRỪ CÁC DANH SÁCH SỐ NGẮN DƯỚI 25 KÝ TỰ (như "1. PVcomBank")
+                if (/^\d+[\.\)\-]\s+[A-Za-z0-9\s]{1,25}$/i.test(t)) return false;
                 return true;
             });
 
-            // Tự động sinh Khối Tóm tắt Chiến lược (Key Takeaways) nếu bài viết chưa có
+            // Tự động sinh Khối Tóm tắt Chiến lược (Key Takeaways) nếu bài viết chưa có và không bị trùng lặp
             let keyTakeawaysHtml = '';
-            if (!processedBody.includes('key-takeaways') && !processedBody.includes('Tóm tắt Chiến lược') && desc) {
-                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(59, 130, 246, 0.08)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px;">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <h3 style="margin: 0; color: #a5b4fc; font-size: 1.1rem; font-weight: 700;">Tóm tắt Chiến lược (Key Takeaways)</h3>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${desc}</li>\n        </ul>\n      </div>\n\n`;
+            const hasTakeawaysInBody = processedBody.includes('key-takeaways') || processedBody.includes('Tóm tắt Chiến lược') || processedBody.includes('Điểm tin nhanh');
+            // Kiểm tra xem desc có bị trùng lặp nguyên văn với đoạn mở bài không
+            const firstPText = (processedBody.match(/<p[^>]*>(.*?)<\/p>/i) || ['', ''])[1].replace(/<[^>]+>/g, '').trim();
+            const isDescDuplicatingFirstP = desc && firstPText && (firstPText.startsWith(desc.substring(0, 35)) || desc.startsWith(firstPText.substring(0, 35)));
+
+            // Chỉ tạo khối này nếu bài viết chưa có khối tóm tắt và desc là thông điệp riêng biệt (không lặp lại câu mở bài)
+            if (!hasTakeawaysInBody && desc && !isDescDuplicatingFirstP) {
+                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(59, 130, 246, 0.08)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px;">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <div class="key-takeaways-title" style="margin: 0; color: #a5b4fc; font-size: 1.1rem; font-weight: 700;">Tóm tắt Chiến lược (Key Takeaways)</div>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${desc}</li>\n        </ul>\n      </div>\n\n`;
             }
 
             // 3. Render HTML Mục lục nếu bài viết có từ 2 tiêu đề trở lên
