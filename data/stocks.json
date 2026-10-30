@@ -16,6 +16,13 @@
     "shares_outstanding": "3,001,302,333",
     "has_data_page": true,
     "last_updated": "2026-10-30",
-    "data_source": "SSI iBoard & CafeF Official Financial API"
+    "data_source": "SSI iBoard & CafeF Official Financial API",
+    "revenue_9m": "9.871 tỷ",
+    "profit_before_tax_9m": "4.510 tỷ",
+    "profit_target_completion": "77%",
+    "margin_debt_q3": "38.294 tỷ",
+    "latest_report": "BCTC Quý 3/2026 (Lũy kế 9 tháng)",
+    "full_year_2026f_revenue": "12.800 - 13.500 tỷ",
+    "full_year_2026f_profit": "5.600 - 5.900 tỷ"
   }
 ]
