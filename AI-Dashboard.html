@@ -2250,14 +2250,18 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
                 await updateHomepage(owner, repo, token);
 
                 // BƯỚC 4: Tự động đồng bộ sitemap.xml
-                btn.innerHTML = '<div class="loader"></div> Bước 4/5: Đang cập nhật sitemap.xml...';
+                btn.innerHTML = '<div class="loader"></div> Bước 4/6: Đang cập nhật sitemap.xml...';
                 await updateSitemap(owner, repo, token, category, slug);
 
                 // BƯỚC 5: Tự động cập nhật llms.txt cho AI Bots (GEO)
-                btn.innerHTML = '<div class="loader"></div> Bước 5/5: Đang cập nhật llms.txt cho AI Bots...';
+                btn.innerHTML = '<div class="loader"></div> Bước 5/6: Đang cập nhật llms.txt cho AI Bots...';
                 await updateLlmsTxt(owner, repo, token, category, slug, title, desc);
+
+                // BƯỚC 6: Tự động phát tín hiệu Lập chỉ mục siêu tốc (IndexNow API)
+                btn.innerHTML = '<div class="loader"></div> Bước 6/6: Bắn tín hiệu IndexNow siêu tốc...';
+                await triggerIndexNow(category, slug);
                 
-                alert("🎉 Xuất bản thành công!\n✅ Bài viết đã push\n✅ Cả 2 danh mục đã đồng bộ\n✅ Trang chủ đã cập nhật với số thứ tự\n✅ Sitemap.xml đã tự động bổ sung bài mới!\n✅ llms.txt đã cập nhật cho các Bot AI!");
+                alert("🎉 Xuất bản thành công!\n✅ Bài viết đã push\n✅ Cả 2 danh mục đã đồng bộ\n✅ Trang chủ đã cập nhật với số thứ tự\n✅ Sitemap.xml đã tự động bổ sung bài mới!\n✅ llms.txt đã cập nhật cho các Bot AI!\n✅ IndexNow đã phát tín hiệu lập chỉ mục siêu tốc cho Bing & AI Search Engines!");
             } catch(e) {
                 alert("Lỗi: " + e.message);
             } finally {
@@ -2743,6 +2747,30 @@ ${subCardsHtml}
                 }
             } catch(e) {
                 console.error("Lỗi cập nhật llms.txt:", e);
+            }
+        }
+
+        // ==========================================
+        // TỰ ĐỘNG PHÁT TÍN HIỆU INDEXNOW (BING, NAVER, AI ENGINES)
+        // ==========================================
+        async function triggerIndexNow(category, slug) {
+            try {
+                const indexNowKey = 'c0e81b67f1b2413a9643a6d7f022ef10';
+                const postUrl = `https://daututaichinh.pro/${category}/${slug}.html`;
+                const payload = {
+                    host: 'daututaichinh.pro',
+                    key: indexNowKey,
+                    keyLocation: `https://daututaichinh.pro/${indexNowKey}.txt`,
+                    urlList: [postUrl]
+                };
+                await fetch('https://api.indexnow.org/indexnow', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                console.log('IndexNow ping dispatched successfully for:', postUrl);
+            } catch (err) {
+                console.warn('IndexNow notice (safe non-blocking ignore):', err);
             }
         }
 
@@ -3600,7 +3628,7 @@ ${subCardsHtml}
                 : '';
 
             const newFigure = `<figure class="article-cover-figure">
-          <img src="${imageUrl}" alt="${title.replace(/"/g, '&quot;')}" loading="lazy">
+          <img src="${imageUrl}" alt="${title.replace(/"/g, '&quot;')}" loading="eager" fetchpriority="high">
           <figcaption class="article-cover-caption">
               ${desc}${captionCredit}
           </figcaption>
@@ -4173,6 +4201,9 @@ ${tocItems}
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
   <link rel="shortcut icon" href="/favicon.ico">
+  <!-- Preconnect to image CDN for Core Web Vitals (LCP) -->
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+  <link rel="dns-prefetch" href="https://images.unsplash.com" />
   <link rel="stylesheet" href="${depth}style.css" />
   <link rel="stylesheet" href="${depth}lead-form.css" />
   <link rel="stylesheet" href="${depth}chatbot.css" />
@@ -4331,7 +4362,7 @@ ${tocItems}
       </div>
       
       <figure class="article-cover-figure">
-          <img src="${imageUrl}" alt="${title}" loading="lazy">
+          <img src="${imageUrl}" alt="${title}" loading="eager" fetchpriority="high">
           <figcaption class="article-cover-caption">
               ${desc} | <em>Ảnh bởi <a href="${finalAuthorLink}" target="_blank" rel="noopener noreferrer nofollow">${finalAuthorName}</a> trên Unsplash</em>
           </figcaption>
