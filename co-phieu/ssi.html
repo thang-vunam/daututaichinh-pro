@@ -98,6 +98,35 @@
 
   <style>
     /* Scoped Styles for Data Hub & Calculator */
+    /* Mobile scroll hint & Touch UX */
+    @media (max-width: 768px) {
+      .mobile-scroll-hint {
+        display: block !important;
+      }
+      .calc-card, .insights-card, .table-container, .faq-container {
+        padding: 16px;
+      }
+      .ticker-code {
+        font-size: 1.8rem;
+      }
+      .current-price {
+        font-size: 1.8rem;
+      }
+    }
+    input[type=range] {
+      height: 6px;
+      border-radius: 4px;
+    }
+    .faq-question {
+      padding: 6px 0;
+    }
+    .faq-answer {
+      display: none;
+    }
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
     .pseo-container {
       max-width: 1080px;
       margin: 0 auto;
@@ -661,9 +690,9 @@
     <!-- COLUMN 1: INTERACTIVE MINI CALCULATOR -->
     <section class="calc-card" id="mini-calculator">
       <div class="calc-header">
-        <div class="calc-title">
-          <span>🧮 Mini Calculator: Định Giá SSI</span>
-        </div>
+        <h2 class="calc-title">
+          <span>🧮 Mini Calculator: Định Giá Cổ Phiếu SSI</span>
+        </h2>
         <span class="calc-badge">Real-time data &bull; HOSE</span>
       </div>
 
@@ -718,6 +747,11 @@
             <input type="range" id="input-bvps" min="12000" max="22000" step="100" value="16470" oninput="calculateValuation()" />
             <div class="calc-val-box" id="val-bvps">16,470</div>
           </div>
+          <div class="preset-btn-group">
+            <button class="preset-btn" onclick="setBvps(15000)">Thận trọng (15.000)</button>
+            <button class="preset-btn" onclick="setBvps(16470)">Hiện tại (16.470)</button>
+            <button class="preset-btn" onclick="setBvps(18500)">Tăng vốn mới (18.500)</button>
+          </div>
         </div>
 
         <div class="form-group">
@@ -754,9 +788,9 @@
 
     <!-- COLUMN 2: STRATEGIC INSIGHTS (Bình luận & Rủi ro) -->
     <section class="insights-card">
-      <div class="section-heading">
-        <span>🚀 3 Động Lực Tăng Trưởng Cốt Lõi</span>
-      </div>
+      <h2 class="section-heading">
+        <span>🚀 3 Động Lực Tăng Trưởng Cốt Lõi Của SSI</span>
+      </h2>
       <div class="insight-item">
         <div class="insight-bullet">1</div>
         <div>
@@ -776,9 +810,9 @@
         </div>
       </div>
 
-      <div class="section-heading" style="margin-top:24px;">
+      <h2 class="section-heading" style="margin-top:24px;">
         <span>⚠️ 2 Rủi Ro Trọng Yếu Cần Lưu Ý</span>
-      </div>
+      </h2>
       <div class="insight-item">
         <div class="insight-bullet risk-bullet">!</div>
         <div>
@@ -796,12 +830,13 @@
 
   <!-- VALUATION MATRIX & FINANCIAL PROFILE (AUTHENTIC DATA) -->
   <section class="table-container">
-    <div class="section-heading" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+    <h2 class="section-heading" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
       <span>📊 Bảng Lịch Sử & Kết Quả Kinh Doanh Mới Nhất SSI (2022 - 2026F)</span>
       <span style="font-size:0.75rem; background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:3px 10px; border-radius:12px; font-weight:600;">
         🔥 Đã cập nhật BCTC Q3/2026 mới nhất
       </span>
-    </div>
+    </h2>
+    <div class="mobile-scroll-hint" style="display:none; font-size:0.75rem; color:#94a3b8; margin-bottom:8px;">👉 <em>Vuốt ngang để xem đủ 6 kỳ báo cáo tài chính</em></div>
     <table class="matrix-table">
       <thead>
         <tr>
@@ -885,9 +920,9 @@
   <!-- SMART INTERNAL LINKING: PHÂN TÍCH & BÀI VIẾT THỰC TẾ VỀ SSI -->
   <section class="related-articles-box">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-      <div class="section-heading" style="margin-bottom:0;">
+      <h2 class="section-heading" style="margin-bottom:0;">
         <span>📰 Phân Tích & Góc Nhìn Chuyên Sâu Về Cổ Phiếu SSI</span>
-      </div>
+      </h2>
       <a href="/market/" style="color:#38bdf8; font-size:0.85rem; text-decoration:none; font-weight:600;">Xem thêm thị trường &rarr;</a>
     </div>
 
@@ -912,16 +947,16 @@
 
   <!-- FAQ SECTION (Structured for Google AI Overviews) -->
   <section class="faq-container">
-    <div class="section-heading">
+    <h2 class="section-heading">
       <span>❓ Câu Hỏi Thường Gặp Về Cổ Phiếu SSI (FAQ)</span>
-    </div>
+    </h2>
 
-    <div class="faq-item">
+    <div class="faq-item active">
       <div class="faq-question" onclick="toggleFaq(this)">
         <span>1. Cổ phiếu SSI hiện tại đang định giá đắt hay rẻ so với thị trường?</span>
-        <span class="faq-icon">+</span>
+        <span class="faq-icon">−</span>
       </div>
-      <div class="faq-answer">
+      <div class="faq-answer" style="display:block;">
         Với mức thị giá quanh 19.550 VNĐ, P/E của SSI đang ở mức 10.06x và P/B 1.44x. So với lịch sử 5 năm qua (P/E trung bình 15.2x), SSI đang nằm ở vùng định giá rất hấp dẫn và có biên an toàn cao cho nhà đầu tư trung và dài hạn trước khi thị trường bước vào chu kỳ nâng hạng mới.
       </div>
     </div>
@@ -1032,10 +1067,16 @@
     }
   }
 
+  function setBvps(val) {
+    document.getElementById('input-bvps').value = val;
+    calculateValuation();
+  }
+
   function toggleFaq(el) {
     const answer = el.nextElementSibling;
     const icon = el.querySelector('.faq-icon');
-    if (answer.style.display === 'none') {
+    const isHidden = window.getComputedStyle(answer).display === 'none';
+    if (isHidden) {
       answer.style.display = 'block';
       icon.innerText = '−';
     } else {
