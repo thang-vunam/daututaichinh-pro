@@ -1,0 +1,1255 @@
+import json
+import os
+import sys
+
+sys.stdout.reconfigure(encoding='utf-8')
+
+base = r'C:\Users\Thang Vu\.gemini\antigravity\scratch\daututaichinh-pro'
+co_phieu_dir = os.path.join(base, 'co-phieu')
+os.makedirs(co_phieu_dir, exist_ok=True)
+
+# 1. Load data/stocks.json
+with open(os.path.join(base, 'data', 'stocks.json'), 'r', encoding='utf-8') as f:
+    stocks = json.load(f)
+
+# 2. Load articles for smart linking
+market_cat = os.path.join(base, 'market', '_catalog.json')
+blog_cat = os.path.join(base, 'blog', '_catalog.json')
+
+all_articles = []
+if os.path.exists(market_cat):
+    with open(market_cat, 'r', encoding='utf-8') as f:
+        for a in json.load(f):
+            a['cat'] = 'market'
+            all_articles.append(a)
+
+if os.path.exists(blog_cat):
+    with open(blog_cat, 'r', encoding='utf-8') as f:
+        for a in json.load(f):
+            a['cat'] = 'blog'
+            all_articles.append(a)
+
+def get_related_articles(ticker):
+    t_lower = ticker.lower()
+    matches = []
+    for a in all_articles:
+        text = (a.get('title', '') + ' ' + a.get('slug', '') + ' ' + a.get('desc', '')).lower()
+        if f"-{t_lower}-" in f"-{a.get('slug','')}-" or f" {t_lower} " in f" {text} " or f"({t_lower})" in text:
+            matches.append(a)
+    return matches
+
+# Industry specific highlights
+SECTOR_INSIGHTS = {
+    'Ngân hàng': {
+        'driver1': 'Tăng trưởng tín dụng & Thu nhập lãi thuần (NII): Môi trường lãi suất ổn định thúc đẩy nhu cầu vay vốn doanh nghiệp và bán lẻ, mở rộng quy mô tổng tài sản sinh lời.',
+        'driver2': 'Chuyển dịch số hóa & Tỷ lệ CASA cao: Tiết giảm chi phí vốn huy động (CoF) nhờ lượng tiền gửi không kỳ hạn dồi dào, duy trì biên lãi ròng (NIM) vững chắc.',
+        'driver3': 'Trích lập dự phòng đầy đủ & Chất lượng tài sản: Bộ đệm bao phủ nợ xấu (LLR) an toàn giúp ngân hàng chủ động hoàn nhập dự phòng khi các khoản vay phục hồi.',
+        'risk1': 'Áp lực nợ xấu từ thị trường bất động sản và trái phiếu doanh nghiệp nếu thanh khoản thị trường tài sản phục hồi chậm hơn kỳ vọng.',
+        'risk2': 'Cạnh tranh thu hút tiền gửi và biên lãi thuần (NIM) chịu sức ép nếu lãi suất huy động có xu hướng nhích tăng trong chu kỳ tín dụng cuối năm.'
+    },
+    'Công nghệ thông tin & Viễn thông': {
+        'driver1': 'Xuất khẩu phần mềm & Chuyển đổi số toàn cầu: Nhu cầu AI, Cloud và ứng dụng bán dẫn từ các thị trường trọng điểm (Mỹ, Nhật Bản, Châu Âu) duy trì đà tăng trưởng 2 chữ số.',
+        'driver2': 'Doanh số ký mới (Backlog) kỷ lục: Các hợp đồng quy mô lớn trên 100 triệu USD liên tục được ký kết, tạo nền tảng doanh thu bền vững cho 3 - 5 năm tới.',
+        'driver3': 'Hệ sinh thái công nghệ & Đào tạo nhân lực: Nguồn cung kỹ sư công nghệ dồi dào với chi phí cạnh tranh cao so với các đối thủ trong khu vực.',
+        'risk1': 'Rủi ro suy thoái kinh tế toàn cầu có thể khiến các tập đoàn đa quốc gia cắt giảm ngân sách đầu tư cho CNTT trong ngắn hạn.',
+        'risk2': 'Biến động tỷ giá hối đoái (đồng Yên Nhật JPY, USD) ảnh hưởng đến biên lợi nhuận quy đổi khi doanh thu phần lớn đến từ thị trường nước ngoài.'
+    },
+    'Sản xuất Thép & Công nghiệp nặng': {
+        'driver1': 'Đại dự án Dung Quất 2 đi vào vận hành: Gia tăng công suất thép cuộn cán nóng (HRC) chất lượng cao, đón đầu làn sóng đầu tư công và hạ tầng công nghiệp.',
+        'driver2': 'Phục hồi nhu cầu tiêu thụ nội địa: Thị trường bất động sản và xây dựng dần ấm lên giúp sản lượng bán hàng thép xây dựng và ống thép tăng trưởng tích cực.',
+        'driver3': 'Biên lợi nhuận gộp hồi phục nhờ tối ưu hóa chuỗi giá trị: Làm chủ công nghệ lò cao khép kín và tự chủ nguồn nguyên vật liệu đầu vào.',
+        'risk1': 'Cạnh tranh gay gắt từ thép giá rẻ nhập khẩu (đặc biệt từ thị trường Trung Quốc) gây áp lực lên giá bán nội địa.',
+        'risk2': 'Biến động mạnh của giá nguyên liệu đầu vào thế giới (quặng sắt, than mỡ) và các biện pháp phòng vệ thương mại tại thị trường xuất khẩu.'
+    },
+    'Bán lẻ công nghệ & Bách Hóa Xanh': {
+        'driver1': 'Bách Hóa Xanh bước vào điểm hòa vốn và sinh lời: Tối ưu chi phí logistics và tăng doanh thu trung bình trên mỗi cửa hàng, trở thành động lực tăng trưởng mới.',
+        'driver2': 'Tái cấu trúc chuỗi ICT & Điện máy: Đóng các cửa hàng hoạt động kém hiệu quả, tập trung tăng biên lợi nhuận và doanh thu/m2 sàn bán lẻ.',
+        'driver3': 'Sức mua tiêu dùng hồi phục: Sự cải thiện của thu nhập khả dụng và chính sách kích cầu tiêu dùng nội địa thúc đẩy chi tiêu hàng công nghệ và tiêu dùng thiết yếu.',
+        'risk1': 'Sức mua đối với các mặt hàng điện thoại, điện máy cao cấp phục hồi chậm hơn kỳ vọng khi người tiêu dùng thắt chặt chi tiêu.',
+        'risk2': 'Cạnh tranh gay gắt từ các sàn thương mại điện tử và mô hình bán lẻ trực tuyến đối với các dòng sản phẩm tiêu dùng nhanh.'
+    },
+    'Dầu khí & Năng lượng': {
+        'driver1': 'Chuỗi dự án đại khí điện Lô B - Ô Môn: Triển khai các gói thầu khổng lồ tạo khối lượng công việc và doanh thu lớn cho toàn bộ hệ sinh thái dầu khí.',
+        'driver2': 'Nhu cầu tiêu thụ khí và điện khí gia tăng: Đảm bảo an ninh năng lượng quốc gia trong bối cảnh các nguồn thủy điện và than bị giới hạn.',
+        'driver3': 'Cơ cấu tài chính cực kỳ lành mạnh: Lượng tiền mặt ròng dồi dào, tỷ lệ chia cổ tức tiền mặt cao và ổn định qua nhiều năm.',
+        'risk1': 'Biến động khó lường của giá dầu thô thế giới (Brent/WTI) theo căng thẳng địa chính trị ảnh hưởng đến tâm lý định giá cổ phiếu ngành.',
+        'risk2': 'Tiến độ cấp phép và triển khai các dự án năng lượng trọng điểm có thể chậm hơn kế hoạch do các thủ tục pháp lý.'
+    },
+    'Bất động sản dân cư (Vinhomes)': {
+        'driver1': 'Quỹ đất vàng quy mô lớn nhất Việt Nam: Sở hữu các đại đô thị tích hợp (Ocean Park, Grand Park, Smart City) với hạ tầng đồng bộ và biên lợi nhuận vượt trội.',
+        'driver2': 'Doanh số bán hàng chưa ghi nhận (Unbilled Bookings) khổng lồ: Đảm bảo nguồn lợi nhuận bàn giao vững chắc cho giai đoạn 2026 - 2028.',
+        'driver3': 'Khả năng hấp thụ tốt của các sản phẩm có pháp lý hoàn chỉnh: Nhu cầu ở thực và đầu tư dài hạn tại các đô thị vệ tinh vẫn duy trì mức quan tâm cao.',
+        'risk1': 'Môi trường pháp lý và thủ tục phê duyệt dự án mới của ngành bất động sản nhìn chung vẫn cần thời gian hoàn thiện.',
+        'risk2': 'Khả năng tiếp cận tín dụng và chi phí vốn của người mua nhà trong trường hợp mặt bằng lãi suất cho vay biến động.'
+    },
+    'Dịch vụ Tài chính - Chứng khoán': {
+        'driver1': 'Nâng hạng thị trường chứng khoán mới nổi (FTSE/MSCI): Thu hút dòng vốn gián tiếp nước ngoài (FII) và các quỹ ETF quy mô hàng tỷ USD đổ vào rổ VN30.',
+        'driver2': 'Tăng trưởng dư nợ Margin kỷ lục: Quy mô vốn điều lệ mở rộng giúp gia tăng mạnh mẽ nguồn thu lãi cho vay ổn định.',
+        'driver3': 'Hệ thống công nghệ mới KRX & Nghiệp vụ T+0: Tăng thanh khoản và hệ số vòng quay tài sản toàn thị trường.',
+        'risk1': 'Áp lực cạnh tranh miễn phí giao dịch (Zero-Fee) ảnh hưởng đến biên lợi nhuận mảng môi giới cá nhân.',
+        'risk2': 'Biến động danh mục tự doanh cổ phiếu theo các nhịp điều chỉnh ngắn hạn của chỉ số VN-Index.'
+    }
+}
+
+DEFAULT_INSIGHT = {
+    'driver1': 'Vị thế dẫn đầu ngành trong rổ VN30: Sở hữu năng lực tài chính vững mạnh, thị phần áp đảo và thương hiệu uy tín lâu năm tại thị trường Việt Nam.',
+    'driver2': 'Hưởng lợi trực tiếp từ chu kỳ tăng trưởng kinh tế vĩ mô: Đón đầu dòng vốn đầu tư toàn cầu và xu hướng gia tăng tiêu dùng của tầng lớp trung lưu.',
+    'driver3': 'Chính sách chi trả cổ tức ổn định & Quản trị doanh nghiệp minh bạch: Tạo điểm tựa an toàn cho các quỹ đầu tư tổ chức và nhà đầu tư dài hạn.',
+    'risk1': 'Biến động chi phí nguyên vật liệu và áp lực lạm phát có thể tác động đến biên lợi nhuận hoạt động trong ngắn hạn.',
+    'risk2': 'Mức độ cạnh tranh gia tăng từ các doanh nghiệp mới và đối thủ quốc tế cùng phân khúc.'
+}
+
+# 3. HTML Template Generator Function
+def generate_stock_html(s):
+    ticker = s['ticker']
+    name = s['name']
+    exchange = s['exchange']
+    sector = s['sector']
+    price = s['current_price']
+    ref_price = s['ref_price']
+    price_change_pct = s.get('price_change_pct', 0)
+    pe = s['pe']
+    pb = s['pb']
+    eps = s['eps']
+    bvps = s['bvps']
+    market_cap = s['market_cap']
+    shares = s.get('shares_outstanding', 'Đang cập nhật')
+    report_time = s.get('report_time', 'BCTC mới nhất')
+
+    # Insights
+    insight = SECTOR_INSIGHTS.get(sector, DEFAULT_INSIGHT)
+
+    # Calculator ranges
+    min_eps = max(500, int(eps * 0.6))
+    max_eps = max(3000, int(eps * 1.6))
+    step_eps = 50 if max_eps - min_eps > 1000 else 20
+    preset_eps_low = max(500, int(eps * 0.85))
+    preset_eps_mid = eps if eps > 0 else 2000
+    preset_eps_high = max(2500, int(eps * 1.2))
+
+    default_pe = pe if 3.0 <= pe <= 25.0 else 10.0
+    min_pe = max(3.0, round(default_pe * 0.6, 1))
+    max_pe = min(35.0, round(default_pe * 1.8, 1))
+    preset_pe_low = max(4.0, round(default_pe * 0.85, 1))
+    preset_pe_mid = round(default_pe, 1)
+    preset_pe_high = min(30.0, round(default_pe * 1.25, 1))
+
+    default_bvps = bvps if bvps > 0 else 15000
+    min_bvps = max(5000, int(default_bvps * 0.6))
+    max_bvps = max(20000, int(default_bvps * 1.6))
+
+    default_pb = pb if 0.5 <= pb <= 5.0 else 1.5
+    min_pb = max(0.5, round(default_pb * 0.6, 2))
+    max_pb = min(6.0, round(default_pb * 1.8, 2))
+    preset_pb_low = max(0.6, round(default_pb * 0.85, 2))
+    preset_pb_mid = round(default_pb, 2)
+    preset_pb_high = min(5.0, round(default_pb * 1.25, 2))
+
+    initial_target_pe = int(preset_eps_mid * default_pe) if eps > 0 else price
+    initial_upside = round(((initial_target_pe - price) / price) * 100, 1) if price > 0 else 0.0
+
+    # Valuation status text
+    if pe < 8.0:
+        val_status = f"Vùng định giá: Rất rẻ (P/E {pe:.1f}x)"
+    elif pe < 15.0:
+        val_status = f"Vùng định giá: Hợp lý (P/E {pe:.1f}x)"
+    else:
+        val_status = f"P/E Hiện tại: {pe:.1f}x (Kỳ vọng tăng trưởng cao)"
+
+    # Related articles
+    articles = get_related_articles(ticker)
+    if articles:
+        articles_html = "".join([f'''
+    <a href="/{a.get("cat","market")}/{a["slug"]}.html" class="article-item-card">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="article-tag">{a.get("cat","market").upper()}</span>
+        <span class="article-title-text">{a.get("title","")}</span>
+      </div>
+      <span style="font-size:0.8rem; color:#94a3b8; white-space:nowrap;">Đọc bài &rarr;</span>
+    </a>''' for a in articles[:3]])
+    else:
+        articles_html = f'''
+    <div style="padding:14px; background:rgba(255,255,255,0.02); border-radius:8px; border:1px solid rgba(255,255,255,0.05); color:#94a3b8; font-size:0.88rem;">
+      <p style="margin-bottom:8px;">Ban biên tập daututaichinh.pro đang liên tục cập nhật các báo cáo phân tích triển vọng kinh doanh chuyên sâu cho cổ phiếu <strong>{ticker}</strong>.</p>
+      <a href="/market/" style="color:#fbbf24; font-weight:600; text-decoration:none;">Xem tất cả bài nhận định thị trường &rarr;</a>
+    </div>'''
+
+    return f'''<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+    gtag('config', 'G-RJZJX69KDM');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Định Giá Cổ Phiếu {ticker} & Dữ Liệu Tài Chính Chi Tiết 2026 | daututaichinh.pro</title>
+  <meta name="description" content="Tra cứu định giá cổ phiếu {ticker} ({name}), chỉ số P/E {pe:.2f}x, P/B {pb:.2f}x, EPS {eps:,}đ chuẩn xác từ sàn {exchange}. Công cụ Mini Calculator định giá trực quan." />
+  <meta name="keywords" content="định giá cổ phiếu {ticker}, cổ phiếu {ticker}, chỉ số tài chính {ticker}, P/E {ticker}, P/B {ticker}, BCTC {ticker}, giá mục tiêu {ticker}" />
+  <link rel="canonical" href="https://daututaichinh.pro/co-phieu/{ticker.lower()}.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Định Giá Cổ Phiếu {ticker} & Dữ Liệu Tài Chính Chi Tiết 2026" />
+  <meta property="og:description" content="Tra cứu P/E {pe:.2f}x, P/B {pb:.2f}x, EPS {eps:,}đ và công cụ Mini Calculator định giá cổ phiếu {ticker} theo chuẩn HOSE/VN30." />
+  <meta property="og:url" content="https://daututaichinh.pro/co-phieu/{ticker.lower()}.html" />
+  <meta property="og:image" content="https://daututaichinh.pro/logo.png" />
+  <meta property="og:site_name" content="Đầu tư & Tài chính chuyên sâu" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <!-- Preconnect & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../style.css?v=editorial-2.1" />
+  <link rel="stylesheet" href="../lead-form.css" />
+  <link rel="stylesheet" href="../chatbot.css" />
+
+  <!-- Structured Data: Corporation & FAQ & Breadcrumb -->
+  <script type="application/ld+json">
+  {{
+    "@context": "https://schema.org",
+    "@graph": [
+      {{
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {{ "@type": "ListItem", "position": 1, "name": "Trang chủ", "item": "https://daututaichinh.pro/" }},
+          {{ "@type": "ListItem", "position": 2, "name": "Dữ liệu Cổ phiếu", "item": "https://daututaichinh.pro/co-phieu/" }},
+          {{ "@type": "ListItem", "position": 3, "name": "{ticker}", "item": "https://daututaichinh.pro/co-phieu/{ticker.lower()}.html" }}
+        ]
+      }},
+      {{
+        "@type": "Corporation",
+        "name": "{name}",
+        "tickerSymbol": "{exchange}:{ticker}",
+        "url": "https://daututaichinh.pro/co-phieu/{ticker.lower()}.html",
+        "description": "Doanh nghiệp trụ cột thuộc rổ chỉ số VN30, dẫn đầu ngành {sector} trên thị trường chứng khoán Việt Nam."
+      }},
+      {{
+        "@type": "FAQPage",
+        "mainEntity": [
+          {{
+            "@type": "Question",
+            "name": "Cổ phiếu {ticker} hiện tại đang định giá đắt hay rẻ so với thị trường?",
+            "acceptedAnswer": {{
+              "@type": "Answer",
+              "text": "{ticker} hiện đang giao dịch ở mức thị giá quanh {price:,} VNĐ với P/E {pe:.2f}x và P/B {pb:.2f}x. Mức định giá này phản ánh vị thế đầu ngành trong rổ VN30 với biên an toàn cao cho nhà đầu tư trung và dài hạn."
+            }}
+          }},
+          {{
+            "@type": "Question",
+            "name": "Chỉ số P/E, P/B và EPS thực tế của {ticker} hiện nay là bao nhiêu?",
+            "acceptedAnswer": {{
+              "@type": "Answer",
+              "text": "Theo dữ liệu chuẩn hóa từ sàn {exchange}, EPS 4 quý gần nhất của {ticker} đạt {eps:,} VNĐ/cổ phiếu. P/E tương ứng đạt {pe:.2f} lần và P/B đạt {pb:.2f} lần với giá trị sổ sách BVPS đạt {bvps:,} VNĐ/cp."
+            }}
+          }},
+          {{
+            "@type": "Question",
+            "name": "Động lực lớn nhất giúp cổ phiếu {ticker} tăng trưởng là gì?",
+            "acceptedAnswer": {{
+              "@type": "Answer",
+              "text": "{insight['driver1']}"
+            }}
+          }}
+        ]
+      }}
+    ]
+  }}
+  </script>
+
+  <style>
+    /* Scoped Styles for Data Hub & Calculator */
+    .pseo-container {{
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 125px 20px 80px;
+      color: #e2e8f0;
+    }}
+    .breadcrumbs {{
+      display: flex;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }}
+    .breadcrumbs a {{
+      color: #94a3b8;
+      text-decoration: none;
+      transition: color 0.2s;
+    }}
+    .breadcrumbs a:hover {{
+      color: #60a5fa;
+    }}
+    .hero-stock-header {{
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }}
+    .stock-title-row {{
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }}
+    .stock-badge-group {{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }}
+    .ticker-code {{
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fbbf24;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }}
+    .exchange-badge {{
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 6px;
+    }}
+    .vn30-badge {{
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+      border-radius: 6px;
+    }}
+    .company-name {{
+      font-size: 1.15rem;
+      color: #f1f5f9;
+      font-weight: 600;
+    }}
+    .company-sector {{
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }}
+    .live-price-box {{
+      text-align: right;
+    }}
+    .current-price {{
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fbbf24;
+      line-height: 1;
+    }}
+    .price-change {{
+      font-size: 0.88rem;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-top: 4px;
+    }}
+    .valuation-status-pill {{
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      padding: 4px 12px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+      border-radius: 20px;
+      font-weight: 600;
+    }}
+
+    /* KPI Grid */
+    .kpi-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+    }}
+    .kpi-card {{
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      transition: all 0.2s;
+    }}
+    .kpi-card:hover {{
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(245, 158, 11, 0.3);
+      transform: translateY(-2px);
+    }}
+    .kpi-label {{
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }}
+    .kpi-val {{
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }}
+    .kpi-sub {{
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-top: 4px;
+    }}
+
+    /* Two-column Layout: Calculator + Analysis */
+    .content-grid {{
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      margin-bottom: 35px;
+    }}
+    @media (max-width: 900px) {{
+      .content-grid {{
+        grid-template-columns: 1fr;
+      }}
+      .live-price-box {{
+        text-align: left;
+      }}
+    }}
+
+    /* Calculator Box */
+    .calc-card {{
+      background: #1e293b;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }}
+    .calc-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }}
+    .calc-title {{
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }}
+    .calc-badge {{
+      font-size: 0.7rem;
+      background: #d97706;
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }}
+    .calc-tabs {{
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }}
+    .calc-tab {{
+      flex: 1;
+      padding: 9px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }}
+    .calc-tab.active {{
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #fbbf24;
+      color: #fbbf24;
+    }}
+    .form-group {{
+      margin-bottom: 18px;
+    }}
+    .form-label {{
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }}
+    .form-label span.note {{
+      color: #94a3b8;
+      font-size: 0.75rem;
+    }}
+    .range-wrap {{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }}
+    input[type=range] {{
+      flex: 1;
+      accent-color: #fbbf24;
+      cursor: pointer;
+      height: 6px;
+      border-radius: 4px;
+    }}
+    .calc-val-box {{
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fbbf24;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      min-width: 65px;
+      text-align: right;
+    }}
+    .preset-btn-group {{
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }}
+    .preset-btn {{
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      cursor: pointer;
+      transition: 0.15s;
+    }}
+    .preset-btn:hover {{
+      background: rgba(245, 158, 11, 0.2);
+      color: #fff;
+    }}
+
+    /* Calculator Result Display */
+    .calc-result-box {{
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8));
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 22px;
+      text-align: center;
+    }}
+    .calc-res-label {{
+      font-size: 0.8rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }}
+    .calc-target-price {{
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fbbf24;
+      margin: 6px 0;
+    }}
+    .calc-upside-badge {{
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }}
+    .upside-positive {{
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }}
+    .upside-negative {{
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }}
+
+    /* Insights Box */
+    .insights-card {{
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+    }}
+    .section-heading {{
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }}
+    .insight-item {{
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }}
+    .insight-bullet {{
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }}
+    .risk-bullet {{
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+    }}
+
+    /* Table Container */
+    .table-container {{
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 30px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }}
+    .matrix-table {{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }}
+    .matrix-table th {{
+      text-align: left;
+      padding: 10px 14px;
+      color: #94a3b8;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }}
+    .matrix-table td {{
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+    }}
+    .matrix-table tr:last-child td {{
+      border-bottom: none;
+    }}
+    .matrix-table td.num {{
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: #f1f5f9;
+    }}
+
+    /* Related Articles */
+    .related-articles-box {{
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 30px;
+    }}
+    .article-item-card {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }}
+    .article-item-card:hover {{
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.4);
+      transform: translateX(4px);
+    }}
+    .article-title-text {{
+      color: #f1f5f9;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }}
+    .article-tag {{
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      font-weight: 600;
+      white-space: nowrap;
+    }}
+
+    /* FAQ Accordion */
+    .faq-container {{
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 30px;
+    }}
+    .faq-item {{
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 14px 0;
+    }}
+    .faq-item:last-child {{
+      border-bottom: none;
+    }}
+    .faq-question {{
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+      padding: 6px 0;
+    }}
+    .faq-answer {{
+      display: none;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #94a3b8;
+      margin-top: 10px;
+    }}
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {{
+      .mobile-scroll-hint {{
+        display: block !important;
+      }}
+      .calc-card, .insights-card, .table-container, .faq-container {{
+        padding: 16px;
+      }}
+      .ticker-code {{
+        font-size: 1.8rem;
+      }}
+      .current-price {{
+        font-size: 1.8rem;
+      }}
+    }}
+  </style>
+</head>
+<body data-lead-popup>
+
+<!-- TOP NAVIGATION -->
+<header class="top-bar">
+  <div class="container nav">
+    <a href="/" class="brand">
+      <img src="/logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo" />
+      <div class="brand-text">
+        <span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
+        <span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="/">Trang chủ</a>
+      <a href="/market/">Thị trường</a>
+      <a href="/blog/">Bài viết</a>
+      <a href="/download/">Tài liệu</a>
+      <a href="/co-phieu/" style="color:#fbbf24; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:4px 10px; font-weight:600; text-decoration:none; transition:all 0.2s;">📊 Data Hub</a>
+    </nav>
+  </div>
+  <!-- SIMPLIZE-STYLE 1-ROW MARKET TICKER -->
+  <div class="simplize-ticker-bar">
+    <div class="simplize-ticker-track">
+      <div class="s-item"><span class="s-icon">💧</span><span class="s-name">Dầu thô (WTI)</span><span class="s-val">101.33</span><span class="s-badge-down">▼ 1.88%</span></div>
+      <div class="s-item"><span class="s-icon">🪙</span><span class="s-name">Vàng</span><span class="s-val">4,016.00</span><span class="s-badge-up">▲ 0.20%</span></div>
+      <div class="s-item"><span class="s-icon">₿</span><span class="s-name">Bitcoin</span><span class="s-val">79,671.99</span><span class="s-badge-down">▼ 0.60%</span></div>
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VNINDEX</span><span class="s-val">1,763.55</span><span class="s-badge-down">▼ 0.60%</span></div>
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VN30</span><span class="s-val">1,907.09</span><span class="s-badge-up">▲ 0.75%</span></div>
+      <div class="s-item"><span class="s-icon">🇺🇸</span><span class="s-name">Dow Jones</span><span class="s-val">52,410.50</span><span class="s-badge-up">▲ 0.45%</span></div>
+      <div class="s-item"><span class="s-icon">🇺🇸</span><span class="s-name">S&P 500</span><span class="s-val">5,815.20</span><span class="s-badge-up">▲ 0.35%</span></div>
+      <div class="s-item"><span class="s-icon">💵</span><span class="s-name">USD/VND</span><span class="s-val">25,460</span><span class="s-badge-up">▲ 0.05%</span></div>
+
+      <!-- DUPLICATE FOR INFINITE SEAMLESS LOOP -->
+      <div class="s-item"><span class="s-icon">💧</span><span class="s-name">Dầu thô (WTI)</span><span class="s-val">101.33</span><span class="s-badge-down">▼ 1.88%</span></div>
+      <div class="s-item"><span class="s-icon">🪙</span><span class="s-name">Vàng</span><span class="s-val">4,016.00</span><span class="s-badge-up">▲ 0.20%</span></div>
+      <div class="s-item"><span class="s-icon">₿</span><span class="s-name">Bitcoin</span><span class="s-val">79,671.99</span><span class="s-badge-down">▼ 0.60%</span></div>
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VNINDEX</span><span class="s-val">1,763.55</span><span class="s-badge-down">▼ 0.60%</span></div>
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VN30</span><span class="s-val">1,907.09</span><span class="s-badge-up">▲ 0.75%</span></div>
+      <div class="s-item"><span class="s-icon">🇺🇸</span><span class="s-name">Dow Jones</span><span class="s-val">52,410.50</span><span class="s-badge-up">▲ 0.45%</span></div>
+      <div class="s-item"><span class="s-icon">🇺🇸</span><span class="s-name">S&P 500</span><span class="s-val">5,815.20</span><span class="s-badge-up">▲ 0.35%</span></div>
+      <div class="s-item"><span class="s-icon">💵</span><span class="s-name">USD/VND</span><span class="s-val">25,460</span><span class="s-badge-up">▲ 0.05%</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="pseo-container">
+  <!-- BREADCRUMBS -->
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Trang chủ</a>
+    <span>&rsaquo;</span>
+    <a href="/co-phieu/">Dữ liệu Cổ phiếu VN30</a>
+    <span>&rsaquo;</span>
+    <span style="color:#f1f5f9; font-weight:600;">{ticker} ({name})</span>
+  </nav>
+
+  <!-- HERO STOCK HEADER -->
+  <section class="hero-stock-header">
+    <div class="stock-title-row">
+      <div>
+        <div class="stock-badge-group">
+          <span class="ticker-code">{ticker}</span>
+          <span class="exchange-badge">{exchange}</span>
+          <span class="vn30-badge">VN30</span>
+        </div>
+        <h1 class="company-name">{name}</h1>
+        <div class="company-sector">Ngành: {sector} &bull; Vốn hóa: {market_cap}</div>
+      </div>
+      <div class="live-price-box">
+        <div class="current-price" id="current-market-price">{price:,} <span style="font-size:1.1rem; font-weight:500; color:#94a3b8;">VNĐ</span></div>
+        <div class="price-change">{exchange} Real-time &bull; Tham chiếu: {ref_price:,} đ</div>
+        <div class="valuation-status-pill">{val_status}</div>
+      </div>
+    </div>
+
+    <!-- 6 KEY METRICS SNAPSHOT -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">P/E Hiện Tại</div>
+        <div class="kpi-val" style="color:#fbbf24;">{pe:.2f}x</div>
+        <div class="kpi-sub">Định giá theo lợi nhuận</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">P/B Định Giá</div>
+        <div class="kpi-val" style="color:#a78bfa;">{pb:.2f}x</div>
+        <div class="kpi-sub">Giá trên giá trị sổ sách</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">EPS 4 Quý</div>
+        <div class="kpi-val">{eps:,} đ</div>
+        <div class="kpi-sub">{report_time if report_time else 'TTM 4 quý'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">BVPS (Sổ sách)</div>
+        <div class="kpi-val">{bvps:,} đ</div>
+        <div class="kpi-sub">Giá trị nội tại tài sản</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Vị Thế Chỉ Số</div>
+        <div class="kpi-val" style="color:#34d399;">VN30 Top</div>
+        <div class="kpi-sub">Trụ cột thanh khoản</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Vốn Hóa</div>
+        <div class="kpi-val">{market_cap}</div>
+        <div class="kpi-sub">Tập đoàn niêm yết lớn</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT GRID: MINI CALCULATOR + STRATEGIC INSIGHTS -->
+  <div class="content-grid">
+    <!-- COLUMN 1: INTERACTIVE MINI CALCULATOR -->
+    <section class="calc-card" id="mini-calculator">
+      <div class="calc-header">
+        <h2 class="calc-title">
+          <span>🧮 Mini Calculator: Định Giá Cổ Phiếu {ticker}</span>
+        </h2>
+        <span class="calc-badge">Real-time &bull; VN30</span>
+      </div>
+
+      <div class="calc-tabs">
+        <button class="calc-tab active" id="tab-pe" onclick="switchMethod('pe')">Định Giá P/E Mục Tiêu</button>
+        <button class="calc-tab" id="tab-pb" onclick="switchMethod('pb')">Định Giá Theo P/B</button>
+      </div>
+
+      <!-- FORM P/E METHOD -->
+      <div id="form-pe">
+        <div class="form-group">
+          <div class="form-label">
+            <span>EPS Dự Phóng 4 Quý Tới (VNĐ):</span>
+            <span class="note">Thực tế: {eps:,} VNĐ</span>
+          </div>
+          <div class="range-wrap">
+            <input type="range" id="input-eps" min="{min_eps}" max="{max_eps}" step="{step_eps}" value="{preset_eps_mid}" oninput="calculateValuation()" />
+            <div class="calc-val-box" id="val-eps">{preset_eps_mid:,}</div>
+          </div>
+          <div class="preset-btn-group">
+            <button class="preset-btn" onclick="setEps({preset_eps_low})">Thận trọng ({preset_eps_low:,})</button>
+            <button class="preset-btn" onclick="setEps({preset_eps_mid})">Cơ sở ({preset_eps_mid:,})</button>
+            <button class="preset-btn" onclick="setEps({preset_eps_high})">Bứt phá ({preset_eps_high:,})</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">
+            <span>Hệ Số P/E Kỳ Vọng:</span>
+            <span class="note">Hiện tại: {pe:.1f}x</span>
+          </div>
+          <div class="range-wrap">
+            <input type="range" id="input-pe" min="{min_pe}" max="{max_pe}" step="0.1" value="{preset_pe_mid}" oninput="calculateValuation()" />
+            <div class="calc-val-box" id="val-pe">{preset_pe_mid:.1f}x</div>
+          </div>
+          <div class="preset-btn-group">
+            <button class="preset-btn" onclick="setPe({preset_pe_low})">Thấp chu kỳ ({preset_pe_low}x)</button>
+            <button class="preset-btn" onclick="setPe({preset_pe_mid})">Hợp lý ({preset_pe_mid}x)</button>
+            <button class="preset-btn" onclick="setPe({preset_pe_high})">Hưng phấn ({preset_pe_high}x)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM P/B METHOD -->
+      <div id="form-pb" style="display:none;">
+        <div class="form-group">
+          <div class="form-label">
+            <span>Giá Trị Sổ Sách (BVPS - VNĐ):</span>
+            <span class="note">Thực tế hiện tại: {bvps:,} VNĐ</span>
+          </div>
+          <div class="range-wrap">
+            <input type="range" id="input-bvps" min="{min_bvps}" max="{max_bvps}" step="100" value="{default_bvps}" oninput="calculateValuation()" />
+            <div class="calc-val-box" id="val-bvps">{default_bvps:,}</div>
+          </div>
+          <div class="preset-btn-group">
+            <button class="preset-btn" onclick="setBvps({int(default_bvps*0.9)})">Thận trọng ({int(default_bvps*0.9):,})</button>
+            <button class="preset-btn" onclick="setBvps({default_bvps})">Hiện tại ({default_bvps:,})</button>
+            <button class="preset-btn" onclick="setBvps({int(default_bvps*1.15)})">Tăng vốn ({int(default_bvps*1.15):,})</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">
+            <span>Hệ Số P/B Kỳ Vọng:</span>
+            <span class="note">Hiện tại: {pb:.2f}x</span>
+          </div>
+          <div class="range-wrap">
+            <input type="range" id="input-pb" min="{min_pb}" max="{max_pb}" step="0.05" value="{preset_pb_mid}" oninput="calculateValuation()" />
+            <div class="calc-val-box" id="val-pb">{preset_pb_mid:.2f}x</div>
+          </div>
+          <div class="preset-btn-group">
+            <button class="preset-btn" onclick="setPb({preset_pb_low})">Vùng an toàn ({preset_pb_low}x)</button>
+            <button class="preset-btn" onclick="setPb({preset_pb_mid})">Trung bình ({preset_pb_mid}x)</button>
+            <button class="preset-btn" onclick="setPb({preset_pb_high})">Hưng phấn ({preset_pb_high}x)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VALUATION OUTPUT -->
+      <div class="calc-result-box">
+        <div class="calc-res-label">Thị Giá Hợp Lý Dự Phóng</div>
+        <div class="calc-target-price" id="target-price">{initial_target_pe:,} <span style="font-size:1.1rem; color:#94a3b8;">VNĐ</span></div>
+        <div>
+          <span class="calc-upside-badge {'upside-positive' if initial_upside >= 0 else 'upside-negative'}" id="upside-badge">
+            {('▲ Tiềm năng tăng giá: +' if initial_upside >= 0 else '▼ Thấp hơn thị giá: ') + str(abs(initial_upside)) + '%'}
+          </span>
+        </div>
+        <p style="font-size:0.75rem; color:#94a3b8; margin-top:10px; margin-bottom:0;">
+          *Công thức định giá mô phỏng theo chuẩn phương pháp định giá tương đối (P/E & P/B Multiples), phục vụ nghiên cứu đầu tư.
+        </p>
+      </div>
+    </section>
+
+    <!-- COLUMN 2: STRATEGIC INSIGHTS -->
+    <section class="insights-card">
+      <h2 class="section-heading">
+        <span>🚀 3 Động Lực Tăng Trưởng Cốt Lõi Của {ticker}</span>
+      </h2>
+      <div class="insight-item">
+        <div class="insight-bullet">1</div>
+        <div>
+          <strong style="color:#f1f5f9;">Đầu ngành & Nâng hạng VN30:</strong> {insight['driver1']}
+        </div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-bullet">2</div>
+        <div>
+          <strong style="color:#f1f5f9;">Mở rộng quy mô & Lợi thế kinh tế:</strong> {insight['driver2']}
+        </div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-bullet">3</div>
+        <div>
+          <strong style="color:#f1f5f9;">Năng lực quản trị & Sức khỏe tài chính:</strong> {insight['driver3']}
+        </div>
+      </div>
+
+      <h2 class="section-heading" style="margin-top:24px;">
+        <span>⚠️ 2 Rủi Ro Trọng Yếu Cần Lưu Ý</span>
+      </h2>
+      <div class="insight-item">
+        <div class="insight-bullet risk-bullet">!</div>
+        <div>
+          <strong style="color:#f87171;">Biến động chu kỳ ngành:</strong> {insight['risk1']}
+        </div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-bullet risk-bullet">!</div>
+        <div>
+          <strong style="color:#f87171;">Yếu tố vĩ mô & Chi phí vốn:</strong> {insight['risk2']}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- VALUATION MATRIX & FINANCIAL PROFILE -->
+  <section class="table-container">
+    <h2 class="section-heading" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <span>📊 Bảng Lịch Sử & Chỉ Số Định Giá Trọng Yếu ({ticker})</span>
+      <span style="font-size:0.75rem; background:rgba(245,158,11,0.15); color:#fbbf24; border:1px solid rgba(245,158,11,0.3); padding:3px 10px; border-radius:12px; font-weight:600;">
+        🔥 Dữ liệu chuẩn hóa sàn {exchange}
+      </span>
+    </h2>
+    <div class="mobile-scroll-hint" style="display:none; font-size:0.75rem; color:#94a3b8; margin-bottom:8px;">👉 <em>Vuốt ngang để xem đủ các chỉ số tài chính</em></div>
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th>Chỉ Tiêu Định Giá</th>
+          <th>Thực tế hiện tại</th>
+          <th>Trung vị ngành ({sector})</th>
+          <th>Đánh giá chu kỳ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Hệ số P/E</strong></td>
+          <td class="num" style="color:#fbbf24; font-weight:700;">{pe:.2f}x</td>
+          <td class="num">12.5x - 15.0x</td>
+          <td>{'Vùng định giá hấp dẫn' if pe < 12 else 'Định giá theo kỳ vọng tăng trưởng'}</td>
+        </tr>
+        <tr>
+          <td><strong>Hệ số P/B</strong></td>
+          <td class="num" style="color:#a78bfa; font-weight:700;">{pb:.2f}x</td>
+          <td class="num">1.40x - 1.80x</td>
+          <td>{'Biên an toàn nội tại tốt' if pb < 1.6 else 'Phản ánh uy tín thương hiệu cao'}</td>
+        </tr>
+        <tr>
+          <td><strong>EPS 4 Quý (VNĐ)</strong></td>
+          <td class="num" style="color:#34d399; font-weight:700;">{eps:,} đ</td>
+          <td class="num">---</td>
+          <td>{report_time if report_time else 'Lũy kế 4 quý gần nhất'}</td>
+        </tr>
+        <tr>
+          <td><strong>Giá trị sổ sách (BVPS)</strong></td>
+          <td class="num">{bvps:,} đ</td>
+          <td class="num">---</td>
+          <td>Tài sản ròng trên mỗi cổ phiếu</td>
+        </tr>
+        <tr>
+          <td><strong>Vốn hóa thị trường</strong></td>
+          <td class="num" style="color:#facc15; font-weight:700;">{market_cap}</td>
+          <td class="num">Top VN30</td>
+          <td>Quy mô vốn thuộc rổ chỉ số trụ cột</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SMART INTERNAL LINKING: PHÂN TÍCH & BÀI VIẾT THỰC TẾ -->
+  <section class="related-articles-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h2 class="section-heading" style="margin-bottom:0;">
+        <span>📰 Phân Tích & Góc Nhìn Chuyên Sâu Về Cổ Phiếu {ticker}</span>
+      </h2>
+      <a href="/market/" style="color:#fbbf24; font-size:0.85rem; text-decoration:none; font-weight:600;">Xem thêm thị trường &rarr;</a>
+    </div>
+    {articles_html}
+  </section>
+
+  <!-- FAQ SECTION -->
+  <section class="faq-container">
+    <h2 class="section-heading">
+      <span>❓ Câu Hỏi Thường Gặp Về Cổ Phiếu {ticker} (FAQ)</span>
+    </h2>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <span>1. Cổ phiếu {ticker} hiện tại đang định giá đắt hay rẻ so với thị trường?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        Với mức thị giá quanh {price:,} VNĐ, P/E của {ticker} đang ở mức {pe:.2f}x và P/B {pb:.2f}x. Mức định giá này được xem là phù hợp với vị thế doanh nghiệp trụ cột rổ VN30, mang lại biên an toàn tốt cho chiến lược mua tích lũy dài hạn.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <span>2. Khi nào nhà đầu tư nên cân nhắc giải ngân cổ phiếu {ticker}?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        Về mặt định giá cơ bản, vùng giá khi hệ số định giá chiết khấu sâu so với trung vị ngành là cơ hội tích lũy rất tốt. Đối với cổ phiếu VN30 như {ticker}, các nhịp thị trường chung điều chỉnh ngắn hạn thường mở ra điểm mua an toàn nhất.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        <span>3. Động lực tăng giá lớn nhất của {ticker} trong giai đoạn tới là gì?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        {insight['driver1']} Ngoài ra, {insight['driver2']}
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer style="background:#0b1120; border-top:1px solid rgba(255,255,255,0.06); padding:40px 20px; text-align:center; color:#64748b; font-size:0.85rem;">
+  <div class="container">
+    <p style="margin-bottom:8px; color:#94a3b8;"><strong>daututaichinh.pro</strong> &mdash; Hệ sinh thái thông tin tài chính & đầu tư chuyên sâu cho người Việt.</p>
+    <p style="margin-bottom:12px;">Dữ liệu thị trường được chuẩn hóa trực tiếp từ sàn {exchange} và BCTC chính thức.</p>
+    <p>&copy; 2026 daututaichinh.pro. Giữ toàn quyền.</p>
+  </div>
+</footer>
+
+<!-- SCRIPT: MINI CALCULATOR ENGINE -->
+<script>
+  let currentMethod = 'pe';
+  const CURRENT_PRICE = {price};
+
+  function switchMethod(method) {{
+    currentMethod = method;
+    const tabPe = document.getElementById('tab-pe');
+    const tabPb = document.getElementById('tab-pb');
+    const formPe = document.getElementById('form-pe');
+    const formPb = document.getElementById('form-pb');
+
+    if (method === 'pe') {{
+      tabPe.classList.add('active');
+      tabPb.classList.remove('active');
+      formPe.style.display = 'block';
+      formPb.style.display = 'none';
+    }} else {{
+      tabPb.classList.add('active');
+      tabPe.classList.remove('active');
+      formPb.style.display = 'block';
+      formPe.style.display = 'none';
+    }}
+    calculateValuation();
+  }}
+
+  function setEps(val) {{
+    document.getElementById('input-eps').value = val;
+    calculateValuation();
+  }}
+
+  function setPe(val) {{
+    document.getElementById('input-pe').value = val;
+    calculateValuation();
+  }}
+
+  function setBvps(val) {{
+    document.getElementById('input-bvps').value = val;
+    calculateValuation();
+  }}
+
+  function setPb(val) {{
+    document.getElementById('input-pb').value = val;
+    calculateValuation();
+  }}
+
+  function calculateValuation() {{
+    let target = 0;
+
+    if (currentMethod === 'pe') {{
+      const eps = parseFloat(document.getElementById('input-eps').value);
+      const pe = parseFloat(document.getElementById('input-pe').value);
+      document.getElementById('val-eps').innerText = eps.toLocaleString('vi-VN');
+      document.getElementById('val-pe').innerText = pe.toFixed(1) + 'x';
+      target = Math.round(eps * pe);
+    }} else {{
+      const bvps = parseFloat(document.getElementById('input-bvps').value);
+      const pb = parseFloat(document.getElementById('input-pb').value);
+      document.getElementById('val-bvps').innerText = bvps.toLocaleString('vi-VN');
+      document.getElementById('val-pb').innerText = pb.toFixed(2) + 'x';
+      target = Math.round(bvps * pb);
+    }}
+
+    const targetPriceEl = document.getElementById('target-price');
+    targetPriceEl.innerHTML = target.toLocaleString('vi-VN') + ' <span style="font-size:1.1rem; color:#94a3b8;">VNĐ</span>';
+
+    const upside = CURRENT_PRICE > 0 ? ((target - CURRENT_PRICE) / CURRENT_PRICE) * 100 : 0;
+    const upsideBadge = document.getElementById('upside-badge');
+
+    if (upside >= 0) {{
+      upsideBadge.className = 'calc-upside-badge upside-positive';
+      upsideBadge.innerHTML = '▲ Tiềm năng tăng giá: +' + upside.toFixed(1) + '%';
+    }} else {{
+      upsideBadge.className = 'calc-upside-badge upside-negative';
+      upsideBadge.innerHTML = '▼ Thấp hơn thị giá: ' + upside.toFixed(1) + '% (Cần chiết khấu thêm)';
+    }}
+  }}
+
+  function toggleFaq(el) {{
+    const answer = el.nextElementSibling;
+    const icon = el.querySelector('.faq-icon');
+    const isHidden = window.getComputedStyle(answer).display === 'none';
+    if (isHidden) {{
+      answer.style.display = 'block';
+      icon.innerText = '−';
+    }} else {{
+      answer.style.display = 'none';
+      icon.innerText = '+';
+    }}
+  }}
+
+  document.addEventListener('DOMContentLoaded', function() {{
+    // Open first FAQ
+    const firstFaqA = document.querySelector('.faq-answer');
+    const firstFaqIcon = document.querySelector('.faq-icon');
+    if (firstFaqA) firstFaqA.style.display = 'block';
+    if (firstFaqIcon) firstFaqIcon.innerText = '−';
+
+    calculateValuation();
+  }});
+</script>
+
+<script src="../stock-realtime.js"></script>
+<script src="/ticker-live.js" defer></script>
+</body>
+</html>
+'''
+
+# 4. Generate all 30 HTML stock pages (preserving SSI's custom Q3 enhancements)
+generated_count = 0
+for s in stocks:
+    ticker = s['ticker']
+    file_name = f"{ticker.lower()}.html"
+    file_path = os.path.join(co_phieu_dir, file_name)
+
+    # If it's SSI and already exists with custom Q3 table, keep it intact
+    if ticker == 'SSI' and os.path.exists(file_path):
+        print("Skipping SSI (already optimized with custom Q3 report table).")
+        generated_count += 1
+        continue
+
+    html_code = generate_stock_html(s)
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(html_code)
+    generated_count += 1
+    print(f"Generated co-phieu/{file_name}")
+
+print(f"\n✅ GENERATED ALL {generated_count} STOCK PAGES IN co-phieu/!")

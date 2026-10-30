@@ -59,7 +59,7 @@
     .hub-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 30px 20px 80px;
+      padding: 125px 20px 80px;
       color: #e2e8f0;
     }
     .breadcrumbs {
@@ -192,7 +192,7 @@
     }
     .hub-table thead th {
       position: sticky;
-      top: 70px; /* Sticks right below fixed top-bar */
+      top: 105px; /* Sticks right below top-bar + ticker */
       background: #141e34;
       z-index: 50;
       text-align: left;
@@ -308,6 +308,29 @@
       <a href="/download/">Tài liệu</a>
       <a href="/co-phieu/" style="color:#fbbf24; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:4px 10px; font-weight:600; text-decoration:none; transition:all 0.2s;">📊 Data Hub</a>
     </nav>
+  </div>
+  <!-- SIMPLIZE-STYLE 1-ROW MARKET TICKER -->
+  <div class="simplize-ticker-bar">
+    <div class="simplize-ticker-track">
+      <div class="s-item"><span class="s-icon">💧</span><span class="s-name">Dầu thô (WTI)</span><span class="s-val">101.33</span><span class="s-badge-down">▼ 1.88%</span></div>
+      <div class="s-item"><span class="s-icon">🪙</span><span class="s-name">Vàng</span><span class="s-val">4,016.00</span><span class="s-badge-up">▲ 0.20%</span></div>
+      <div class="s-item"><span class="s-icon">₿</span><span class="s-name">Bitcoin</span><span class="s-val">79,671.99</span><span class="s-badge-down">▼ 0.60%</span></div>
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VNINDEX</span><span class="s-val">1,763.55</span><span class="s-badge-down">▼ 0.60%</span></div>
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VN30</span><span class="s-val">1,907.09</span><span class="s-badge-up">▲ 0.75%</span></div>
+      <div class="s-item"><span class="s-icon">🇺🇸</span><span class="s-name">Dow Jones</span><span class="s-val">52,410.50</span><span class="s-badge-up">▲ 0.45%</span></div>
+      <div class="s-item"><span class="s-icon">🇺🇸</span><span class="s-name">S&P 500</span><span class="s-val">5,815.20</span><span class="s-badge-up">▲ 0.35%</span></div>
+      <div class="s-item"><span class="s-icon">💵</span><span class="s-name">USD/VND</span><span class="s-val">25,460</span><span class="s-badge-up">▲ 0.05%</span></div>
+
+      <!-- DUPLICATE FOR INFINITE SEAMLESS LOOP -->
+      <div class="s-item"><span class="s-icon">💧</span><span class="s-name">Dầu thô (WTI)</span><span class="s-val">101.33</span><span class="s-badge-down">▼ 1.88%</span></div>
+      <div class="s-item"><span class="s-icon">🪙</span><span class="s-name">Vàng</span><span class="s-val">4,016.00</span><span class="s-badge-up">▲ 0.20%</span></div>
+      <div class="s-item"><span class="s-icon">₿</span><span class="s-name">Bitcoin</span><span class="s-val">79,671.99</span><span class="s-badge-down">▼ 0.60%</span></div>
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VNINDEX</span><span class="s-val">1,763.55</span><span class="s-badge-down">▼ 0.60%</span></div>
+      <div class="s-item"><span class="s-icon">🇻🇳</span><span class="s-name">VN30</span><span class="s-val">1,907.09</span><span class="s-badge-up">▲ 0.75%</span></div>
+      <div class="s-item"><span class="s-icon">🇺🇸</span><span class="s-name">Dow Jones</span><span class="s-val">52,410.50</span><span class="s-badge-up">▲ 0.45%</span></div>
+      <div class="s-item"><span class="s-icon">🇺🇸</span><span class="s-name">S&P 500</span><span class="s-val">5,815.20</span><span class="s-badge-up">▲ 0.35%</span></div>
+      <div class="s-item"><span class="s-icon">💵</span><span class="s-name">USD/VND</span><span class="s-val">25,460</span><span class="s-badge-up">▲ 0.05%</span></div>
+    </div>
   </div>
 </header>
 
@@ -859,5 +882,6 @@
   }
 </script>
 
+<script src="/ticker-live.js" defer></script>
 </body>
 </html>
