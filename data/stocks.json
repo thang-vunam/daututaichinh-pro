@@ -6,14 +6,16 @@
     "index": "VN30",
     "sector": "Dịch vụ Tài chính - Chứng khoán",
     "url": "/co-phieu/ssi.html",
-    "pe": 14.2,
-    "pb": 1.75,
+    "pe": 10.06,
+    "pb": 1.44,
     "roe": 12.8,
-    "eps": 2450,
-    "bvps": 19800,
-    "current_price": 34800,
-    "market_cap": "61.500 tỷ",
+    "eps": 1940,
+    "bvps": 16470,
+    "current_price": 19550,
+    "market_cap": "58,675.46 tỷ",
+    "shares_outstanding": "3,001,302,333",
     "has_data_page": true,
-    "last_updated": "2026-10-30"
+    "last_updated": "2026-10-30",
+    "data_source": "SSI iBoard & CafeF Official Financial API"
   }
 ]
