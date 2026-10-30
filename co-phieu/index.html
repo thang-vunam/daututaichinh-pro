@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RJZJX69KDM');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cổng Dữ Liệu & Định Giá Cổ Phiếu VN30 | daututaichinh.pro</title>
+  <meta name="description" content="Tra cứu dữ liệu tài chính, chỉ số P/E, P/B, EPS, BVPS và công cụ Mini Calculator định giá giá trị thực cho toàn bộ 30 cổ phiếu thuộc rổ chỉ số VN30." />
+  <meta name="keywords" content="định giá cổ phiếu VN30, dữ liệu tài chính VN30, tra cứu cổ phiếu, P/E VN30, BCTC VN30, Mini Calculator cổ phiếu" />
+  <link rel="canonical" href="https://daututaichinh.pro/co-phieu/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Cổng Dữ Liệu & Định Giá Cổ Phiếu VN30 | daututaichinh.pro" />
+  <meta property="og:description" content="Tra cứu P/E, P/B, EPS và định giá trực quan cho trọn bộ 30 mã trụ cột VN30." />
+  <meta property="og:url" content="https://daututaichinh.pro/co-phieu/" />
+  <meta property="og:image" content="https://daututaichinh.pro/logo.png" />
+  <meta property="og:site_name" content="Đầu tư & Tài chính chuyên sâu" />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <!-- Preconnect & Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../style.css?v=editorial-2.1" />
+  <link rel="stylesheet" href="../lead-form.css" />
+  <link rel="stylesheet" href="../chatbot.css" />
+
+  <!-- Structured Data: CollectionPage & BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Cổng Dữ Liệu & Định Giá Cổ Phiếu VN30",
+    "url": "https://daututaichinh.pro/co-phieu/",
+    "description": "Thư viện dữ liệu định giá và báo cáo tài chính cho toàn bộ 30 cổ phiếu rổ chỉ số VN30.",
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Trang chủ", "item": "https://daututaichinh.pro/" },
+        { "@type": "ListItem", "position": 2, "name": "Data Hub VN30", "item": "https://daututaichinh.pro/co-phieu/" }
+      ]
+    }
+  }
+  </script>
+
+  <style>
+    .hub-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px 80px;
+      color: #e2e8f0;
+    }
+    .breadcrumbs {
+      display: flex;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 24px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .breadcrumbs a {
+      color: #94a3b8;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .breadcrumbs a:hover {
+      color: #60a5fa;
+    }
+    .hub-hero {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .hub-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .hub-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+    .hub-sub {
+      font-size: 1rem;
+      color: #94a3b8;
+      line-height: 1.6;
+      max-width: 800px;
+      margin-bottom: 24px;
+    }
+
+    /* Search & Filter Controls */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .search-box-wrap {
+      position: relative;
+      max-width: 600px;
+    }
+    .search-box-wrap input {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #f8fafc;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .search-box-wrap input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .filter-pill {
+      padding: 7px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .filter-pill:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .filter-pill.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    /* Stock Table */
+    .stocks-table-card {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 20px;
+      overflow-x: auto;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    .hub-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .hub-table th {
+      text-align: left;
+      padding: 12px 14px;
+      color: #94a3b8;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      user-select: none;
+    }
+    .hub-table th:hover {
+      color: #38bdf8;
+    }
+    .hub-table td {
+      padding: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+    }
+    .hub-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .ticker-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: #38bdf8;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .ticker-link:hover {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+    .action-btn {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .action-btn:hover {
+      background: #38bdf8;
+      color: #0f172a;
+    }
+
+    @media (max-width: 768px) {
+      .hub-hero {
+        padding: 20px;
+      }
+      .hub-title {
+        font-size: 1.7rem;
+      }
+      .stocks-table-card {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body data-lead-popup>
+
+<!-- TOP NAVIGATION -->
+<header class="top-bar">
+  <div class="container nav">
+    <a href="/" class="brand">
+      <img src="/logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo" />
+      <div class="brand-text">
+        <span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
+        <span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a href="/">Trang chủ</a>
+      <a href="/market/">Thị trường</a>
+      <a href="/blog/">Bài viết</a>
+      <a href="/download/">Tài liệu</a>
+      <a href="/co-phieu/" style="color:#38bdf8; font-weight:700;">📊 Data Hub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="hub-container">
+  <!-- BREADCRUMBS -->
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Trang chủ</a>
+    <span>&rsaquo;</span>
+    <span style="color:#f1f5f9; font-weight:600;">Data Hub: Cổ Phiếu VN30</span>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hub-hero">
+    <span class="hub-badge">🚀 Data Hub & Định Giá Chuyên Sâu</span>
+    <h1 class="hub-title">Hồ Sơ & Công Cụ Định Giá 30 Cổ Phiếu Trụ Cột VN30</h1>
+    <p class="hub-sub">
+      Cổng tra cứu chỉ số tài chính (P/E, P/B, EPS, BVPS, Vốn hóa) và công cụ Mini Calculator định giá trực quan theo kịch bản lợi nhuận độc quyền từ daututaichinh.pro.
+    </p>
+  </section>
+
+  <!-- CONTROLS: SEARCH + SECTOR FILTER -->
+  <div class="controls-panel">
+    <div class="search-box-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="filter-search" placeholder="Tìm kiếm nhanh mã CP hoặc tên công ty (VD: SSI, HPG, FPT, VCB...)..." oninput="applyFilters()" />
+    </div>
+
+    <div class="filter-pills">
+      <button class="filter-pill active" onclick="filterSector('all', this)">Tất cả (30)</button>
+      <button class="filter-pill" onclick="filterSector('Ngân hàng', this)">Ngân hàng (13)</button>
+      <button class="filter-pill" onclick="filterSector('Tiêu dùng & Bán lẻ', this)">Tiêu dùng & Bán lẻ (6)</button>
+      <button class="filter-pill" onclick="filterSector('Bất động sản', this)">Bất động sản (4)</button>
+      <button class="filter-pill" onclick="filterSector('Sản xuất & Công nghiệp', this)">Sản xuất & Thép (2)</button>
+      <button class="filter-pill" onclick="filterSector('Dầu khí & Năng lượng', this)">Dầu khí & Năng lượng (2)</button>
+      <button class="filter-pill" onclick="filterSector('Công nghệ', this)">Công nghệ (1)</button>
+      <button class="filter-pill" onclick="filterSector('Dịch vụ Tài chính', this)">Chứng khoán (1)</button>
+    </div>
+  </div>
+
+  <!-- STOCKS TABLE -->
+  <div class="stocks-table-card">
+    <table class="hub-table" id="stocks-table">
+      <thead>
+        <tr>
+          <th>Mã CP</th>
+          <th>Doanh Nghiệp</th>
+          <th>Ngành Nghề</th>
+          <th>Thị Giá (VNĐ)</th>
+          <th>P/E</th>
+          <th>P/B</th>
+          <th>EPS (VNĐ)</th>
+          <th>Vốn Hóa</th>
+          <th>Hành Động</th>
+        </tr>
+      </thead>
+      <tbody id="stocks-body">
+        <tr data-ticker="ACB" data-name="ngân hàng thương mại cổ phần á châu" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/acb.html" class="ticker-link">ACB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Á Châu</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">21,000</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">7.57x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.17x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">2,770</td>
+          <td style="font-size:0.85rem;">121,892.86 tỷ</td>
+          <td>
+            <a href="/co-phieu/acb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="BID" data-name="ngân hàng thương mại cổ phần đầu tư và phát triển việt nam" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/bid.html" class="ticker-link">BID</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Đầu tư và Phát triển Việt Nam</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">33,500</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">7.35x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.31x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">4,560</td>
+          <td style="font-size:0.85rem;">260,570.69 tỷ</td>
+          <td>
+            <a href="/co-phieu/bid.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="BSR" data-name="công ty cổ phần – tổng công ty lọc hóa dầu việt nam" data-sector="Dầu khí & Năng lượng">
+          <td>
+            <a href="/co-phieu/bsr.html" class="ticker-link">BSR</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">CÔNG TY CỔ PHẦN – TỔNG CÔNG TY LỌC HÓA DẦU VIỆT NAM</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Dầu khí & Lọc hóa dầu</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">27,600</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">7.03x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.86x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">3,930</td>
+          <td style="font-size:0.85rem;">138,201.47 tỷ</td>
+          <td>
+            <a href="/co-phieu/bsr.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="CTG" data-name="ngân hàng thương mại cổ phần công thương việt nam" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/ctg.html" class="ticker-link">CTG</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Công Thương Việt Nam</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">30,350</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">5.87x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.18x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">5,170</td>
+          <td style="font-size:0.85rem;">235,726.77 tỷ</td>
+          <td>
+            <a href="/co-phieu/ctg.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="FPT" data-name="công ty cổ phần fpt" data-sector="Công nghệ">
+          <td>
+            <a href="/co-phieu/fpt.html" class="ticker-link">FPT</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty Cổ phần FPT</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Công nghệ thông tin & Viễn thông</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">53,100</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">9.68x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">2.27x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">5,480</td>
+          <td style="font-size:0.85rem;">100,132.14 tỷ</td>
+          <td>
+            <a href="/co-phieu/fpt.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="GAS" data-name="tổng công ty khí việt nam - công ty cổ phần" data-sector="Dầu khí & Năng lượng">
+          <td>
+            <a href="/co-phieu/gas.html" class="ticker-link">GAS</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Tổng Công ty Khí Việt Nam - Công ty Cổ phần</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Dầu khí & Năng lượng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">75,200</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">14.28x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">2.58x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">5,270</td>
+          <td style="font-size:0.85rem;">181,454.07 tỷ</td>
+          <td>
+            <a href="/co-phieu/gas.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="GVR" data-name="tập đoàn công nghiệp cao su việt nam - công ty cổ phần" data-sector="Sản xuất & Công nghiệp">
+          <td>
+            <a href="/co-phieu/gvr.html" class="ticker-link">GVR</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Tập đoàn Công nghiệp Cao su Việt Nam - Công ty Cổ phần</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Cao su & Khu công nghiệp</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">31,500</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">16.94x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.88x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">1,860</td>
+          <td style="font-size:0.85rem;">126,000.00 tỷ</td>
+          <td>
+            <a href="/co-phieu/gvr.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="HDB" data-name="ngân hàng thương mại cổ phần phát triển thành phố hồ chí minh" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/hdb.html" class="ticker-link">HDB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Phát triển Thành phố Hồ Chí Minh</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">22,050</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">5.63x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.59x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">3,920</td>
+          <td style="font-size:0.85rem;">143,476.25 tỷ</td>
+          <td>
+            <a href="/co-phieu/hdb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="HPG" data-name="công ty cổ phần tập đoàn hòa phát" data-sector="Sản xuất & Công nghiệp">
+          <td>
+            <a href="/co-phieu/hpg.html" class="ticker-link">HPG</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty Cổ phần Tập đoàn Hòa Phát</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Sản xuất Thép & Công nghiệp nặng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">21,150</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">7.69x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.26x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">2,750</td>
+          <td style="font-size:0.85rem;">178,568.70 tỷ</td>
+          <td>
+            <a href="/co-phieu/hpg.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="LPB" data-name="ngân hàng thương mại cổ phần lộc phát việt nam" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/lpb.html" class="ticker-link">LPB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Lộc Phát Việt Nam</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">36,100</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">8.92x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">2.31x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">4,050</td>
+          <td style="font-size:0.85rem;">107,840.88 tỷ</td>
+          <td>
+            <a href="/co-phieu/lpb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="MBB" data-name="ngân hàng thương mại cổ phần quân đội" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/mbb.html" class="ticker-link">MBB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Quân Đội</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">19,400</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">5.20x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.19x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">3,730</td>
+          <td style="font-size:0.85rem;">195,333.75 tỷ</td>
+          <td>
+            <a href="/co-phieu/mbb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="MCH" data-name="công ty cổ phần hàng tiêu dùng masan" data-sector="Tiêu dùng & Bán lẻ">
+          <td>
+            <a href="/co-phieu/mch.html" class="ticker-link">MCH</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty cổ phần Hàng tiêu dùng Masan</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Hàng tiêu dùng thực phẩm (Masan Consumer)</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">135,300</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">24.14x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">9.43x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">5,600</td>
+          <td style="font-size:0.85rem;">176,891.89 tỷ</td>
+          <td>
+            <a href="/co-phieu/mch.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="MSN" data-name="công ty cổ phần tập đoàn masan" data-sector="Tiêu dùng & Bán lẻ">
+          <td>
+            <a href="/co-phieu/msn.html" class="ticker-link">MSN</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty Cổ phần Tập đoàn MaSan</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Tập đoàn đa ngành & Bán lẻ tiêu dùng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">70,600</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">10.76x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.92x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">6,560</td>
+          <td style="font-size:0.85rem;">103,102.45 tỷ</td>
+          <td>
+            <a href="/co-phieu/msn.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="MWG" data-name="công ty cổ phần đầu tư thế giới di động" data-sector="Tiêu dùng & Bán lẻ">
+          <td>
+            <a href="/co-phieu/mwg.html" class="ticker-link">MWG</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty Cổ phần Đầu tư Thế Giới Di Động</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Bán lẻ công nghệ & Bách Hóa Xanh</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">74,100</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">9.79x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">2.08x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">7,570</td>
+          <td style="font-size:0.85rem;">109,348.93 tỷ</td>
+          <td>
+            <a href="/co-phieu/mwg.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="SAB" data-name="tổng công ty cổ phần bia – rượu – nước giải khát sài gòn" data-sector="Tiêu dùng & Bán lẻ">
+          <td>
+            <a href="/co-phieu/sab.html" class="ticker-link">SAB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Tổng Công ty Cổ phần Bia – Rượu – Nước giải khát Sài Gòn</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Thực phẩm & Đồ uống (Bia Sài Gòn)</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">42,400</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">11.39x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">2.53x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">3,720</td>
+          <td style="font-size:0.85rem;">54,380.64 tỷ</td>
+          <td>
+            <a href="/co-phieu/sab.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="SHB" data-name="ngân hàng thương mại cổ phần sài gòn – hà nội" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/shb.html" class="ticker-link">SHB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Sài Gòn – Hà Nội</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">10,600</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">4.45x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">0.67x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">2,380</td>
+          <td style="font-size:0.85rem;">56,643.26 tỷ</td>
+          <td>
+            <a href="/co-phieu/shb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="SSB" data-name="ngân hàng thương mại cổ phần đông nam á" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/ssb.html" class="ticker-link">SSB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Đông Nam Á</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">15,100</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">14.50x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.23x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">1,041</td>
+          <td style="font-size:0.85rem;">52,552.32 tỷ</td>
+          <td>
+            <a href="/co-phieu/ssb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="SSI" data-name="công ty cổ phần chứng khoán ssi" data-sector="Dịch vụ Tài chính">
+          <td>
+            <a href="/co-phieu/ssi.html" class="ticker-link">SSI</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty Cổ phần Chứng khoán SSI</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Dịch vụ Tài chính - Chứng khoán</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">19,350</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">9.96x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.42x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">1,940</td>
+          <td style="font-size:0.85rem;">58,075.20 tỷ</td>
+          <td>
+            <a href="/co-phieu/ssi.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="STB" data-name="ngân hàng thương mại cổ phần sài gòn tài lộc" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/stb.html" class="ticker-link">STB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng thương mại cổ phần Sài Gòn Tài Lộc</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">66,600</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">82.31x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.96x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">810</td>
+          <td style="font-size:0.85rem;">125,555.37 tỷ</td>
+          <td>
+            <a href="/co-phieu/stb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="TCB" data-name="ngân hàng thương mại cổ phần kỹ thương việt nam" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/tcb.html" class="ticker-link">TCB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Kỹ Thương Việt Nam</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">21,650</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">5.36x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.17x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">4,040</td>
+          <td style="font-size:0.85rem;">230,125.66 tỷ</td>
+          <td>
+            <a href="/co-phieu/tcb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="TCX" data-name="công ty cổ phần chứng khoán kỹ thương" data-sector="Tiêu dùng & Bán lẻ">
+          <td>
+            <a href="/co-phieu/tcx.html" class="ticker-link">TCX</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty cổ phần Chứng khoán Kỹ Thương</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Bán lẻ & Thương mại</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">27,000</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">14.45x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.90x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">1,870</td>
+          <td style="font-size:0.85rem;">89,892.18 tỷ</td>
+          <td>
+            <a href="/co-phieu/tcx.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="VCB" data-name="ngân hàng thương mại cổ phần ngoại thương việt nam" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/vcb.html" class="ticker-link">VCB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Ngoại Thương Việt Nam</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">56,600</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">11.36x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.90x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">4,980</td>
+          <td style="font-size:0.85rem;">472,931.21 tỷ</td>
+          <td>
+            <a href="/co-phieu/vcb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="VHM" data-name="công ty cổ phần vinhomes" data-sector="Bất động sản">
+          <td>
+            <a href="/co-phieu/vhm.html" class="ticker-link">VHM</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty Cổ phần Vinhomes</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Bất động sản dân cư (Vinhomes)</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">64,000</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">3.33x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.92x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">19,240</td>
+          <td style="font-size:0.85rem;">525,748.74 tỷ</td>
+          <td>
+            <a href="/co-phieu/vhm.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="VIB" data-name="ngân hàng thương mại cổ phần quốc tế việt nam" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/vib.html" class="ticker-link">VIB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Quốc tế Việt Nam</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">13,900</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">6.71x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.04x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">2,070</td>
+          <td style="font-size:0.85rem;">51,921.87 tỷ</td>
+          <td>
+            <a href="/co-phieu/vib.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="VIC" data-name="tập đoàn vingroup - công ty cổ phần" data-sector="Bất động sản">
+          <td>
+            <a href="/co-phieu/vic.html" class="ticker-link">VIC</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Tập đoàn Vingroup - Công ty Cổ phần</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Tập đoàn đa ngành & Bất động sản (Vingroup)</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">240,000</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">74.84x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">10.28x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">3,210</td>
+          <td style="font-size:0.85rem;">1,862,924.74 tỷ</td>
+          <td>
+            <a href="/co-phieu/vic.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="VJC" data-name="công ty cổ phần hàng không vietjet" data-sector="Khác">
+          <td>
+            <a href="/co-phieu/vjc.html" class="ticker-link">VJC</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty Cổ phần Hàng không VietJet</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Hàng không (Vietjet Air)</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">131,700</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">46.56x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">3.84x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">2,830</td>
+          <td style="font-size:0.85rem;">101,366.45 tỷ</td>
+          <td>
+            <a href="/co-phieu/vjc.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="VNM" data-name="công ty cổ phần sữa việt nam" data-sector="Tiêu dùng & Bán lẻ">
+          <td>
+            <a href="/co-phieu/vnm.html" class="ticker-link">VNM</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty Cổ phần Sữa Việt Nam</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Sữa & Thực phẩm dinh dưỡng (Vinamilk)</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">57,000</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">10.87x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">3.34x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">5,250</td>
+          <td style="font-size:0.85rem;">119,127.46 tỷ</td>
+          <td>
+            <a href="/co-phieu/vnm.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="VPB" data-name="ngân hàng thương mại cổ phần việt nam thịnh vượng" data-sector="Ngân hàng">
+          <td>
+            <a href="/co-phieu/vpb.html" class="ticker-link">VPB</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Ngân hàng Thương mại Cổ phần Việt Nam Thịnh Vượng</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Ngân hàng</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">22,950</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">7.36x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.15x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">3,120</td>
+          <td style="font-size:0.85rem;">229,500.00 tỷ</td>
+          <td>
+            <a href="/co-phieu/vpb.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="VPL" data-name="công ty cổ phần vinpearl" data-sector="Bất động sản">
+          <td>
+            <a href="/co-phieu/vpl.html" class="ticker-link">VPL</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty cổ phần Vinpearl</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Năng lượng & Bất động sản</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">89,600</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#facc15;">53.35x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">3.54x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">1,680</td>
+          <td style="font-size:0.85rem;">160,679.71 tỷ</td>
+          <td>
+            <a href="/co-phieu/vpl.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+        <tr data-ticker="VRE" data-name="công ty cổ phần vincom retail" data-sector="Bất động sản">
+          <td>
+            <a href="/co-phieu/vre.html" class="ticker-link">VRE</a>
+          </td>
+          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">Công ty Cổ phần Vincom Retail</td>
+          <td style="font-size:0.85rem; color:#94a3b8;">Bất động sản bán lẻ & TTTM (Vincom Retail)</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#38bdf8;">23,900</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#34d399;">7.34x</td>
+          <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#a78bfa;">1.07x</td>
+          <td style="font-family:'JetBrains Mono',monospace;">3,250</td>
+          <td style="font-size:0.85rem;">54,308.41 tỷ</td>
+          <td>
+            <a href="/co-phieu/vre.html" class="action-btn">Định giá &rarr;</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer style="background:#0b1120; border-top:1px solid rgba(255,255,255,0.06); padding:40px 20px; text-align:center; color:#64748b; font-size:0.85rem;">
+  <div class="container">
+    <p style="margin-bottom:8px; color:#94a3b8;"><strong>daututaichinh.pro</strong> &mdash; Hệ sinh thái thông tin tài chính & đầu tư chuyên sâu cho người Việt.</p>
+    <p style="margin-bottom:12px;">Dữ liệu bảng giá và tài chính chuẩn hóa từ sàn HOSE và Báo cáo tài chính soát xét.</p>
+    <p>&copy; 2026 daututaichinh.pro. Giữ toàn quyền.</p>
+  </div>
+</footer>
+
+<script>
+  let activeSector = 'all';
+
+  function filterSector(sec, el) {
+    activeSector = sec;
+    document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
+    el.classList.add('active');
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const query = (document.getElementById('filter-search').value || '').toLowerCase().trim();
+    const rows = document.querySelectorAll('#stocks-body tr');
+
+    rows.forEach(row => {
+      const ticker = (row.getAttribute('data-ticker') || '').toLowerCase();
+      const name = (row.getAttribute('data-name') || '').toLowerCase();
+      const sector = row.getAttribute('data-sector') || '';
+
+      const matchSearch = !query || ticker.includes(query) || name.includes(query);
+      const matchSector = activeSector === 'all' || sector === activeSector;
+
+      if (matchSearch && matchSector) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
