@@ -1177,6 +1177,27 @@ Bạn có thể viết:
                 });
             }
 
+            // TIER 0: VN30 Data Hub Whitelist (/co-phieu/{ticker}.html)
+            const vn30Tickers = [
+                'ACB', 'BID', 'BSR', 'CTG', 'FPT', 'GAS', 'GVR', 'HDB', 'HPG', 'LPB',
+                'MBB', 'MCH', 'MSN', 'MWG', 'SAB', 'SHB', 'SSB', 'SSI', 'STB', 'TCB',
+                'TCX', 'VCB', 'VHM', 'VIB', 'VIC', 'VJC', 'VNM', 'VPB', 'VPL', 'VRE'
+            ];
+            for (const ticker of vn30Tickers) {
+                if (internalLinkCount >= 3) break;
+                const words = [`cổ phiếu ${ticker}`, `mã ${ticker}`, ticker];
+                for (const w of words) {
+                    const testRes = safeReplaceFirstInParagraphs(modifiedHtml, w, (matched) => {
+                        return `<a href="/co-phieu/${ticker.toLowerCase()}.html" title="Định giá & Dữ liệu cổ phiếu ${ticker}">${matched}</a>`;
+                    });
+                    if (testRes !== modifiedHtml) {
+                        modifiedHtml = testRes;
+                        internalLinkCount++;
+                        break;
+                    }
+                }
+            }
+
             // TIER 1: Internal Article Mapping Whitelist
             const internalMap = [
                 { words: ['cổ phiếu SSI', 'SSI'], url: '/market/co-phieu-ssi-kich-ban-q1-2026-va-nang-hang-thi-truong.html' },
