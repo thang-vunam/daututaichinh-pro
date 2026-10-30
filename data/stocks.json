@@ -1,0 +1,19 @@
+[
+  {
+    "ticker": "SSI",
+    "name": "Công ty Cổ phần Chứng khoán SSI",
+    "exchange": "HOSE",
+    "index": "VN30",
+    "sector": "Dịch vụ Tài chính - Chứng khoán",
+    "url": "/co-phieu/ssi.html",
+    "pe": 14.2,
+    "pb": 1.75,
+    "roe": 12.8,
+    "eps": 2450,
+    "bvps": 19800,
+    "current_price": 34800,
+    "market_cap": "61.500 tỷ",
+    "has_data_page": true,
+    "last_updated": "2026-10-30"
+  }
+]
