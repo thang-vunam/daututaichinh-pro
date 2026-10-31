@@ -642,7 +642,30 @@ Bạn có thể viết:
                         </div>
                     </div>
 
-                    <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
+                    
+                    <!-- STUDIO ẢNH BÌA THƯƠNG HIỆU (1200x630) -->
+                    <div style="margin-top: 16px; padding: 14px; background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(15, 23, 42, 0.7)); border: 1px solid rgba(251, 191, 36, 0.35); border-radius: 10px;">
+                        <div style="font-size: 0.88rem; font-weight: 700; color: #fbbf24; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span><i class="fa-solid fa-wand-magic-sparkles"></i> Studio Ảnh Bìa Thương Hiệu</span>
+                            <span style="font-size: 0.68rem; background: #fbbf24; color: #0b1120; font-weight: 800; padding: 2px 7px; border-radius: 999px;">1200x630</span>
+                        </div>
+                        <div style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.4; margin-bottom: 10px;">
+                            Tự động vẽ ảnh bìa độc quyền chuẩn Dark Navy & Vàng kim, bám sát cấu trúc 3 chuyên mục chính.
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button type="button" class="btn" onclick="openCoverStudioModal()" style="font-size: 0.82rem; padding: 8px 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #0f172a; font-weight: 700; justify-content: center; border: none;">
+                                <i class="fa-solid fa-palette"></i> Mở Studio / Tạo Ảnh Bìa Độc Quyền
+                            </button>
+                            <button type="button" class="btn" onclick="downloadCurrentCoverPng()" style="font-size: 0.8rem; padding: 6px 12px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; justify-content: center;">
+                                <i class="fa-solid fa-download"></i> Tải File Ảnh (.PNG) Về Máy
+                            </button>
+                        </div>
+                        <div id="cover-brand-status" style="margin-top: 8px; font-size: 0.75rem; color: #94a3b8; display: flex; align-items: center; gap: 5px;">
+                            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> Nhận diện: <b>Đầu Tư Tài Chính .pro</b>
+                        </div>
+                    </div>
+
+<div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
                         <label style="color: #a5b4fc; font-weight: 600; display: block; margin-bottom: 8px;"><i class="fa-regular fa-image"></i> Cấu hình Ảnh bìa</label>
                         
                         <div style="margin-top: 8px;">
@@ -2275,6 +2298,17 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
 
             const path = `${category}/${slug}.html`;
             
+            // BƯỚC 0: Tự động Upload Ảnh Bìa Thương Hiệu nếu được tạo bằng Studio
+            if (currentArticleData && currentArticleData.coverBase64Payload) {
+                try {
+                    const coverPath = `images/cover-${slug}.png`;
+                    btn.innerHTML = '<div class="loader"></div> Đang Upload Ảnh Bìa Thương Hiệu...';
+                    await uploadBinaryFileToGithub(owner, repo, coverPath, currentArticleData.coverBase64Payload, `Cover Studio: Thêm ảnh bìa cover-${slug}.png`, token);
+                } catch(coverErr) {
+                    console.warn("Không thể upload ảnh bìa tự động, tiếp tục xuất bản HTML:", coverErr);
+                }
+            }
+            
             const btn = document.getElementById('btn-publish');
             btn.innerHTML = '<div class="loader"></div> Bước 1/4: Đang Push bài viết...';
             btn.disabled = true;
@@ -2588,6 +2622,9 @@ ${emptyMsg}
     }
   });
 <\/script>
+
+
+
 </body>
 </html>`;
             
@@ -3375,6 +3412,41 @@ ${subCardsHtml}
         }
 
         // HELPER: Upload file Github REST API (tự động lấy SHA nếu file đã tồn tại)
+        
+        // Upload file nhị phân (PNG, JPEG base64) lên GitHub
+        async function uploadBinaryFileToGithub(owner, repo, path, base64Content, message, token) {
+            const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+            let existingSha = null;
+            try {
+                const getRes = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (getRes.ok) {
+                    const getData = await getRes.json();
+                    existingSha = getData.sha;
+                }
+            } catch(e) {}
+
+            const body = { message: message, content: base64Content };
+            if (existingSha) body.sha = existingSha;
+
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(`Upload ảnh thất bại: ${err.message || res.statusText}`);
+            }
+            return await res.json();
+        }
+
         async function uploadFileToGithub(owner, repo, path, content, message, token) {
             // Encode Base64 (UTF-8 safe)
             const b64Content = btoa(unescape(encodeURIComponent(content)));
@@ -4576,6 +4648,364 @@ function toggleFaq(el) {
 </html>`;
         }
 
-    </script>
+    
+
+        // ==========================================
+        // BRAND COVER STUDIO LOGIC
+        // ==========================================
+        let currentBrandCoverBase64 = null;
+
+        function roundRectHelper(ctx, x, y, width, height, radius, fill, stroke) {
+            if (typeof stroke === 'undefined') stroke = true;
+            if (typeof radius === 'undefined') radius = 5;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            if (fill) ctx.fill();
+            if (stroke) ctx.stroke();
+        }
+
+        function wrapCanvasText(ctx, text, maxWidth) {
+            if (!text) return [];
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = words[0] || '';
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const width = ctx.measureText(currentLine + ' ' + word).width;
+                if (width < maxWidth) {
+                    currentLine += ' ' + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            if (currentLine) lines.push(currentLine);
+            return lines;
+        }
+
+        function openCoverStudioModal() {
+            const cat = document.getElementById('input-category')?.value || 'blog';
+            const title = document.getElementById('review-title')?.value || document.getElementById('input-topic')?.value || 'Bài Viết Đầu Tư Tài Chính';
+            const desc = document.getElementById('review-desc')?.value || '';
+
+            const badgeSelect = document.getElementById('studio-cover-badge');
+            if (badgeSelect) {
+                badgeSelect.value = (cat === 'market') ? 'THỊ TRƯỜNG' : (cat === 'hub' ? 'DATA HUB' : 'CHUYÊN MỤC BLOG');
+            }
+
+            const titleInput = document.getElementById('studio-cover-title');
+            if (titleInput) titleInput.value = title;
+
+            const subInput = document.getElementById('studio-cover-sub');
+            if (subInput) subInput.value = desc || 'Phân tích & Quản trị rủi ro chuyên sâu';
+
+            if (!document.getElementById('studio-p1-title').value) {
+                if (cat === 'market') {
+                    document.getElementById('studio-cover-style').value = 'kpi';
+                    document.getElementById('studio-p1-title').value = 'P/E Dự Phóng';
+                    document.getElementById('studio-p1-desc').value = '17.2x (Định giá hợp lý so với chu kỳ)';
+                    document.getElementById('studio-p2-title').value = 'Biên An Toàn';
+                    document.getElementById('studio-p2-desc').value = '18.4% (Chiết khấu so với giá trị thực)';
+                    document.getElementById('studio-p3-title').value = 'Mục Tiêu 2026';
+                    document.getElementById('studio-p3-desc').value = 'Dư địa tăng trưởng bền vững';
+                } else {
+                    document.getElementById('studio-cover-style').value = 'pillars';
+                    document.getElementById('studio-p1-title').value = 'Hiệu Ứng Mỏ Neo';
+                    document.getElementById('studio-p1-desc').value = 'Ám ảnh giá đỉnh cũ, chần chừ hạ tỷ trọng khi vi phạm nguyên tắc.';
+                    document.getElementById('studio-p2-title').value = 'Nỗi Đau Mất Mát';
+                    document.getElementById('studio-p2-desc').value = 'Nỗi đau lỗ gấp đôi niềm vui thắng, dẫn đến bán tháo ngay đáy.';
+                    document.getElementById('studio-p3-title').value = 'Kỷ Luật Cắt Rời';
+                    document.getElementById('studio-p3-desc').value = 'Giao dịch theo hệ thống và kế hoạch thay vì cảm xúc đám đông.';
+                }
+            }
+
+            document.getElementById('cover-studio-modal').style.display = 'block';
+            renderStudioCover();
+        }
+
+        function closeCoverStudioModal() {
+            document.getElementById('cover-studio-modal').style.display = 'none';
+        }
+
+        function renderStudioCover() {
+            const canvas = document.getElementById('studio-cover-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const W = 1200;
+            const H = 630;
+            canvas.width = W;
+            canvas.height = H;
+
+            const badgeText = document.getElementById('studio-cover-badge')?.value || 'CHUYÊN MỤC BLOG';
+            const titleText = document.getElementById('studio-cover-title')?.value || 'Tiêu Đề Bài Viết';
+            const subText = document.getElementById('studio-cover-sub')?.value || '';
+
+            // 1. Background gradient Dark Navy
+            const bgGrad = ctx.createRadialGradient(W * 0.15, H * 0.2, 50, W * 0.5, H * 0.5, W * 0.85);
+            bgGrad.addColorStop(0, '#172554');
+            bgGrad.addColorStop(0.55, '#0b1120');
+            bgGrad.addColorStop(1, '#050811');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // 2. Subtle Grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < W; x += 50) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+            }
+            for (let y = 0; y < H; y += 50) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+            }
+
+            // 3. Radial Glows
+            const goldGlow = ctx.createRadialGradient(W - 80, -120, 10, W - 80, -120, 480);
+            goldGlow.addColorStop(0, 'rgba(251, 191, 36, 0.13)');
+            goldGlow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+            ctx.fillStyle = goldGlow;
+            ctx.fillRect(0, 0, W, H);
+
+            const cyanGlow = ctx.createRadialGradient(-100, H + 150, 10, -100, H + 150, 500);
+            cyanGlow.addColorStop(0, 'rgba(56, 189, 248, 0.10)');
+            cyanGlow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+            ctx.fillStyle = cyanGlow;
+            ctx.fillRect(0, 0, W, H);
+
+            // 4. Header Bar
+            ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            const badgeWidth = ctx.measureText(badgeText).width + 44;
+            
+            ctx.fillStyle = 'rgba(251, 191, 36, 0.12)';
+            ctx.strokeStyle = 'rgba(251, 191, 36, 0.35)';
+            ctx.lineWidth = 1;
+            roundRectHelper(ctx, 64, 48, badgeWidth, 34, 17, true, true);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(80, 65, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText(badgeText, 94, 70);
+
+            // Brand Logo: Đầu Tư Tài Chính .pro (No &)
+            ctx.font = '800 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            const brandName = 'Đầu Tư Tài Chính';
+            const brandWidth = ctx.measureText(brandName).width;
+            ctx.fillText(brandName, W - 64 - brandWidth - 38, 71);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText('.pro', W - 64 - 38, 71);
+
+            // 5. Title & Subtitle
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '900 40px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            const titleLines = wrapCanvasText(ctx, titleText, 1040);
+            let titleY = 145;
+            for (let i = 0; i < Math.min(titleLines.length, 2); i++) {
+                ctx.fillText(titleLines[i], 64, titleY);
+                titleY += 48;
+            }
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '500 18px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            const subLines = wrapCanvasText(ctx, subText, 1000);
+            let subY = titleY + 12;
+            for (let i = 0; i < Math.min(subLines.length, 2); i++) {
+                ctx.fillText(subLines[i], 64, subY);
+                subY += 26;
+            }
+
+            // 6. Pillars Cards
+            const p1_t = document.getElementById('studio-p1-title')?.value || 'Luận Điểm 1';
+            const p1_d = document.getElementById('studio-p1-desc')?.value || '';
+            const p2_t = document.getElementById('studio-p2-title')?.value || 'Luận Điểm 2';
+            const p2_d = document.getElementById('studio-p2-desc')?.value || '';
+            const p3_t = document.getElementById('studio-p3-title')?.value || 'Luận Điểm 3';
+            const p3_d = document.getElementById('studio-p3-desc')?.value || '';
+
+            const cards = [
+                { tag: 'TRỤ CỘT 01', title: p1_t, desc: p1_d },
+                { tag: 'TRỤ CỘT 02', title: p2_t, desc: p2_d },
+                { tag: 'TRỤ CỘT 03', title: p3_t, desc: p3_d }
+            ];
+
+            const cardW = 342;
+            const cardH = 150;
+            const cardY = 390;
+            cards.forEach((c, idx) => {
+                const cardX = 64 + idx * (cardW + 23);
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.16)';
+                ctx.lineWidth = 1;
+                roundRectHelper(ctx, cardX, cardY, cardW, cardH, 14, true, true);
+
+                ctx.fillStyle = '#fbbf24';
+                roundRectHelper(ctx, cardX, cardY, cardW, 3, 2, true, false);
+
+                ctx.font = '800 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                ctx.fillStyle = '#fbbf24';
+                ctx.fillText(c.tag, cardX + 18, cardY + 28);
+
+                ctx.font = 'bold 17px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(c.title, cardX + 18, cardY + 54);
+
+                ctx.font = '400 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                ctx.fillStyle = '#94a3b8';
+                const descLines = wrapCanvasText(ctx, c.desc, cardW - 36);
+                let dY = cardY + 78;
+                for (let d = 0; d < Math.min(descLines.length, 3); d++) {
+                    ctx.fillText(descLines[d], cardX + 18, dY);
+                    dY += 20;
+                }
+            });
+
+            // 7. Footer
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.15)';
+            ctx.beginPath();
+            ctx.moveTo(64, 575);
+            ctx.lineTo(W - 64, 575);
+            ctx.stroke();
+
+            ctx.font = '500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('Nền tảng phân tích & Tư duy đầu tư thực chiến', 64, 600);
+
+            ctx.font = '600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            ctx.fillStyle = '#94a3b8';
+            const domainText = 'daututaichinh.pro';
+            ctx.fillText(domainText, W - 64 - ctx.measureText(domainText).width, 600);
+
+            currentBrandCoverBase64 = canvas.toDataURL('image/png');
+        }
+
+        function applyStudioCoverToArticle() {
+            if (!currentBrandCoverBase64) renderStudioCover();
+            
+            const slug = document.getElementById('review-slug')?.value || 'bai-viet';
+            const coverRelativeUrl = `/images/cover-${slug}.png`;
+            
+            const urlInput = document.getElementById('review-image-url');
+            if (urlInput) urlInput.value = coverRelativeUrl;
+            
+            applyCoverImageToHtml(currentBrandCoverBase64, 'Đầu Tư Tài Chính .pro', 'https://daututaichinh.pro');
+            
+            if (typeof currentArticleData !== 'undefined' && currentArticleData) {
+                currentArticleData.coverBase64Payload = currentBrandCoverBase64.split(',')[1];
+                currentArticleData.coverTargetFilename = `cover-${slug}.png`;
+                currentArticleData.imageUrl = coverRelativeUrl;
+            }
+
+            closeCoverStudioModal();
+            alert("Đã áp dụng Ảnh Bìa Thương Hiệu thành công! Ảnh sẽ tự động được tải lên GitHub khi bạn bấm Xuất bản.");
+        }
+
+        function downloadCurrentCoverPng() {
+            const canvas = document.getElementById('studio-cover-canvas');
+            if (!canvas) {
+                openCoverStudioModal();
+                renderStudioCover();
+            }
+            const slug = document.getElementById('review-slug')?.value || 'daututaichinh-cover';
+            const link = document.createElement('a');
+            link.download = `cover-${slug}.png`;
+            link.href = canvas ? canvas.toDataURL('image/png') : currentBrandCoverBase64;
+            link.click();
+        }
+
+</script>
+
+
+    <!-- MODAL STUDIO TẠO ẢNH BÌA THƯƠNG HIỆU -->
+    <div id="cover-studio-modal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 99999; overflow-y: auto; padding: 24px;">
+        <div style="max-width: 1000px; margin: 30px auto; background: #0f172a; border: 1px solid rgba(251,191,36,0.3); border-radius: 16px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7); color: #f8fafc;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(148,163,184,0.15); padding-bottom: 14px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 1.2rem;">
+                        <i class="fa-solid fa-palette"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #ffffff;">Studio Ảnh Bìa Thương Hiệu (1200x630)</h3>
+                        <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #94a3b8;">Nhận diện: <strong>Đầu Tư Tài Chính .pro</strong> • 0 VNĐ • Chuẩn 3 chuyên mục</p>
+                    </div>
+                </div>
+                <button type="button" class="btn" onclick="closeCoverStudioModal()" style="padding: 6px 12px; background: rgba(255,255,255,0.08);"><i class="fa-solid fa-xmark"></i> Đóng</button>
+            </div>
+
+            <!-- Canvas Preview Container -->
+            <div style="background: #020617; border-radius: 12px; padding: 12px; border: 1px solid rgba(148,163,184,0.15); text-align: center; margin-bottom: 20px;">
+                <canvas id="studio-cover-canvas" width="1200" height="630" style="width: 100%; max-width: 860px; height: auto; border-radius: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); display: inline-block; vertical-align: middle;"></canvas>
+            </div>
+
+            <!-- Controls -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                <div>
+                    <label style="font-size: 0.82rem; font-weight: 600; color: #fbbf24; display: block; margin-bottom: 4px;">Badge Chuyên Mục (Theo 3 cột trụ website)</label>
+                    <select id="studio-cover-badge" onchange="renderStudioCover()" style="width: 100%; padding: 8px 12px; background: #1e293b; border: 1px solid rgba(148,163,184,0.3); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                        <option value="CHUYÊN MỤC BLOG">CHUYÊN MỤC BLOG (/blog)</option>
+                        <option value="THỊ TRƯỜNG">THỊ TRƯỜNG (/market)</option>
+                        <option value="DATA HUB">DATA HUB (/hub)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 0.82rem; font-weight: 600; color: #fbbf24; display: block; margin-bottom: 4px;">Phong Cách Hiển Thị</label>
+                    <select id="studio-cover-style" onchange="renderStudioCover()" style="width: 100%; padding: 8px 12px; background: #1e293b; border: 1px solid rgba(148,163,184,0.3); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                        <option value="pillars">3 Trụ Cột / Bẫy Tâm Lý (Chuẩn Blog)</option>
+                        <option value="kpi">4 Chỉ Số Định Lượng (Chuẩn Cổ Phiếu / Thị Trường)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 4px;">Tiêu đề hiển thị trên ảnh</label>
+                <input type="text" id="studio-cover-title" oninput="renderStudioCover()" style="width: 100%; padding: 8px 12px; background: #1e293b; border: 1px solid rgba(148,163,184,0.3); border-radius: 6px; color: #fff; font-size: 0.85rem;" />
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 4px;">Mô tả ngắn / Phụ đề</label>
+                <input type="text" id="studio-cover-sub" oninput="renderStudioCover()" style="width: 100%; padding: 8px 12px; background: #1e293b; border: 1px solid rgba(148,163,184,0.3); border-radius: 6px; color: #fff; font-size: 0.85rem;" />
+            </div>
+
+            <!-- 3 Pillars Inputs -->
+            <div id="studio-pillars-inputs" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(148,163,184,0.2);">
+                    <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 700; margin-bottom: 4px;">TRỤ CỘT 01</div>
+                    <input type="text" id="studio-p1-title" placeholder="Tiêu đề 1" oninput="renderStudioCover()" style="width:100%; padding:6px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#fff; font-size:0.8rem; margin-bottom:4px;" />
+                    <textarea id="studio-p1-desc" placeholder="Mô tả tóm tắt" oninput="renderStudioCover()" style="width:100%; height:50px; padding:6px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#94a3b8; font-size:0.75rem;"></textarea>
+                </div>
+                <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(148,163,184,0.2);">
+                    <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 700; margin-bottom: 4px;">TRỤ CỘT 02</div>
+                    <input type="text" id="studio-p2-title" placeholder="Tiêu đề 2" oninput="renderStudioCover()" style="width:100%; padding:6px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#fff; font-size:0.8rem; margin-bottom:4px;" />
+                    <textarea id="studio-p2-desc" placeholder="Mô tả tóm tắt" oninput="renderStudioCover()" style="width:100%; height:50px; padding:6px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#94a3b8; font-size:0.75rem;"></textarea>
+                </div>
+                <div style="background: rgba(30,41,59,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(148,163,184,0.2);">
+                    <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 700; margin-bottom: 4px;">TRỤ CỘT 03</div>
+                    <input type="text" id="studio-p3-title" placeholder="Tiêu đề 3" oninput="renderStudioCover()" style="width:100%; padding:6px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#fff; font-size:0.8rem; margin-bottom:4px;" />
+                    <textarea id="studio-p3-desc" placeholder="Mô tả tóm tắt" oninput="renderStudioCover()" style="width:100%; height:50px; padding:6px; background:#0f172a; border:1px solid #334155; border-radius:4px; color:#94a3b8; font-size:0.75rem;"></textarea>
+                </div>
+            </div>
+
+            <!-- Actions Bar -->
+            <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(148,163,184,0.15); padding-top: 16px;">
+                <button type="button" class="btn" onclick="downloadCurrentCoverPng()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;">
+                    <i class="fa-solid fa-download"></i> Tải File PNG (1200x630)
+                </button>
+                <button type="button" class="btn btn-primary" onclick="applyStudioCoverToArticle()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b1120; font-weight: 700; border: none; padding: 10px 20px;">
+                    <i class="fa-solid fa-check"></i> Áp Dụng Cho Bài Viết Hiện Tại
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
