@@ -4244,7 +4244,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             }
 
             // 3. Trích xuất H2, H3 để gắn ID và tạo Mục lục (Table of Contents - TOC)
-            const headingRegex = /<(h[23])([^>]*)>(.*?)<\/\1>/gi;
+            const headingRegex = /<(h2)([^>]*)>(.*?)<\/h2>/gi; // Chỉ đưa các đề mục chính H2 vào Mục lục để tinh gọn
             let headingsList = [];
             let headingIdx = 0;
 
@@ -4379,10 +4379,9 @@ gtag('config', 'G-RJZJX69KDM');
   "datePublished": "${new Date().toISOString()}",
   "mainEntityOfPage": "${canonicalUrl}",
   "author": {
-    "@type": "Person",
-    "name": "Vũ Nam Thắng",
-    "jobTitle": "Chuyên gia Phân tích Tài chính Vĩ mô & Chứng khoán",
-    "url": "https://daututaichinh.pro/#founder"
+    "@type": "Organization",
+    "name": "Đầu tư & Tài chính chuyên sâu",
+    "url": "https://daututaichinh.pro/"
   },
   "publisher": {
     "@type": "Organization",
@@ -4527,7 +4526,7 @@ td { padding: 14px 18px !important; border-bottom: 1px solid rgba(255,255,255,0.
 <div class="article-meta">
 <span class="meta-item">📅 Đăng ngày: ${formattedDate}</span>
 <span class="meta-item">📁 Chuyên mục: <a href="/${category}/">${categoryName}</a></span>
-<span class="meta-item">✍️ Tác giả: Vũ Nam Thắng</span>
+
 </div>
 
 <figure class="article-cover-figure">
