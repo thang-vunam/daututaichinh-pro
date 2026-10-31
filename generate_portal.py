@@ -59,43 +59,24 @@ index_html = f'''<!DOCTYPE html>
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Cổng Dữ Liệu & Định Giá Cổ Phiếu VN30 | daututaichinh.pro" />
-  <meta property="og:description" content="Tra cứu P/E, P/B, EPS và định giá trực quan cho trọn bộ 30 mã trụ cột VN30." />
+  <meta property="og:description" content="Tra cứu chỉ số P/E, P/B, EPS, BVPS và công cụ Mini Calculator định giá thực tế cho 30 cổ phiếu VN30." />
   <meta property="og:url" content="https://daututaichinh.pro/co-phieu/" />
   <meta property="og:image" content="https://daututaichinh.pro/logo.png" />
-  <meta property="og:site_name" content="Đầu tư & Tài chính chuyên sâu" />
 
-  <!-- Favicons -->
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-
-  <!-- Preconnect & Fonts -->
+  <!-- Fonts & Core Styles -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet" />
-
-  <link rel="stylesheet" href="../style.css?v=editorial-2.1" />
-  <link rel="stylesheet" href="../lead-form.css" />
-  <link rel="stylesheet" href="../chatbot.css" />
-
-  <!-- Structured Data: CollectionPage & BreadcrumbList -->
-  <script type="application/ld+json">
-  {{
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "Cổng Dữ Liệu & Định Giá Cổ Phiếu VN30",
-    "url": "https://daututaichinh.pro/co-phieu/",
-    "description": "Thư viện dữ liệu định giá và báo cáo tài chính cho toàn bộ 30 cổ phiếu rổ chỉ số VN30.",
-    "breadcrumb": {{
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {{ "@type": "ListItem", "position": 1, "name": "Trang chủ", "item": "https://daututaichinh.pro/" }},
-        {{ "@type": "ListItem", "position": 2, "name": "Data Hub VN30", "item": "https://daututaichinh.pro/co-phieu/" }}
-      ]
-    }}
-  }}
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
 
   <style>
+    /* Scoped Styles for Data Hub Portal */
+    body {{
+      background: #070a11;
+      color: #f1f5f9;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+    }}
     .hub-container {{
       max-width: 1200px;
       margin: 0 auto;
@@ -139,54 +120,54 @@ index_html = f'''<!DOCTYPE html>
       margin-bottom: 12px;
     }}
     .hub-title {{
-      font-family: 'Playfair Display', serif;
       font-size: 2.2rem;
       font-weight: 800;
-      color: #f8fafc;
+      letter-spacing: -0.5px;
+      color: #fff;
       margin-bottom: 12px;
       line-height: 1.25;
     }}
     .hub-sub {{
-      font-size: 1rem;
+      font-size: 1.05rem;
       color: #94a3b8;
-      line-height: 1.6;
       max-width: 800px;
-      margin-bottom: 24px;
+      line-height: 1.6;
     }}
 
     /* Search & Filter Controls */
     .controls-panel {{
+      margin-bottom: 24px;
       display: flex;
       flex-direction: column;
       gap: 16px;
-      margin-bottom: 28px;
     }}
     .search-box-wrap {{
       position: relative;
-      max-width: 600px;
+      max-width: 100%;
     }}
     .search-box-wrap input {{
       width: 100%;
-      padding: 14px 16px 14px 44px;
       background: #1e293b;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 10px;
-      color: #f8fafc;
+      padding: 14px 18px 14px 46px;
+      color: #fff;
       font-size: 0.95rem;
       outline: none;
       transition: all 0.2s;
     }}
     .search-box-wrap input:focus {{
       border-color: #fbbf24;
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
     }}
     .search-icon {{
       position: absolute;
       left: 16px;
       top: 50%;
       transform: translateY(-50%);
-      color: #94a3b8;
       font-size: 1.1rem;
+      color: #64748b;
+      pointer-events: none;
     }}
     .filter-pills {{
       display: flex;
@@ -214,8 +195,7 @@ index_html = f'''<!DOCTYPE html>
       color: #fbbf24;
     }}
 
-    /* Stock Table */
-        /* Stock Table with Sticky Header */
+    /* Stock Table with Sticky Header */
     .stocks-table-card {{
       background: #1e293b;
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -262,6 +242,7 @@ index_html = f'''<!DOCTYPE html>
       padding: 14px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       color: #cbd5e1;
+      transition: background 0.15s;
     }}
     .hub-table td:first-child {{
       padding-left: 20px;
@@ -269,8 +250,16 @@ index_html = f'''<!DOCTYPE html>
     .hub-table td:last-child {{
       padding-right: 20px;
     }}
-    .hub-table tr:hover td {{
-      background: rgba(245, 158, 11, 0.04);
+    
+    /* Interactive Full-Row Clickable Styling */
+    .hub-table tbody tr {{
+      cursor: pointer;
+    }}
+    .hub-table tbody tr:hover td {{
+      background: rgba(245, 158, 11, 0.08);
+    }}
+    .hub-table tbody tr:active td {{
+      background: rgba(245, 158, 11, 0.15);
     }}
 
     @media (max-width: 991px) {{
@@ -283,7 +272,53 @@ index_html = f'''<!DOCTYPE html>
       .hub-table thead th {{
         top: 0;
       }}
+      /* Freeze first column (Mã CP) on mobile & tablets */
+      .hub-table th:first-child,
+      .hub-table td:first-child {{
+        position: sticky;
+        left: 0;
+        background: #141e34;
+        z-index: 10;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.4);
+      }}
+      .hub-table thead th:first-child {{
+        z-index: 60;
+      }}
+      .hub-table tr:hover td:first-child {{
+        background: #1e293b !important;
+      }}
     }}
+
+    /* Mobile UX Optimizations */
+    @media (max-width: 768px) {{
+      .hub-container {{
+        padding: 155px 16px 60px !important;
+      }}
+      .hub-hero {{
+        padding: 20px;
+      }}
+      .hub-title {{
+        font-size: 1.6rem;
+      }}
+      /* Hide full company name column on mobile to eliminate clutter */
+      .col-company {{
+        display: none !important;
+      }}
+      /* Horizontal scrollable sector filter pills */
+      .filter-pills {{
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 6px;
+        gap: 8px;
+      }}
+      .filter-pill {{
+        white-space: nowrap;
+        flex-shrink: 0;
+      }}
+    }}
+
     .ticker-link {{
       display: inline-flex;
       align-items: center;
@@ -310,22 +345,11 @@ index_html = f'''<!DOCTYPE html>
       font-weight: 600;
       text-decoration: none;
       transition: all 0.2s;
+      white-space: nowrap;
     }}
     .action-btn:hover {{
       background: #fbbf24;
       color: #0f172a;
-    }}
-
-    @media (max-width: 768px) {{
-      .hub-hero {{
-        padding: 20px;
-      }}
-      .hub-title {{
-        font-size: 1.7rem;
-      }}
-      .stocks-table-card {{
-        padding: 12px;
-      }}
     }}
   </style>
 </head>
@@ -416,7 +440,7 @@ index_html = f'''<!DOCTYPE html>
       <thead>
         <tr>
           <th>Mã CP</th>
-          <th>Doanh Nghiệp</th>
+          <th class="col-company">Doanh Nghiệp</th>
           <th>Ngành Nghề</th>
           <th>Thị Giá (VNĐ)</th>
           <th>P/E</th>
@@ -440,11 +464,11 @@ for s in stocks:
     eps = s['eps']
     cap = s['market_cap']
 
-    index_html += f'''        <tr data-ticker="{ticker}" data-name="{name.lower()}" data-sector="{sec_group}">
+    index_html += f'''        <tr data-ticker="{ticker}" data-name="{name.lower()}" data-sector="{sec_group}" data-href="/co-phieu/{ticker.lower()}.html">
           <td>
             <a href="/co-phieu/{ticker.lower()}.html" class="ticker-link">{ticker}</a>
           </td>
-          <td style="font-weight:500; color:#f1f5f9; max-width:240px;">{name}</td>
+          <td class="col-company" style="font-weight:500; color:#f1f5f9; max-width:240px;">{name}</td>
           <td style="font-size:0.85rem; color:#94a3b8;">{sector}</td>
           <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#fbbf24;">{price:,}</td>
           <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:{'#34d399' if pe < 10 else '#facc15'};">{pe:.2f}x</td>
@@ -490,24 +514,43 @@ index_html += '''      </tbody>
       const name = (row.getAttribute('data-name') || '').toLowerCase();
       const sector = row.getAttribute('data-sector') || '';
 
-      const matchSearch = !query || ticker.includes(query) || name.includes(query);
+      const matchQuery = !query || ticker.includes(query) || name.includes(query);
       const matchSector = activeSector === 'all' || sector === activeSector;
 
-      if (matchSearch && matchSector) {
+      if (matchQuery && matchSector) {
         row.style.display = '';
       } else {
         row.style.display = 'none';
       }
     });
   }
-</script>
 
+  // Row-level Click Handler: click anywhere on row navigates to stock page
+  document.addEventListener('DOMContentLoaded', () => {
+    const rows = document.querySelectorAll('#stocks-body tr');
+    rows.forEach(row => {
+      row.addEventListener('click', (e) => {
+        // If user explicitly clicked an <a> or interactive element, let native link work
+        if (e.target.closest('a') || e.target.closest('button')) return;
+        const href = row.getAttribute('data-href');
+        if (href) {
+          if (e.ctrlKey || e.metaKey) {
+            window.open(href, '_blank');
+          } else {
+            window.location.href = href;
+          }
+        }
+      });
+    });
+  });
+</script>
 <script src="/ticker-live.js" defer></script>
 </body>
 </html>
 '''
 
-with open(os.path.join(co_phieu_dir, 'index.html'), 'w', encoding='utf-8') as f:
+output_path = os.path.join(co_phieu_dir, 'index.html')
+with open(output_path, 'w', encoding='utf-8') as f:
     f.write(index_html)
 
 print("✅ Generated co-phieu/index.html portal successfully!")
