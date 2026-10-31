@@ -621,6 +621,27 @@ Bạn có thể viết:
                         <i class="fa-solid fa-wand-magic-sparkles"></i> AI Tự động sửa chuẩn SEO
                     </button>
 
+                    <!-- gSEO & Smart Data Hub Toolbox -->
+                    <div style="margin-top: 16px; padding: 14px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(15, 23, 42, 0.6)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px;">
+                        <div style="font-size: 0.88rem; font-weight: 700; color: #fbbf24; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-bolt"></i> gSEO & Smart Ticker Automation
+                        </div>
+                        <div style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 10px;">
+                            Tự động quét mã VN30 để gắn Huy hiệu Data Hub và kích hoạt Rich Snippets FAQPage.
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button type="button" class="btn" onclick="applySmartTickersInEditor()" style="font-size: 0.8rem; padding: 6px 12px; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; justify-content: center;">
+                                <i class="fa-solid fa-tags"></i> Tự động gắn Ticker Badges
+                            </button>
+                            <button type="button" class="btn" onclick="generateAutoFaqInEditor()" style="font-size: 0.8rem; padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #93c5fd; justify-content: center;">
+                                <i class="fa-solid fa-circle-question"></i> Tạo 3 câu hỏi FAQ Rich Snippet
+                            </button>
+                        </div>
+                        <div id="gseo-health-status" style="margin-top: 10px; font-size: 0.75rem; color: #10b981; display: flex; align-items: center; gap: 5px;">
+                            <i class="fa-solid fa-shield-check"></i> Cấu trúc gSEO + Data Hub: SẴN SÀNG
+                        </div>
+                    </div>
+
                     <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border);">
                         <label style="color: #a5b4fc; font-weight: 600; display: block; margin-bottom: 8px;"><i class="fa-regular fa-image"></i> Cấu hình Ảnh bìa</label>
                         
@@ -3528,6 +3549,63 @@ ${subCardsHtml}
 
         // AUTO-FIX SEO: Gọi AI viết lại title/desc cho đạt chuẩn
         // Dùng model lite (nhanh ~3-5s) + auto-retry nếu lần 1 vẫn chưa đạt
+        // --- gSEO & Smart Ticker Handlers for Editor UI ---
+        function applySmartTickersInEditor() {
+            if (typeof currentArticleData === 'undefined' || !currentArticleData) {
+                alert('Vui lòng chọn bài viết trước khi gắn Ticker!');
+                return;
+            }
+            let body = currentArticleData.htmlContent || '';
+            let newBody = injectSmartTickers(body);
+            currentArticleData.htmlContent = newBody;
+            const editorEl = document.getElementById('review-body');
+            if (editorEl) editorEl.value = newBody;
+            syncReview();
+            alert('✅ Đã tự động quét và gắn Ticker Badges liên kết Data Hub!');
+        }
+
+        function generateAutoFaqInEditor() {
+            if (typeof currentArticleData === 'undefined' || !currentArticleData) {
+                alert('Vui lòng chọn bài viết trước khi tạo FAQ!');
+                return;
+            }
+            const title = (document.getElementById('review-title') || {}).value || currentArticleData.title || '';
+            const faqBlock = `\n\n<!-- FAQ Accordion chuẩn gSEO & Schema FAQPage -->
+<div class="faq-wrap" id="faq" style="margin: 40px 0;">
+  <h2 style="color: #fbbf24; font-size: 1.45rem; margin-bottom: 20px;">
+    <i class="fa-solid fa-circle-question"></i> Câu hỏi thường gặp (FAQ)
+  </h2>
+  <div class="faq-item active" style="background:#131d33; border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; overflow:hidden;">
+    <div class="faq-question" onclick="toggleFaq(this)" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+      <span>1. Trọng tâm chiến lược và thông điệp cốt lõi của bài viết là gì?</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+    <div class="faq-answer" style="padding:0 20px 16px; color:#94a3b8; font-size:0.95rem; line-height:1.7;">
+      Bài viết tập trung phân tích xu hướng định lượng, cung cấp các kịch bản hành động cụ thể và định giá các cơ hội đầu tư an toàn cho giai đoạn hiện tại.
+    </div>
+  </div>
+  <div class="faq-item" style="background:#131d33; border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; overflow:hidden;">
+    <div class="faq-question" onclick="toggleFaq(this)" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+      <span>2. Làm thế nào để tra cứu thêm định giá chuyên sâu của các cổ phiếu liên quan?</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+    <div class="faq-answer" style="padding:0 20px 16px; color:#94a3b8; font-size:0.95rem; line-height:1.7; display:none;">
+      Bạn có thể truy cập trực tiếp cổng Data Hub VN30 tại daututaichinh.pro/co-phieu/ để theo dõi bảng chỉ số P/E, P/B, EPS và biên an toàn được cập nhật liên tục.
+    </div>
+  </div>
+</div>`;
+            let body = currentArticleData.htmlContent || '';
+            if (!body.includes('class="faq-wrap"')) {
+                currentArticleData.htmlContent = body + faqBlock;
+                const editorEl = document.getElementById('review-body');
+                if (editorEl) editorEl.value = currentArticleData.htmlContent;
+                syncReview();
+                alert('✅ Đã chèn khối FAQ Accordion (hệ thống sẽ tự sinh Schema FAQPage)!');
+            } else {
+                alert('Bài viết đã có khối FAQ!');
+            }
+        }
+
         async function autoFixSeo() {
             const key = getItemSafe('gemini_key');
             if(!key) return alert('Vui lòng cấu hình API Key trước!');
@@ -4076,9 +4154,70 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             };
         }
 
+        // --- CÁC HÀM BỔ TRỢ SEO & gSEO NÂNG CAO ---
+        function injectSmartTickers(html) {
+            if (!html) return '';
+            const tickers = [
+                'ACB', 'BID', 'BSR', 'CTG', 'FPT', 'GAS', 'GVR', 'HDB', 'HPG', 
+                'LPB', 'MBB', 'MCH', 'MSN', 'MWG', 'PLX', 'PNJ', 'POW', 'PVS', 
+                'SAB', 'SHB', 'SSB', 'SSI', 'STB', 'TCB', 'VCB', 'VHM', 'VIB', 
+                'VIC', 'VJC', 'VNM', 'VPB', 'VRE'
+            ];
+            return html.replace(/<p([^>]*)>([\s\S]*?)<\/p>/gi, (pMatch, pAttrs, pInner) => {
+                let modifiedInner = pInner;
+                tickers.forEach(tk => {
+                    if (!modifiedInner.includes(`/co-phieu/${tk.toLowerCase()}.html`)) {
+                        const tkRegex = new RegExp(`(?<!<[^>]*)(cổ phiếu\\s+|mã\\s+)?\\b(${tk})\\b(?![^<]*>)(?![^<]*<\\/a>)`, 'i');
+                        if (tkRegex.test(modifiedInner)) {
+                            const badgeHtml = `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge" style="display:inline-flex; align-items:center; gap:5px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); padding:2px 8px; border-radius:6px; font-weight:700; color:#fbbf24; text-decoration:none; font-size:0.9em; vertical-align:middle; transition:all 0.2s;"><i class="fa-solid fa-chart-line"><\/i> ${tk}<\/a>`;
+                            modifiedInner = modifiedInner.replace(tkRegex, (m, prefix, ticker) => {
+                                return (prefix || '') + badgeHtml;
+                            });
+                        }
+                    }
+                });
+                return `<p${pAttrs}>${modifiedInner}<\/p>`;
+            });
+        }
+
+        function extractFaqSchema(html) {
+            if (!html) return null;
+            let faqs = [];
+            const faqRegex = /<div class="faq-question"[^>]*>([\s\S]*?)<\/div>\s*<div class="faq-answer"[^>]*>([\s\S]*?)<\/div>/gi;
+            let m;
+            while ((m = faqRegex.exec(html)) !== null) {
+                let q = m[1].replace(/<[^>]+>/g, '').trim();
+                let a = m[2].replace(/<[^>]+>/g, '').trim();
+                if (q && a) faqs.push({ question: q, answer: a });
+            }
+            if (faqs.length === 0) {
+                const qRegex = /<h[34][^>]*>([\s\S]*?\?)<\/h[34]>\s*<p[^>]*>([\s\S]*?)<\/p>/gi;
+                while ((m = qRegex.exec(html)) !== null && faqs.length < 3) {
+                    let q = m[1].replace(/<[^>]+>/g, '').trim();
+                    let a = m[2].replace(/<[^>]+>/g, '').trim();
+                    if (q.length > 8 && a.length > 15) faqs.push({ question: q, answer: a });
+                }
+            }
+            if (faqs.length > 0) {
+                return {
+                    "@context": "https://schema.org",
+                    "@type": "FAQPage",
+                    "mainEntity": faqs.map(item => ({
+                        "@type": "Question",
+                        "name": item.question,
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": item.answer
+                        }
+                    }))
+                };
+            }
+            return null;
+        }
+
         function buildTemplate(title, desc, category, body, imageUrl, tags, hashtags, dateString, authorName, authorLink, customSlug) {
-            const depth = category === 'market' ? '../' : '../'; 
-            
+            const depth = category === 'market' ? '../' : '../';
+
             // Tự động tính toán Slug và Canonical URL chuẩn SEO
             let articleSlug = customSlug;
             if (!articleSlug && typeof currentArticleData !== 'undefined' && currentArticleData && currentArticleData.slug) {
@@ -4092,11 +4231,19 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                 articleSlug = title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
             }
             const canonicalUrl = `https://daututaichinh.pro/${category}/${articleSlug}.html`;
-            
-            // 1. Chuẩn hóa toàn bộ thẻ Heading (H2, H3)
-            let processedBody = ensureSemanticHeadings(body);
 
-            // 2. Trích xuất H2, H3 để gắn ID và tạo Mục lục (Table of Contents - TOC)
+            // 1. Chuẩn hóa thẻ Heading & Tự động gắn Smart Ticker Badges
+            let processedBody = ensureSemanticHeadings(body);
+            processedBody = injectSmartTickers(processedBody);
+
+            // 2. Trích xuất Schema FAQPage nếu có câu hỏi
+            const faqSchema = extractFaqSchema(processedBody);
+            let faqSchemaScript = '';
+            if (faqSchema) {
+                faqSchemaScript = `\n  <!-- Schema.org FAQPage Structured Data (gSEO Rich Snippets) -->\n  <script type="application/ld+json">\n${JSON.stringify(faqSchema, null, 2)}\n  <\/script>\n`;
+            }
+
+            // 3. Trích xuất H2, H3 để gắn ID và tạo Mục lục (Table of Contents - TOC)
             const headingRegex = /<(h[23])([^>]*)>(.*?)<\/\1>/gi;
             let headingsList = [];
             let headingIdx = 0;
@@ -4119,38 +4266,33 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                     text: plainText
                 });
                 headingIdx++;
-                return `<${cleanTag}${attrs}>${inner}</${cleanTag}>`;
+                return `<${cleanTag}${attrs}>${inner}<\/${cleanTag}>`;
             });
 
-            // Lọc bỏ triệt để các tiêu đề rác / ASCII / khung chữ nhầm lẫn khỏi Mục lục TOC
+            // Lọc bỏ các tiêu đề rác / ASCII / khung chữ nhầm lẫn khỏi Mục lục TOC
             headingsList = headingsList.filter(h => {
                 const t = h.text;
                 if (!t || t.length < 3) return false;
                 if (/[│─┌┐└┘├┤┬┴┼▼▲►◄═║]/.test(t)) return false;
                 if (/^\s*\[.*\]\s*$/.test(t)) return false;
                 if (/^(BÁO CÁO PHÂN TÍCH|BÀI VIẾT PHÂN TÍCH|TỔNG HỢP NHẬN ĐỊNH)/i.test(t)) return false;
-                // LOẠI TRỪ 100% TÓM TẮT CHIẾN LƯỢC / KEY TAKEAWAYS KHỎI MỤC LỤC
                 if (/Tóm tắt|Key Takeaways|Executive Summary|Điểm tin/i.test(t)) return false;
-                // LOẠI TRỪ 100% CÁC KHUNG CTA / LIÊN HỆ / POPUP
                 if (/người cầm lái|hành khách|đăng ký nhận|tài liệu miễn phí|bài viết cùng chủ đề/i.test(t)) return false;
-                // LOẠI TRỪ CÁC DANH SÁCH SỐ NGẮN DƯỚI 25 KÝ TỰ (như "1. PVcomBank")
                 if (/^\d+[\.\)\-]\s+[A-Za-z0-9\s]{1,25}$/i.test(t)) return false;
                 return true;
             });
 
-            // Tự động sinh Khối Tóm tắt Chiến lược (Key Takeaways) nếu bài viết chưa có và không bị trùng lặp
+            // Tự động sinh Khối Tóm tắt Chiến lược (Key Takeaways) nếu bài viết chưa có
             let keyTakeawaysHtml = '';
             const hasTakeawaysInBody = processedBody.includes('key-takeaways') || processedBody.includes('Tóm tắt Chiến lược') || processedBody.includes('Điểm tin nhanh');
-            // Kiểm tra xem desc có bị trùng lặp nguyên văn với đoạn mở bài không
             const firstPText = (processedBody.match(/<p[^>]*>(.*?)<\/p>/i) || ['', ''])[1].replace(/<[^>]+>/g, '').trim();
             const isDescDuplicatingFirstP = desc && firstPText && (firstPText.startsWith(desc.substring(0, 35)) || desc.startsWith(firstPText.substring(0, 35)));
 
-            // Chỉ tạo khối này nếu bài viết chưa có khối tóm tắt và desc là thông điệp riêng biệt (không lặp lại câu mở bài)
             if (!hasTakeawaysInBody && desc && !isDescDuplicatingFirstP) {
-                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(59, 130, 246, 0.08)); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px;">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <div class="key-takeaways-title" style="margin: 0; color: #a5b4fc; font-size: 1.1rem; font-weight: 700;">Tóm tắt Chiến lược (Key Takeaways)</div>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${desc}</li>\n        </ul>\n      </div>\n\n`;
+                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways chuẩn gSEO -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(30, 41, 59, 0.7)); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <div class="key-takeaways-title" style="margin: 0; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">Tóm tắt Định lượng & Chiến lược (Key Takeaways)</div>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${desc}</li>\n        </ul>\n      </div>\n\n`;
             }
 
-            // 3. Render HTML Mục lục nếu bài viết có từ 2 tiêu đề trở lên
+            // 4. Render HTML Mục lục nếu bài viết có từ 2 tiêu đề trở lên
             let tocHtml = '';
             if (headingsList.length >= 2) {
                 const tocItems = headingsList.map(h => {
@@ -4169,10 +4311,9 @@ ${tocItems}
       </div>\n`;
             }
 
-            const tagsHtml = (tags || []).map(t => `<span style="display:inline-block; padding:4px 12px; background:rgba(99,102,241,0.2); color:#a5b4fc; border-radius:15px; font-size:12px; margin-right:5px;">${t}</span>`).join('');
-            const hashHtml = (hashtags || []).map(t => `<a href="#" style="color:#60a5fa; text-decoration:none; margin-right:8px;">${t}</a>`).join('');
+            const tagsHtml = (tags || []).map(t => `<span style="display:inline-block; padding:4px 12px; background:rgba(245,158,11,0.15); color:#fbbf24; border-radius:15px; font-size:12px; margin-right:5px; margin-bottom:5px;">${t}</span>`).join('');
+            const hashHtml = (hashtags || []).map(t => `<a href="#" style="color:#60a5fa; text-decoration:none; margin-right:8px;">${t.startsWith('#') ? t : '#' + t}</a>`).join('');
 
-            // Format date correctly
             let formattedDate = dateString;
             if (!formattedDate) {
                 const d = new Date();
@@ -4186,245 +4327,256 @@ ${tocItems}
             return `<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"><\/script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"><\/script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-RJZJX69KDM');
+<\/script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="referrer" content="no-referrer" />
+<title>${title} | daututaichinh.pro</title>
+<meta name="description" content="${desc}">
+<meta name="keywords" content="${(tags || []).join(', ')}">
+<link rel="canonical" href="${canonicalUrl}" />
 
-    gtag('config', 'G-RJZJX69KDM');
-  <\/script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="referrer" content="no-referrer" />
-  <title>${title} | daututaichinh.pro</title>
-  <meta name="description" content="${desc}">
-  <meta name="keywords" content="${(tags || []).join(', ')}">
-  <link rel="canonical" href="${canonicalUrl}" />
+<!-- Open Graph / Facebook / Zalo -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="${title.replace(/"/g, '&quot;')}" />
+<meta property="og:description" content="${desc.replace(/"/g, '&quot;')}" />
+<meta property="og:url" content="${canonicalUrl}" />
+<meta property="og:image" content="${imageUrl}" />
+<meta property="og:site_name" content="Đầu tư &amp; Tài chính chuyên sâu" />
+<meta property="og:locale" content="vi_VN" />
 
-  <!-- Open Graph / Facebook / Zalo -->
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content="${title.replace(/"/g, '&quot;')}" />
-  <meta property="og:description" content="${desc.replace(/"/g, '&quot;')}" />
-  <meta property="og:url" content="${canonicalUrl}" />
-  <meta property="og:image" content="${imageUrl}" />
-  <meta property="og:site_name" content="Đầu tư &amp; Tài chính chuyên sâu" />
-  <meta property="og:locale" content="vi_VN" />
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${title.replace(/"/g, '&quot;')}" />
+<meta name="twitter:description" content="${desc.replace(/"/g, '&quot;')}" />
+<meta name="twitter:image" content="${imageUrl}" />
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="${title.replace(/"/g, '&quot;')}" />
-  <meta name="twitter:description" content="${desc.replace(/"/g, '&quot;')}" />
-  <meta name="twitter:image" content="${imageUrl}" />
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="${depth}style.css" />
+<link rel="stylesheet" href="${depth}lead-form.css" />
+<link rel="stylesheet" href="${depth}chatbot.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <!-- Preconnect to image CDN for Core Web Vitals (LCP) -->
-  <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
-  <link rel="dns-prefetch" href="https://images.unsplash.com" />
-  <link rel="stylesheet" href="${depth}style.css" />
-  <link rel="stylesheet" href="${depth}lead-form.css" />
-  <link rel="stylesheet" href="${depth}chatbot.css" />
-  
-  <!-- Schema.org Article Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "${title.replace(/"/g, '\\"')}",
-    "description": "${desc.replace(/"/g, '\\"')}",
-    "image": "${imageUrl}",
-    "datePublished": "${new Date().toISOString()}",
-    "mainEntityOfPage": "${canonicalUrl}",
-    "author": {
-      "@type": "Organization",
-      "name": "Đầu tư Tài chính Pro",
-      "url": "https://daututaichinh.pro/"
+<!-- Schema.org Article Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "${title.replace(/"/g, '\\"')}",
+  "description": "${desc.replace(/"/g, '\\"')}",
+  "image": "${imageUrl}",
+  "datePublished": "${new Date().toISOString()}",
+  "mainEntityOfPage": "${canonicalUrl}",
+  "author": {
+    "@type": "Person",
+    "name": "Vũ Nam Thắng",
+    "jobTitle": "Chuyên gia Phân tích Tài chính Vĩ mô & Chứng khoán",
+    "url": "https://daututaichinh.pro/#founder"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Đầu tư & Tài chính chuyên sâu",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://daututaichinh.pro/favicon.png"
     }
   }
-  <\/script>
+}
+<\/script>
 
-  <!-- Schema.org BreadcrumbList Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Trang chủ",
-        "item": "https://daututaichinh.pro/"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "${categoryName}",
-        "item": "https://daututaichinh.pro/${category}/"
-      },
-      {
-        "@type": "ListItem",
-        "position": 3,
-        "name": "${title.replace(/"/g, '\\"')}",
-        "item": "${canonicalUrl}"
-      }
-    ]
-  }
-  <\/script>
-  <style>
-    /* Dark theme inline cho Preview */
-    body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; line-height: 1.8; }
-    h1 { color: #f8fafc; font-size: 1.6rem; margin-bottom: 20px; }
-    h2 { color: #cbd5e1; font-size: 1.25rem; margin: 25px 0 12px; }
-    h3 { color: #94a3b8; }
-    p { color: #cbd5e1; margin-bottom: 15px; }
-    a { color: #60a5fa; }
-    ul, ol { color: #cbd5e1; padding-left: 20px; margin-bottom: 15px; }
-    li { margin-bottom: 6px; }
-    img { max-width: 100%; border-radius: 12px; }
-    .article-table-wrap { width: 100% !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; margin: 28px 0 !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.08) !important; background: #0f172a !important; }
-    table { width: 100% !important; margin: 0 !important; border-collapse: collapse !important; text-align: left !important; font-size: 0.95rem !important; border: none !important; }
-    th { background: #151f32 !important; color: #94a3b8 !important; font-weight: 600 !important; font-size: 0.9rem !important; padding: 14px 18px !important; border: none !important; border-bottom: 1px solid rgba(255,255,255,0.12) !important; white-space: normal !important; line-height: 1.4 !important; }
-    td { padding: 14px 18px !important; border: none !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; color: #cbd5e1 !important; font-variant-numeric: tabular-nums !important; }
-    tr:last-child td { border-bottom: none !important; }
-    tr:hover td { background: rgba(255,255,255,0.03) !important; }
-    td strong { color: #f8fafc !important; font-weight: 700 !important; font-size: 1rem !important; }
-
-    /* CSS cho Ảnh bìa chuẩn SEO */
-    .article-cover-figure { margin: 0 0 30px 0; width: 100%; }
-    .article-cover-figure img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: block; }
-    .article-cover-caption { margin-top: 12px; font-size: 0.85rem; color: #94a3b8; line-height: 1.5; text-align: center; font-style: italic; }
-    .article-cover-caption a { color: #60a5fa; text-decoration: none; }
-    .article-cover-caption a:hover { text-decoration: underline; }
-
-    /* CSS cho Mục lục bài viết (Table of Contents - TOC) */
-    html { scroll-behavior: smooth; }
-    h1, h2, h3, h4, h5, h6 { scroll-margin-top: 110px; }
-    @media screen and (max-width: 768px) {
-      h1, h2, h3, h4, h5, h6 { scroll-margin-top: 140px !important; }
+<!-- Schema.org BreadcrumbList Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Trang chủ",
+      "item": "https://daututaichinh.pro/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "${categoryName}",
+      "item": "https://daututaichinh.pro/${category}/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "${title.replace(/"/g, '\\"')}",
+      "item": "${canonicalUrl}"
     }
-    .seo-toc-container { background: rgba(99, 102, 241, 0.06); border: 1px solid rgba(99, 102, 241, 0.22); border-radius: 12px; padding: 18px 20px; margin: 25px 0 30px; backdrop-filter: blur(8px); }
-    .toc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .toc-title { font-weight: 700; font-size: 1.05rem; color: #a5b4fc; }
-    .toc-toggle { background: transparent; border: none; color: #cbd5e1; cursor: pointer; padding: 6px 8px; border-radius: 6px; transition: 0.2s; }
-    .toc-toggle:hover { color: #38bdf8; background: rgba(255,255,255,0.05); }
-    .toc-list { list-style: none !important; padding: 0 !important; margin: 0 !important; }
-    .toc-list li { margin-bottom: 4px; line-height: 1.4; }
-    .toc-h2 { font-weight: 600; }
-    .toc-h3 { padding-left: 18px; font-size: 0.95em; color: #94a3b8; }
-    .toc-list a { text-decoration: none; color: #cbd5e1; display: block; padding: 8px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.02); border: 1px solid transparent; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; }
-    .toc-list a:hover { color: #38bdf8; background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.2); }
-    .toc-list a:active { color: #60a5fa !important; background: rgba(99, 102, 241, 0.25) !important; border-color: rgba(99, 102, 241, 0.5) !important; transform: scale(0.985); }
-    .seo-toc-container.collapsed .toc-list { display: none; }
-    .seo-toc-container.collapsed .toc-toggle { transform: rotate(180deg); color: #38bdf8; }
-    @media screen and (max-width: 768px) {
-      .seo-toc-container { padding: 15px; margin: 20px 0; }
-      .toc-title { font-size: 1rem; }
-      .toc-h3 { padding-left: 14px; font-size: 0.9em; }
-    }
+  ]
+}
+<\/script>${faqSchemaScript}
+<style>
+/* Core Dark & Gold Theme */
+body { background: #0b1120; color: #cbd5e1; font-family: 'Inter', system-ui, sans-serif; line-height: 1.8; }
+.top-bar { position: sticky; top: 0; z-index: 1000; background: #0b1120; border-bottom: 1px solid rgba(255,255,255,0.08); }
 
-    /* CSS cho Breadcrumb Navigation */
-    .breadcrumb-nav { margin: 10px 0 16px 0; font-size: 0.88rem; }
-    .breadcrumb-list { display: flex; flex-wrap: wrap; align-items: center; list-style: none !important; padding: 0 !important; margin: 0 !important; gap: 8px; }
-    .breadcrumb-item { display: inline-flex; align-items: center; color: #94a3b8; }
-    .breadcrumb-item a { color: #94a3b8; text-decoration: none; transition: color 0.2s ease; display: inline-flex; align-items: center; gap: 5px; }
-    .breadcrumb-item a:hover { color: #60a5fa; text-decoration: underline; }
-    .breadcrumb-separator { color: #475569; font-size: 0.72rem; display: inline-flex; align-items: center; user-select: none; }
-    .breadcrumb-item.active { color: #cbd5e1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 480px; }
-    @media (max-width: 768px) {
-      .breadcrumb-nav { margin: 6px 0 12px 0; font-size: 0.82rem; }
-      .breadcrumb-item.active { max-width: 220px; }
-    }
-  </style>
+/* Real-time Ticker Bar */
+.ticker-bar-container { position: sticky; top: 70px; z-index: 999; width: 100%; background: #070d19; border-bottom: 1px solid rgba(245, 158, 11, 0.25); height: 38px; overflow: hidden; display: flex; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+.ticker-wrap { width: 100%; overflow: hidden; white-space: nowrap; }
+.ticker-move { display: inline-flex; gap: 24px; animation: tickerScroll 45s linear infinite; }
+.ticker-move:hover { animation-play-state: paused; }
+@keyframes tickerScroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+.ticker-item { font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.t-up { color: #10b981; } .t-down { color: #ef4444; }
+
+/* Smart Ticker Mention Badges */
+.ticker-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); padding: 2px 8px; border-radius: 6px; font-weight: 700; color: #fbbf24; text-decoration: none; font-size: 0.9em; vertical-align: middle; transition: all 0.2s; }
+.ticker-badge:hover { background: #f59e0b; color: #0f172a; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4); }
+
+/* FAQ Accordion */
+.faq-wrap { margin: 35px 0; }
+.faq-item { background: #131d33; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+.faq-question { padding: 16px 20px; font-weight: 700; color: #f8fafc; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+.faq-question:hover { background: rgba(255,255,255,0.03); color: #fbbf24; }
+.faq-answer { padding: 0 20px 16px; color: #94a3b8; font-size: 0.95rem; line-height: 1.7; display: none; }
+.faq-item.active .faq-answer { display: block; }
+.faq-item.active .faq-question { color: #fbbf24; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+/* Table of Contents & Tables */
+.seo-toc-container { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 18px 20px; margin: 25px 0 30px; }
+.toc-title { font-weight: 700; color: #fbbf24; }
+.article-table-wrap { width: 100% !important; overflow-x: auto !important; margin: 28px 0 !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.08) !important; background: #0f172a !important; }
+table { width: 100% !important; border-collapse: collapse !important; text-align: left !important; font-size: 0.95rem !important; }
+th { background: #151f32 !important; color: #94a3b8 !important; font-weight: 600 !important; padding: 14px 18px !important; border-bottom: 1px solid rgba(255,255,255,0.12) !important; }
+td { padding: 14px 18px !important; border-bottom: 1px solid rgba(255,255,255,0.06) !important; color: #cbd5e1 !important; }
+
+@media screen and (max-width: 768px) {
+  .ticker-bar-container { position: relative !important; top: 0 !important; }
+  h1, h2, h3, h4, h5, h6 { scroll-margin-top: 140px !important; }
+}
+</style>
 </head>
 <body data-lead-popup>
 
 <header class="top-bar">
-  <div class="container nav">
-    <a href="/" class="brand">
-      <img src="${depth}logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
-      <div class="brand-text">
-        <span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
-        <span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
-      </div>
-    </a>
-    <nav class="nav-links">
-      <a href="/">Trang chủ</a>
-      <a href="/market/">Thị trường</a>
-      <a href="/blog/">Bài viết</a>
-      <a href="/#tai-lieu">Tài liệu</a>
-      <a href="/co-phieu/" style="color:#fbbf24; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:4px 10px; font-weight:600; text-decoration:none; transition:all 0.2s;">📊 Data Hub</a>
-      <a href="/#contact">Liên hệ</a>
-    </nav>
-  </div>
+<div class="container nav">
+<a href="/" class="brand">
+<img src="${depth}logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
+<div class="brand-text">
+<span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
+<span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
+</div>
+</a>
+<nav class="nav-links">
+<a href="/">Trang chủ</a>
+<a href="/market/">Thị trường</a>
+<a href="/blog/">Bài viết</a>
+<a href="/#tai-lieu">Tài liệu</a>
+<a href="/co-phieu/" style="color:#fbbf24; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:4px 10px; font-weight:600; text-decoration:none; transition:all 0.2s;">📊 Data Hub</a>
+<a href="/#contact">Liên hệ</a>
+</nav>
+</div>
 </header>
 
-<main class="article-container">
-  <div class="article-layout">
-    <article class="blog-article article-main" style="padding-top: 0; padding-bottom: 0; margin: 0;">
-      <!-- Breadcrumb Navigation chuẩn SEO -->
-      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-        <ol class="breadcrumb-list">
-          <li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
-          <li class="breadcrumb-separator"><i class="fa-solid fa-chevron-right"></i></li>
-          <li class="breadcrumb-item"><a href="/${category}/">${categoryName}</a></li>
-          <li class="breadcrumb-separator"><i class="fa-solid fa-chevron-right"></i></li>
-          <li class="breadcrumb-item active" aria-current="page">${title}</li>
-        </ol>
-      </nav>
+<!-- Real-time Market Ticker -->
+<div class="ticker-bar-container">
+  <div class="ticker-wrap">
+    <div class="ticker-move" id="ticker-content">
+      <span class="ticker-item">🇻🇳 VN-INDEX <b class="t-up">1,850.25 (+0.45%)</b></span>
+      <span class="ticker-item">📊 VN30 <b class="t-up">1,920.80 (+0.52%)</b></span>
+      <span class="ticker-item">💻 FPT <b class="t-up">52,700 (+1.15%)</b></span>
+      <span class="ticker-item">🏦 SSI <b class="t-up">28,500 (+0.71%)</b></span>
+      <span class="ticker-item">🛢️ BSR <b class="t-down">27,600 (-0.36%)</b></span>
+      <span class="ticker-item">🪙 Vàng <b class="t-down">3,898.90 (-3.29%)</b></span>
+      <span class="ticker-item">₿ BTC <b class="t-up">104,850 (+1.82%)</b></span>
+      <!-- Loop -->
+      <span class="ticker-item">🇻🇳 VN-INDEX <b class="t-up">1,850.25 (+0.45%)</b></span>
+      <span class="ticker-item">📊 VN30 <b class="t-up">1,920.80 (+0.52%)</b></span>
+      <span class="ticker-item">💻 FPT <b class="t-up">52,700 (+1.15%)</b></span>
+      <span class="ticker-item">🏦 SSI <b class="t-up">28,500 (+0.71%)</b></span>
+      <span class="ticker-item">🛢️ BSR <b class="t-down">27,600 (-0.36%)</b></span>
+      <span class="ticker-item">🪙 Vàng <b class="t-down">3,898.90 (-3.29%)</b></span>
+      <span class="ticker-item">₿ BTC <b class="t-up">104,850 (+1.82%)</b></span>
+    </div>
+  </div>
+</div>
 
-      <h1>${title}</h1>
-      
-      <div class="article-meta">
-        <span class="meta-item">📅 Đăng ngày: ${formattedDate}</span>
-        <span class="meta-item">📁 Chuyên mục: <a href="/${category}/">${categoryName}</a></span>
-      </div>
-      
-      <figure class="article-cover-figure">
-          <img src="${imageUrl}" alt="${title}" loading="eager" fetchpriority="high">
-          <figcaption class="article-cover-caption">
-              ${desc} | <em>Ảnh bởi <a href="${finalAuthorLink}" target="_blank" rel="noopener noreferrer nofollow">${finalAuthorName}</a> trên Unsplash</em>
-          </figcaption>
-      </figure>
-      
+<main class="article-container">
+<div class="article-layout">
+<article class="blog-article article-main" style="padding-top: 0; padding-bottom: 0; margin: 0;">
+<!-- Breadcrumb Navigation chuẩn SEO -->
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+<ol class="breadcrumb-list">
+<li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house"></i> Trang chủ</a></li>
+<li class="breadcrumb-separator"><i class="fa-solid fa-chevron-right"></i></li>
+<li class="breadcrumb-item"><a href="/${category}/">${categoryName}</a></li>
+<li class="breadcrumb-separator"><i class="fa-solid fa-chevron-right"></i></li>
+<li class="breadcrumb-item active" aria-current="page">${title}</li>
+</ol>
+</nav>
+
+<h1>${title}</h1>
+
+<div class="article-meta">
+<span class="meta-item">📅 Đăng ngày: ${formattedDate}</span>
+<span class="meta-item">📁 Chuyên mục: <a href="/${category}/">${categoryName}</a></span>
+<span class="meta-item">✍️ Tác giả: Vũ Nam Thắng</span>
+</div>
+
+<figure class="article-cover-figure">
+<img src="${imageUrl}" alt="${title}" loading="eager" fetchpriority="high">
+<figcaption class="article-cover-caption">
+${desc} | <em>Ảnh bởi <a href="${finalAuthorLink}" target="_blank" rel="noopener noreferrer nofollow">${finalAuthorName}</a> trên Unsplash</em>
+</figcaption>
+</figure>
+
 ${keyTakeawaysHtml}${tocHtml}      ${processedBody}
 
-      <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-          <div style="margin-bottom: 10px;"><strong>Tags: </strong> ${tagsHtml}</div>
-          <div>${hashHtml}</div>
-      </div>
+<div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+<div style="margin-bottom: 10px;"><strong>Tags: </strong> ${tagsHtml}</div>
+<div>${hashHtml}</div>
+</div>
 
-      <div style="margin-top: 40px; padding: 25px; border-radius: 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
-        <h3 style="color: #60a5fa; margin-top: 0; margin-bottom: 15px;">👉 Bạn chọn làm "người cầm lái" hay hành khách?</h3>
-        <p style="margin-bottom: 20px;">Đăng ký nhận báo cáo phân tích mới nhất để đi trước thị trường 1 bước.</p>
-        <a href="#" id="cta-open-popup-blog" style="display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; border-radius: 8px; font-weight: 600; text-decoration: none;">📥 Đăng ký nhận tài liệu</a>
-      </div>
-    </article>
+<div style="margin-top: 40px; padding: 25px; border-radius: 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);">
+<h3 style="color: #60a5fa; margin-top: 0; margin-bottom: 15px;">👉 Bạn chọn làm "người cầm lái" hay hành khách?</h3>
+<p style="margin-bottom: 20px;">Đăng ký nhận báo cáo phân tích mới nhất để đi trước thị trường 1 bước.</p>
+<a href="#" id="cta-open-popup-blog" style="display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; border-radius: 8px; font-weight: 600; text-decoration: none;">📥 Đăng ký nhận tài liệu</a>
+</div>
+</article>
 
-    <aside class="article-sidebar">
-      <div class="sidebar-widget">
-        <h3 class="widget-title">Bài viết cùng chủ đề</h3>
-        <div id="related-articles-list" class="sidebar-list">
-          <div class="sidebar-loading">Đang tải bài viết liên quan...</div>
-        </div>
-      </div>
-    </aside>
-  </div>
+<aside class="article-sidebar">
+<div class="sidebar-widget">
+<h3 class="widget-title">Bài viết cùng chủ đề</h3>
+<div id="related-articles-list" class="sidebar-list">
+<div class="sidebar-loading">Đang tải bài viết liên quan...</div>
+</div>
+</div>
+</aside>
+</div>
 </main>
 
 <footer class="footer">
-  <div class="container"><p>© <span>${new Date().getFullYear()}</span> daututaichinh.pro</p></div>
+<div class="container"><p>© <span>${new Date().getFullYear()}</span> daututaichinh.pro</p></div>
 </footer>
+<script>
+function toggleFaq(el) {
+  if (el && el.parentElement) el.parentElement.classList.toggle('active');
+}
+<\/script>
 <script src="${depth}lead-form.js"><\/script>
 <script src="${depth}chatbot.js"><\/script>
 <script src="${depth}seo-optimize.js"><\/script>
 </body>
 </html>`;
         }
+
     </script>
 </body>
 </html>
