@@ -330,7 +330,52 @@
         }
         .link-item-actions button:hover { color: #f87171; background: rgba(248,113,113,0.1); }
         .link-item-actions button.link-insert-btn:hover { color: #4ade80; background: rgba(74,222,128,0.1); }
-    </style>
+    
+/* Blockquote / Trích dẫn nổi bật sang trọng */
+blockquote.article-quote, blockquote {
+  border-left: 3px solid #fbbf24 !important;
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.08) 0%, rgba(15, 23, 42, 0.5) 100%) !important;
+  border-radius: 0 10px 10px 0 !important;
+  padding: 16px 24px !important;
+  margin: 28px 0 !important;
+  font-style: italic !important;
+  color: #f1f5f9 !important;
+  line-height: 1.7 !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+}
+blockquote.article-quote p, blockquote p {
+  margin: 0 !important;
+  color: #f1f5f9 !important;
+  font-size: 1.02rem !important;
+}
+.gseo-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.metric-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px 14px;
+  text-align: center;
+}
+.metric-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.metric-val {
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+</style>
 </head>
 <body>
 
@@ -1232,7 +1277,7 @@ Bạn có thể viết:
                 const words = [`cổ phiếu ${ticker}`, `mã ${ticker}`, ticker];
                 for (const w of words) {
                     const testRes = safeReplaceFirstInParagraphs(modifiedHtml, w, (matched) => {
-                        return `<a href="/co-phieu/${ticker.toLowerCase()}.html" title="Định giá & Dữ liệu cổ phiếu ${ticker}">${matched}</a>`;
+                        return `<a href="/co-phieu/${ticker.toLowerCase()}.html" class="ticker-badge" title="Định giá & Dữ liệu cổ phiếu ${ticker}"><i class="fa-solid fa-chart-line"></i> ${ticker}</a>`;
                     });
                     if (testRes !== modifiedHtml) {
                         modifiedHtml = testRes;
@@ -1450,7 +1495,13 @@ Trả về ĐÚNG MỘT KHỐI JSON:
   "metaDescription": "Mô tả SEO tóm tắt nội dung bài viết, độ dài 120-155 ký tự",
   "imagePrompt": "10 English keywords for abstract professional finance cover image on Unsplash (e.g. stock market growth chart, modern trading office, financial district skyline, bull statue... NO text or foreign tickers)",
   "tags": ["tag1", "tag2", "tag3"],
-  "hashtags": ["#tag1", "#tag2"]
+  "hashtags": ["#tag1", "#tag2"],
+  "keyMetrics": [
+    {"label": "Chỉ số 1 (ví dụ P/E hoặc VN-Index)", "val": "Giá trị (ví dụ 10.3x hoặc 1.741đ)"},
+    {"label": "Chỉ số 2 (ví dụ LNST hoặc Khối ngoại)", "val": "Giá trị (ví dụ +45.4% hoặc 120.000 tỷ)"},
+    {"label": "Chỉ số 3 (ví dụ Vùng mua hoặc Hỗ trợ)", "val": "Giá trị (ví dụ 1.720 - 1.740)"},
+    {"label": "Chỉ số 4 (ví dụ Kịch bản hoặc Biên an toàn)", "val": "Giá trị (ví dụ Xác suất 60% hoặc 18%)"}
+  ]
 }
 CHỈ TRẢ VỀ JSON, TUYỆT ĐỐI KHÔNG GIẢI THÍCH THÊM.
 Nội dung bài viết (trích đoạn):
@@ -1570,27 +1621,35 @@ ${contentForBody.substring(0, 35000)}`;
             if (!html) return '';
             let res = html;
             
-            // 1. Markdown headings ## và ###
+            // 0. Làm sạch escape 1\. -> 1. và bọc bold **...**
+            res = res.replace(/(\d+)\\\./g, '$1.');
+            res = res.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            // 1. Markdown headings #, ##, ###, ####, #####
+            res = res.replace(/(^|\n)#####\s+([^\n<]+)/g, '$1<h5>$2</h5>');
+            res = res.replace(/(^|\n)####\s+([^\n<]+)/g, '$1<h4>$2</h4>');
             res = res.replace(/(^|\n)###\s+([^\n<]+)/g, '$1<h3>$2</h3>');
             res = res.replace(/(^|\n)##\s+([^\n<]+)/g, '$1<h2>$2</h2>');
             res = res.replace(/(^|\n)#\s+([^\n<]+)/g, '$1<h2>$2</h2>');
             
-            // 2. Sub-headings (1.1, 1.1., a), b)...) dạng in đậm hoặc đoạn văn
+            // 2. Sub-headings (1.1, 1.1., a), b)...) dạng in đậm hoặc đoạn văn (không kết thúc bằng dấu chấm câu)
             const subPattern = '(\\d+(\\.\\d+)+[\\.\\)\\/:\\-]?|[a-d]\\))';
             res = res.replace(new RegExp('<p>\\s*<(?:strong|b)>\\s*(' + subPattern + '\\s*[^<]+)<\\/(?:strong|b)>\\s*<\\/p>', 'gi'), '<h3>$1</h3>');
-            res = res.replace(new RegExp('<p>\\s*(' + subPattern + '\\s+[^\n<]{3,120})<\\/p>', 'gi'), '<h3>$1</h3>');
+            res = res.replace(new RegExp('<p>\\s*(' + subPattern + '\\s+[^\n<.]{3,120})<\\/p>', 'gi'), '<h3>$1</h3>');
             
-            // 3. Main headings (1., 2., 3., 1/, 1-, I., II., Phần 1, Điểm nhấn 1...)
+            // 3. Main headings (1., 2., 3., I., II., Phần 1, Điểm nhấn 1...)
+            // CHÚ Ý: Tuyệt đối KHÔNG biến các câu danh sách kết thúc bằng dấu chấm thành <h2>
             const mainPattern = '(\\d+[\\.\\)\\/:\\-](?!\\d)|[IVXLCDM]+[\\.\\)\\/:\\-]|Phần\\s+\\d+|Điểm\\s+nhấn\\s+\\d+|Mục\\s+\\d+|Bước\\s+\\d+|Bài\\s+học\\s+\\d+|Chương\\s+\\d+)';
-            res = res.replace(new RegExp('<p>\\s*<(?:strong|b)>\\s*(' + mainPattern + '[^<]+)<\\/(?:strong|b)>\\s*<\\/p>', 'gi'), '<h2>$1</h2>');
-            res = res.replace(new RegExp('<p>\\s*(' + mainPattern + '\\s+[^\n<]{3,120})<\\/p>', 'gi'), (m, p1) => {
+            res = res.replace(new RegExp('<p>\\s*<(?:strong|b)>\\s*(' + mainPattern + '[^<:]+[:\-–—][^<]+)<\\/(?:strong|b)>\\s*<\\/p>', 'gi'), '<h2>$1</h2>');
+            res = res.replace(new RegExp('<p>\\s*(' + mainPattern + '\\s+[^\n<]{3,140})<\\/p>', 'gi'), (m, p1) => {
                 const textAfter = p1.trim();
-                // Không biến các danh sách ngắn dưới 25 ký tự không có dấu hai chấm/gạch ngang thành <h2> (tránh biến 1. PVcomBank thành heading)
+                // Nếu kết thúc bằng dấu chấm câu hoặc không có dấu hai chấm/gạch nối thì giữ nguyên là đoạn văn hoặc list item
+                if (textAfter.endsWith('.') && !/[:\-–—]/.test(textAfter)) return m;
                 if (textAfter.length < 25 && !/[:\-–—]/.test(textAfter)) return m;
                 return `<h2>${p1}</h2>`;
             });
             
-            // 4. Đoạn văn bọc in đậm ngắn đứng riêng không có dấu chấm kết thúc (copy từ Word/Docs)
+            // 4. Đoạn văn bọc in đậm ngắn đứng riêng không có dấu chấm kết thúc
             res = res.replace(/<p>\s*<(?:strong|b)>\s*([^<.,;!?…]{3,95})\s*<\/(?:strong|b)>\s*<\/p>/gi, (match, inner) => {
                 const trimmedInner = inner.trim();
                 if (trimmedInner.endsWith(':') || trimmedInner.startsWith('-') || trimmedInner.startsWith('•')) return match;
@@ -1705,6 +1764,37 @@ ${contentForBody.substring(0, 35000)}`;
                     continue;
                 }
 
+                // 3.5. Dò tìm Khối Trích Dẫn Nổi Bật (Blockquote: > hoặc &gt;)
+                if (/^(>|&gt;)\s*/.test(line)) {
+                    let quoteLines = [];
+                    while (i < lines.length && /^(>|&gt;)\s*/.test(lines[i].trim())) {
+                        let qText = lines[i].trim().replace(/^(>|&gt;)\s*/, '');
+                        // Parse bold & italic inside quote
+                        qText = qText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                        qText = qText.replace(/(^|[^\*])\*([^\*]+?)\*([^\*]|$)/g, '$1<em>$2</em>$3');
+                        quoteLines.push(qText);
+                        i++;
+                    }
+                    resultHtml.push(`<blockquote class="article-quote" style="border-left: 3px solid #fbbf24; background: linear-gradient(90deg, rgba(251, 191, 36, 0.08) 0%, rgba(15, 23, 42, 0.5) 100%); border-radius: 0 10px 10px 0; padding: 16px 24px; margin: 28px 0; font-style: italic; color: #f1f5f9; line-height: 1.7;"><p style="margin:0; color:#f1f5f9; font-size:1.02rem;">${quoteLines.join('<br>')}</p></blockquote>`);
+                    continue;
+                }
+
+                // 3.6. Dò tìm Danh sách có thứ tự (1. , 2. , 3. )
+                if (/^\d+[\.\)]\s+/.test(line) && !detectHeading(line)) {
+                    let listItems = [];
+                    while (i < lines.length && /^\d+[\.\)]\s+/.test(lines[i].trim()) && !detectHeading(lines[i].trim())) {
+                        let itemText = lines[i].trim().replace(/^\d+[\.\)]\s+/, '');
+                        itemText = itemText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                        itemText = itemText.replace(/(\d+)\\\./g, '$1.');
+                        listItems.push(`  <li>${itemText}</li>`);
+                        i++;
+                    }
+                    if (listItems.length > 0) {
+                        resultHtml.push(`<ol style="padding-left: 22px; margin: 15px 0; color: #cbd5e1; line-height: 1.7;">\n${listItems.join('\n')}\n</ol>`);
+                        continue;
+                    }
+                }
+
                 // 4. Danh sách gạch đầu dòng (*, -, •, +)
                 if (/^[-*•+]\s+/.test(line)) {
                     let listItems = [];
@@ -1730,6 +1820,9 @@ ${contentForBody.substring(0, 35000)}`;
             if (!line) return null;
             let trimmed = line.trim();
 
+            // Làm sạch ký tự escape 1\. -> 1.
+            trimmed = trimmed.replace(/(\d+)\\\./g, '$1.');
+
             // TUYỆT ĐỐI BỎ QUA: Ký tự vẽ sơ đồ ASCII, hộp box, ký hiệu mũi tên, chuỗi logic LaTeX
             if (/[│─┌┐└┘├┤┬┴┼▼▲►◄═║╔╗╚╝╠╣╦╩╬]/.test(trimmed) || 
                 /^\s*\[.*\](\s*───.*|\s*<──.*)?$/.test(trimmed) || 
@@ -1739,10 +1832,12 @@ ${contentForBody.substring(0, 35000)}`;
                 return null;
             }
             
-            // Markdown Headings
-            if (/^###\s+/.test(trimmed)) return { tag: 'h3', text: trimmed.replace(/^###\s+/, '') };
-            if (/^##\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^##\s+/, '') };
-            if (/^#\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^#\s+/, '') };
+            // Markdown Headings (Hỗ trợ từ # đến ##### và làm sạch escape \.)
+            if (/^#####\s+/.test(trimmed)) return { tag: 'h5', text: trimmed.replace(/^#####\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
+            if (/^####\s+/.test(trimmed)) return { tag: 'h4', text: trimmed.replace(/^####\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
+            if (/^###\s+/.test(trimmed)) return { tag: 'h3', text: trimmed.replace(/^###\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
+            if (/^##\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^##\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
+            if (/^#\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^#\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
             
             // Loại bỏ bọc in đậm markdown nếu có: **1. Tiêu đề** -> 1. Tiêu đề
             let cleanLine = trimmed.replace(/^\*+|\*+$/g, '').trim();
@@ -1751,12 +1846,17 @@ ${contentForBody.substring(0, 35000)}`;
             }
             
             // 1. Tiêu đề phụ (1.1, 1.2, 2.1, a), b)...)
-            if (/^(\d+(\.\d+)+[\.\)\/:\\-]?|[a-d]\))\s*/i.test(cleanLine) && cleanLine.length < 130) {
+            if (/^(\d+(\.\d+)+[\.\)\/:\-]?|[a-d]\))\s*/i.test(cleanLine) && cleanLine.length < 130 && !cleanLine.endsWith('.')) {
                 return { tag: 'h3', text: cleanLine };
             }
             
-            // 2. Tiêu đề chính mục (1., 2., 3., 1/, 1-, 1:, I., II., III., Phần 1, Điểm nhấn 1, Mục 1, Bước 1, Bài học 1, Chương 1...)
-            if (/^((\d+[\.\)\/:\\-](?!\d)|[IVXLCDM]+[\.\)\/:\\-]|Phần\s+\d+|Điểm\s+nhấn\s+\d+|Mục\s+\d+|Bước\s+\d+|Bài\s+học\s+\d+|Chương\s+\d+)\s*)/i.test(cleanLine) && cleanLine.length < 160) {
+            // 2. Tiêu đề chính mục (1., 2., 3., I., II., Phần 1, Điểm nhấn 1...)
+            // CHÚ Ý: Nếu kết thúc bằng dấu chấm câu (.) hoặc là câu văn dài > 60 ký tự thì đó là item danh sách, KHÔNG PHẢI HEADING H2
+            const isNumberedHeading = /^((\d+[\.\)\/:\-](?!\d)|[IVXLCDM]+[\.\)\/:\-]|Phần\s+\d+|Điểm\s+nhấn\s+\d+|Mục\s+\d+|Bước\s+\d+|Bài\s+học\s+\d+|Chương\s+\d+)\s*)/i.test(cleanLine);
+            if (isNumberedHeading && cleanLine.length < 160) {
+                if (cleanLine.endsWith('.') && !/[:\-–—]/.test(cleanLine)) {
+                    return null; // Giữ nguyên là danh sách hoặc đoạn văn
+                }
                 return { tag: 'h2', text: cleanLine };
             }
             
@@ -4238,6 +4338,10 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             return html.replace(/<p([^>]*)>([\s\S]*?)<\/p>/gi, (pMatch, pAttrs, pInner) => {
                 let modifiedInner = pInner;
                 tickers.forEach(tk => {
+                    // Tự động nâng cấp các link cũ thành huy hiệu vàng có icon
+                    const plainLinkRegex = new RegExp(`<a\\s+href=["']/co-phieu/${tk.toLowerCase()}\\.html["'][^>]*>(${tk})<\\/a>`, 'gi');
+                    modifiedInner = modifiedInner.replace(plainLinkRegex, `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge" style="display:inline-flex; align-items:center; gap:5px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); padding:2px 8px; border-radius:6px; font-weight:700; color:#fbbf24; text-decoration:none; font-size:0.9em; vertical-align:middle; transition:all 0.2s;"><i class="fa-solid fa-chart-line"></i> ${tk}</a>`);
+
                     if (!modifiedInner.includes(`/co-phieu/${tk.toLowerCase()}.html`)) {
                         const tkRegex = new RegExp(`(?<!<[^>]*)(cổ phiếu\\s+|mã\\s+)?\\b(${tk})\\b(?![^<]*>)(?![^<]*<\\/a>)`, 'i');
                         if (tkRegex.test(modifiedInner)) {
@@ -4360,8 +4464,43 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             const firstPText = (processedBody.match(/<p[^>]*>(.*?)<\/p>/i) || ['', ''])[1].replace(/<[^>]+>/g, '').trim();
             const isDescDuplicatingFirstP = desc && firstPText && (firstPText.startsWith(desc.substring(0, 35)) || desc.startsWith(firstPText.substring(0, 35)));
 
+            // Tự động bóc tách hoặc tạo 4 KPI Định Lượng cho Khung Key Takeaways
+            let metricsGridHtml = '';
+            let kpiList = [];
+            if (typeof currentArticleData !== 'undefined' && currentArticleData && currentArticleData.kpis && currentArticleData.kpis.length >= 2) {
+                kpiList = currentArticleData.kpis;
+            } else {
+                // Tự động quét các con số nổi bật trong bài viết (VN-Index, P/E, LNST, Khối ngoại, Biên an toàn...)
+                const peMatch = processedBody.match(/P\/E[^0-9]{1,20}(\d+[,.]\d+(\s*–\s*\d+[,.]\d+)?\s*(?:lần|x)?)/i);
+                const vniMatch = processedBody.match(/VN-Index[^0-9]{1,20}([12][,.]?\d{3}[,.]?\d*)/i);
+                const lnstMatch = processedBody.match(/LNST[^0-9]{1,20}([+-]?\d+[,.]?\d*\s*%(?:\s*YoY)?)/i);
+                const knMatch = processedBody.match(/khối ngoại[^0-9]{1,30}(\d+[,.]?\d*\s*tỷ)/i);
+
+                if (vniMatch) kpiList.push({ label: 'Chỉ Số VN-Index', val: vniMatch[1] + ' đ' });
+                if (peMatch) kpiList.push({ label: 'P/E Định Giá', val: peMatch[1], color: '#10b981' });
+                if (lnstMatch) kpiList.push({ label: 'Tăng Trưởng LNST', val: lnstMatch[1], color: '#10b981' });
+                if (knMatch) kpiList.push({ label: 'Khối Ngoại Giao Dịch', val: knMatch[1], color: '#f59e0b' });
+
+                if (kpiList.length < 2) {
+                    kpiList = [
+                        { label: 'Định Vị Thị Trường', val: 'Vùng Chiết Khấu', color: '#10b981' },
+                        { label: 'Biên An Toàn', val: 'Vượt Trội (MOS)', color: '#fbbf24' },
+                        { label: 'Chiến Lược', val: 'Tích Lũy Giá Trị', color: '#38bdf8' },
+                        { label: 'Quản Trị Rủi Ro', val: 'Tỷ Trọng 30-50%', color: '#a78bfa' }
+                    ];
+                }
+            }
+
+            if (kpiList.length >= 2) {
+                const cardsHtml = kpiList.slice(0, 4).map(k => {
+                    const colStyle = k.color ? `color: ${k.color};` : 'color: #fbbf24;';
+                    return `        <div class="metric-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 12px 14px; text-align: center;">\n          <div class="metric-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">${k.label}</div>\n          <div class="metric-val" style="font-size: 1.15rem; font-weight: 700; ${colStyle} margin-top: 4px; font-variant-numeric: tabular-nums;">${k.val}</div>\n        </div>`;
+                }).join('\n');
+                metricsGridHtml = `\n      <div class="gseo-metrics-grid">\n${cardsHtml}\n      </div>`;
+            }
+
             if (!hasTakeawaysInBody && desc && !isDescDuplicatingFirstP) {
-                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways chuẩn gSEO -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(30, 41, 59, 0.7)); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <div class="key-takeaways-title" style="margin: 0; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">Tóm tắt Định lượng & Chiến lược (Key Takeaways)</div>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${desc}</li>\n        </ul>\n      </div>\n\n`;
+                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways chuẩn gSEO -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(30, 41, 59, 0.7)); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <div class="key-takeaways-title" style="margin: 0; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">Tóm tắt Định lượng & Chiến lược (Key Takeaways)</div>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${desc}</li>\n        </ul>${metricsGridHtml}\n      </div>\n\n`;
             }
 
             // 4. Render HTML Mục lục nếu bài viết có từ 2 tiêu đề trở lên
