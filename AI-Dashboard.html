@@ -1781,22 +1781,23 @@ ${contentForBody.substring(0, 35000)}`;
                     continue;
                 }
 
-                // 3.6. Dò tìm Danh sách các ý / tiểu mục (1., 2., 3. hoặc a., b., c.)
-                // Render thành container <div class="article-sub-list"> với các thẻ <p> có ký hiệu ▸
-                // Giải pháp phổ quát: Không dùng <ol> để triệt tiêu vĩnh viễn xung đột số thứ tự với tiêu đề H2,
-                // đồng thời cho phép injectSmartTickers và applySmartLinking tự động gắn badge mã chứng khoán.
+                // 3.6. Dò tìm Danh sách có đánh số thứ tự (1., 2., 3. ...)
+                // Giữ nguyên số thứ tự chính xác của tác giả bằng nhãn vàng sang trọng,
+                // bọc trong thẻ <p> để injectSmartTickers gắn huy hiệu mã cổ phiếu tự động và không bị lỗi counter HTML.
                 if (/^\d+[\.\)]\s+/.test(line) && !detectHeading(line)) {
                     let listItems = [];
                     while (i < lines.length && /^\d+[\.\)]\s+/.test(lines[i].trim()) && !detectHeading(lines[i].trim())) {
+                        const numMatch = lines[i].trim().match(/^(\d+)[\.\)]\s+/);
+                        const numLabel = numMatch ? (numMatch[1] + '.') : '';
                         let itemText = lines[i].trim().replace(/^\d+[\.\)]\s+/, '');
                         itemText = itemText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
                         itemText = itemText.replace(/(^|[^\*])\*([^\*]+?)\*([^\*]|$)/g, '$1<em>$2</em>$3');
                         itemText = itemText.replace(/(\d+)\\\./g, '$1.');
-                        listItems.push(`  <p style="margin: 10px 0; padding-left: 22px; position: relative; line-height: 1.7; color: #cbd5e1;"><span style="position: absolute; left: 0; color: #fbbf24; font-weight: 700;">▸</span>${itemText}</p>`);
+                        listItems.push(`  <p style="margin: 12px 0; padding-left: 32px; position: relative; line-height: 1.7; color: #cbd5e1;"><span style="position: absolute; left: 0; color: #fbbf24; font-weight: 800; min-width: 24px;">${numLabel}</span>${itemText}</p>`);
                         i++;
                     }
                     if (listItems.length > 0) {
-                        resultHtml.push(`<div class="article-sub-list" style="margin: 18px 0; padding-left: 6px; border-left: 2px solid rgba(251, 191, 36, 0.25);">\n${listItems.join('\n')}\n</div>`);
+                        resultHtml.push(`<div class="article-sub-list" style="margin: 20px 0; padding-left: 8px; border-left: 2px solid rgba(251, 191, 36, 0.25);">\n${listItems.join('\n')}\n</div>`);
                         continue;
                     }
                 }
