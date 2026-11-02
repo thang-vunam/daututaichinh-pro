@@ -1596,6 +1596,7 @@ ${contentForBody.substring(0, 35000)}`;
                     authorLink: '',
                     tags: seo.tags || [],
                     hashtags: seo.hashtags || [],
+                    kpis: seo.keyMetrics || [],
                     dateString: null
                 };
 
@@ -3884,14 +3885,17 @@ ${subCardsHtml}
             const finalAuthorName = authorName || (typeof currentArticleData !== 'undefined' && currentArticleData?.authorName) || 'Unsplash';
             const finalAuthorLink = authorLink || (typeof currentArticleData !== 'undefined' && currentArticleData?.authorLink) || 'https://unsplash.com';
 
-            const captionCredit = finalAuthorName 
-                ? ` | <em>Ảnh bởi <a href="${finalAuthorLink}" target="_blank" rel="noopener noreferrer nofollow">${finalAuthorName}</a> trên Unsplash</em>`
-                : '';
+            const isBrand = (finalAuthorName && finalAuthorName.includes('Đầu Tư Tài Chính')) || (imageUrl && (imageUrl.startsWith('data:image') || imageUrl.startsWith('images/') || imageUrl.includes('cover-')));
+            const captionContent = isBrand 
+                ? 'Đồ họa phân tích &amp; Chiến lược dữ liệu: Đầu Tư Tài Chính .pro'
+                : (finalAuthorName 
+                    ? `Ảnh minh họa thị trường tài chính và chiến lược đầu tư | <em>Ảnh bởi <a href="${finalAuthorLink}" target="_blank" rel="noopener noreferrer nofollow">${finalAuthorName}</a> trên Unsplash</em>`
+                    : 'Ảnh minh họa thị trường tài chính và chiến lược đầu tư');
 
             const newFigure = `<figure class="article-cover-figure">
           <img src="${imageUrl}" alt="${title.replace(/"/g, '&quot;')}" loading="eager" fetchpriority="high">
           <figcaption class="article-cover-caption">
-              Dữ liệu thị trường và phân tích chiến lược tài chính${captionCredit}
+              ${captionContent}
           </figcaption>
       </figure>`;
 
@@ -4490,8 +4494,11 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                 metricsGridHtml = `\n      <div class="gseo-metrics-grid">\n${cardsHtml}\n      </div>`;
             }
 
-            if (!hasTakeawaysInBody && desc && !isDescDuplicatingFirstP) {
-                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways chuẩn gSEO -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(30, 41, 59, 0.7)); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <div class="key-takeaways-title" style="margin: 0; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">Tóm tắt Định lượng & Chiến lược (Key Takeaways)</div>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${desc}</li>\n        </ul>${metricsGridHtml}\n      </div>\n\n`;
+            if (!hasTakeawaysInBody) {
+                const summaryMsg = (isDescDuplicatingFirstP || !desc)
+                    ? `Phân tích dữ liệu tài chính chuyên sâu và kịch bản vận hành chiến lược cho nhà đầu tư.`
+                    : desc;
+                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways chuẩn gSEO -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(30, 41, 59, 0.7)); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <div class="key-takeaways-title" style="margin: 0; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">Tóm tắt Định lượng & Chiến lược (Key Takeaways)</div>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${summaryMsg}</li>\n        </ul>${metricsGridHtml}\n      </div>\n\n`;
             }
 
             // 4. Render HTML Mục lục nếu bài viết có từ 2 tiêu đề trở lên
@@ -4734,7 +4741,7 @@ td { padding: 14px 18px !important; border-bottom: 1px solid rgba(255,255,255,0.
 <figure class="article-cover-figure">
 <img src="${imageUrl}" alt="${title}" loading="eager" fetchpriority="high">
 <figcaption class="article-cover-caption">
-${desc} | <em>Ảnh bởi <a href="${finalAuthorLink}" target="_blank" rel="noopener noreferrer nofollow">${finalAuthorName}</a> trên Unsplash</em>
+${imageUrl && (imageUrl.startsWith('images/') || imageUrl.startsWith('data:image') || imageUrl.includes('cover-')) ? 'Đồ họa phân tích &amp; Chiến lược dữ liệu: Đầu Tư Tài Chính .pro' : `Ảnh minh họa thị trường tài chính và chiến lược đầu tư | <em>Ảnh bởi <a href="${finalAuthorLink}" target="_blank" rel="noopener noreferrer nofollow">${finalAuthorName}</a> trên Unsplash</em>`}
 </figcaption>
 </figure>
 
