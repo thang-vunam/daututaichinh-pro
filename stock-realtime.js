@@ -72,20 +72,36 @@
   }
 
   // Update session badge in UI
-  function updateSessionBadge() {
+  function updateSessionBadge(stockData) {
     const session = getMarketSessionInfo();
     const badgeEl = document.querySelector('.price-change');
     if (badgeEl) {
-      // Preserve exchange name if present
-      const origText = badgeEl.innerText;
       let refText = '';
-      if (origText.includes('Tham chiếu:')) {
-        const parts = origText.split('&bull;');
-        if (parts.length > 1) {
-          refText = ' &bull;' + parts.slice(1).join('&bull;');
+      if (stockData && stockData.ref_price && stockData.current_price) {
+        const diff = stockData.current_price - stockData.ref_price;
+        const diffPct = stockData.price_change_pct || ((diff / stockData.ref_price) * 100).toFixed(2);
+        const sign = diff > 0 ? '+' : '';
+        const color = diff > 0 ? '#34d399' : (diff < 0 ? '#ef4444' : '#fbbf24');
+        refText = ` &bull; <span style="color:${color}; font-weight:600;">${sign}${diff.toLocaleString('vi-VN')} đ (${sign}${diffPct}%)</span> &bull; Tham chiếu: ${stockData.ref_price.toLocaleString('vi-VN')} đ`;
+      } else {
+        const origText = badgeEl.innerText || badgeEl.textContent || '';
+        if (origText.includes('Tham chiếu:')) {
+          const m = origText.match(/Tham chiếu:\s*([0-9.,]+)\s*đ?/i);
+          if (m) {
+            refText = ` &bull; Tham chiếu: ${m[1]} đ`;
+          }
         }
       }
-      badgeEl.innerHTML = `<span style="color:${session.color}; font-weight:600;">${session.label}</span>${refText}`;
+
+      let label = session.label;
+      if (stockData && stockData.last_updated && label.includes('Ngày')) {
+        const parts = stockData.last_updated.split('-');
+        if (parts.length === 3) {
+          const dateStr = `${parts[2]}/${parts[1]}/${parts[0]}`;
+          label = label.replace(/Ngày\s+\d{2}\/\d{2}\/\d{4}/, `Ngày ${dateStr}`);
+        }
+      }
+      badgeEl.innerHTML = `<span style="color:${session.color}; font-weight:600;">${label}</span>${refText}`;
     }
   }
 
@@ -115,8 +131,18 @@
           calculateValuation();
         }
       }
+
+      if (currentStock.pe) {
+        const pill = document.querySelector('.valuation-status-pill');
+        if (pill) {
+          pill.innerText = `Vùng định giá: Rất rẻ (P/E ${currentStock.pe}x)`;
+        }
+      }
+
+      updateSessionBadge(currentStock);
     } catch (e) {
       // Graceful fallback: silently keep static HTML price
+      updateSessionBadge();
     }
   }
 
