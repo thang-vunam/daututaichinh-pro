@@ -3555,9 +3555,15 @@ ${contentForBody.substring(0, 35000)}`;
                                 // 3. Dò tìm Tiêu đề H2 / H3 chuẩn SEO (để tự động sinh Mục lục TOC Menu và phân cấp nội dung)
                 const heading = detectHeading(line);
                 if (heading) {
-                    // Tự động bổ sung Đề mục lớn H2 cho các Điểm Bất Ngờ nếu tác giả chưa khai báo H2 cha
+                    // Nếu gặp H2 có chứa Sự Thật Ngược Đời / Luận Điểm, đánh dấu đã có H2 cha để không chèn đúp
+                    if (heading.tag === 'h2' && /(sự thật|điểm bất ngờ|luận điểm)/i.test(heading.text)) {
+                        hasInsertedSec2Parent = true;
+                    }
+
+                    // Tự động bổ sung Đề mục lớn H2 cho các Điểm Bất Ngờ NẾU tác giả chưa khai báo H2 cha
                     if (heading.tag === 'h3' && /^(điểm bất ngờ|sự thật)\s*1/i.test(heading.text.replace(/^\d+[\.\)]\s*/, ''))) {
-                        if (!hasInsertedSec2Parent) {
+                        const alreadyHasParent = hasInsertedSec2Parent || resultHtml.some(h => /<h2[^>]*>.*?(?:sự thật|điểm bất ngờ|luận điểm).*?<\/h2>/i.test(h));
+                        if (!alreadyHasParent) {
                             resultHtml.push('<h2>2. 4 Sự Thật Ngược Đời Phía Sau Nhịp Điều Chỉnh Thị Trường</h2>');
                             hasInsertedSec2Parent = true;
                         }
@@ -3657,7 +3663,7 @@ ${contentForBody.substring(0, 35000)}`;
 
                         itemText = itemText.replace(/(\d+)\\\./g, '$1.');
 
-                        listItems.push(`  <p style="margin: 10px 0; padding-left: 22px; position: relative; line-height: 1.7; color: #cbd5e1;"><span style="position: absolute; left: 0; color: #fbbf24; font-weight: 700;">•</span>${itemText}</p>`);
+                        listItems.push(`  <p style="margin: 10px 0; padding-left: 22px; position: relative; line-height: 1.7; color: #cbd5e1;"><span style="position: absolute; left: 0; color: #cbd5e1; font-weight: 400;">•</span>${itemText}</p>`);
 
                         i++;
 
@@ -7476,6 +7482,11 @@ ${subCardsHtml}
 
         // --- gSEO & Smart Ticker Handlers for Editor UI ---
 
+                function syncReview() {
+            refreshPreview();
+            updateSeoScores();
+        }
+
         function applySmartTickersInEditor() {
 
             if (typeof currentArticleData === 'undefined' || !currentArticleData) {
@@ -7505,88 +7516,65 @@ ${subCardsHtml}
 
 
         function generateAutoFaqInEditor() {
-
-            if (typeof currentArticleData === 'undefined' || !currentArticleData) {
-
-                alert('Vui lòng chọn bài viết trước khi tạo FAQ!');
-
+            const htmlTextarea = document.getElementById('review-html');
+            let fullHtml = htmlTextarea ? htmlTextarea.value : '';
+            if (!fullHtml) {
+                alert('Vui lòng tạo hoặc duyệt bài viết trước khi chèn FAQ!');
                 return;
-
             }
-
-            const title = (document.getElementById('review-title') || {}).value || currentArticleData.title || '';
+            if (fullHtml.includes('class="faq-wrap"') || fullHtml.includes('id="faq"')) {
+                alert('Bài viết đã có khối FAQ!');
+                return;
+            }
 
             const faqBlock = `\n\n<!-- FAQ Accordion chuẩn gSEO & Schema FAQPage -->
-
 <div class="faq-wrap" id="faq" style="margin: 40px 0;">
-
-  <h2 style="color: #fbbf24; font-size: 1.45rem; margin-bottom: 20px;">
-
-    <i class="fa-solid fa-circle-question"></i> Câu hỏi thường gặp (FAQ)
-
+  <h2 style="color: #cbd5e1; font-size: 1.45rem; margin-bottom: 20px;">
+    <i class="fa-solid fa-circle-question" style="color: #60a5fa;"></i> Câu hỏi thường gặp (FAQ)
   </h2>
-
   <div class="faq-item active" style="background:#131d33; border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; overflow:hidden;">
-
-    <div class="faq-question" onclick="toggleFaq(this)" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-
+    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
       <span>1. Trọng tâm chiến lược và thông điệp cốt lõi của bài viết là gì?</span>
-
       <i class="fa-solid fa-chevron-down"></i>
-
     </div>
-
     <div class="faq-answer" style="padding:0 20px 16px; color:#94a3b8; font-size:0.95rem; line-height:1.7;">
-
       Bài viết tập trung phân tích xu hướng định lượng, cung cấp các kịch bản hành động cụ thể và định giá các cơ hội đầu tư an toàn cho giai đoạn hiện tại.
-
     </div>
-
   </div>
-
   <div class="faq-item" style="background:#131d33; border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; overflow:hidden;">
-
-    <div class="faq-question" onclick="toggleFaq(this)" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-
+    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
       <span>2. Làm thế nào để tra cứu thêm định giá chuyên sâu của các cổ phiếu liên quan?</span>
-
       <i class="fa-solid fa-chevron-down"></i>
-
     </div>
-
     <div class="faq-answer" style="padding:0 20px 16px; color:#94a3b8; font-size:0.95rem; line-height:1.7; display:none;">
-
       Bạn có thể truy cập trực tiếp cổng Data Hub VN30 tại daututaichinh.pro/co-phieu/ để theo dõi bảng chỉ số P/E, P/B, EPS và biên an toàn được cập nhật liên tục.
-
     </div>
-
   </div>
+  <div class="faq-item" style="background:#131d33; border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; overflow:hidden;">
+    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+      <span>3. Nhà đầu tư nên phân bổ tỷ trọng và quản trị rủi ro Margin như thế nào trong giai đoạn này?</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+    <div class="faq-answer" style="padding:0 20px 16px; color:#94a3b8; font-size:0.95rem; line-height:1.7; display:none;">
+      Nên duy trì tỷ trọng cổ phiếu ở mức an toàn từ 30% đến 50% tổng tài sản, tuyệt đối không sử dụng đòn bẩy Margin khi thanh khoản thị trường co hẹp và kiên nhẫn chờ các tín hiệu dòng tiền xác nhận.
+    </div>
+  </div>
+</div>\n`;
 
-</div>`;
-
-            let body = currentArticleData.htmlContent || '';
-
-            if (!body.includes('class="faq-wrap"')) {
-
-                currentArticleData.htmlContent = body + faqBlock;
-
-                const editorEl = document.getElementById('review-body');
-
-                if (editorEl) editorEl.value = currentArticleData.htmlContent;
-
-                syncReview();
-
-                alert('✅ Đã chèn khối FAQ Accordion (hệ thống sẽ tự sinh Schema FAQPage)!');
-
+            if (fullHtml.includes('</article>')) {
+                fullHtml = fullHtml.replace('</article>', faqBlock + '\n</article>');
+            } else if (fullHtml.includes('<!-- Author Bio -->')) {
+                fullHtml = fullHtml.replace('<!-- Author Bio -->', faqBlock + '\n<!-- Author Bio -->');
+            } else if (fullHtml.includes('</body>')) {
+                fullHtml = fullHtml.replace('</body>', faqBlock + '\n</body>');
             } else {
-
-                alert('Bài viết đã có khối FAQ!');
-
+                fullHtml += faqBlock;
             }
 
+            htmlTextarea.value = fullHtml;
+            refreshPreview();
+            alert('✅ Đã chèn thành công 3 câu hỏi FAQ Accordion vào cuối bài viết!');
         }
-
-
 
         async function autoFixSeo() {
 
@@ -8882,6 +8870,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             let headingsList = [];
             let headingIdx = 0;
             let bodyH2Count = 1;
+            const seenH2Keys = new Set();
 
             processedBody = processedBody.replace(headingRegex, (match, tag, attrs, inner) => {
                 const cleanTag = tag.toLowerCase();
@@ -8892,8 +8881,15 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                     return `<h3>${inner.replace(/^\d+[\.\)]\s*/, '')}</h3>`;
                 }
 
-                // Chuẩn hóa số thứ tự H2 tuần tự (1., 2., 3., 4.) trong cả thân bài viết
+                // DEDUPLICATION: Loại bỏ triệt để tiêu đề H2 bị trùng lặp với đề mục vừa xuất hiện
                 const cleanH2Name = plainText.replace(/^\d+[\.\)]\s*/, '').trim();
+                const normH2Key = cleanH2Name.toLowerCase().replace(/[^a-z0-9à-ỹ]/g, '');
+                if (typeof seenH2Keys !== 'undefined' && seenH2Keys.has(normH2Key)) {
+                    return ''; // Xóa hoàn toàn thẻ H2 trùng lặp
+                }
+                if (typeof seenH2Keys !== 'undefined') seenH2Keys.add(normH2Key);
+
+                // Chuẩn hóa số thứ tự H2 tuần tự (1., 2., 3., 4.) trong cả thân bài viết
                 inner = `${bodyH2Count}. ${cleanH2Name}`;
                 plainText = inner;
                 bodyH2Count++;
@@ -9377,6 +9373,7 @@ body { background: #0b1120; color: #cbd5e1; font-family: 'Inter', system-ui, san
 .article-sub-list { margin: 16px 0; padding: 0; }
 
 .article-sub-list p { margin: 10px 0; padding-left: 22px; position: relative; line-height: 1.7; color: #cbd5e1; }
+.article-content ul li::marker, ul li::marker { color: #cbd5e1 !important; }
 
 .article-table-wrap { width: 100% !important; overflow-x: auto !important; margin: 28px 0 !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.08) !important; background: #0f172a !important; }
 
