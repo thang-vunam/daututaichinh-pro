@@ -1674,11 +1674,7 @@ main {
   }
 }
 
-@media (max-width: 480px) {
-  .gseo-metrics-grid {
-    grid-template-columns: 1fr !important;
-  }
-}
+
 
 .metric-card {
   background: rgba(15, 23, 42, 0.85);
