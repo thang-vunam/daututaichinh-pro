@@ -1399,25 +1399,11 @@ blockquote.article-quote p, blockquote p {
 
 
 .gseo-metrics-grid {
-
-
-
-  display: grid;
-
-
-
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-
-
-
-  gap: 12px;
-
-
-
-  margin-top: 16px;
-
-
-
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 12px !important;
+  margin-top: 16px !important;
+  width: 100% !important;
 }
 
 
@@ -1475,29 +1461,12 @@ blockquote.article-quote p, blockquote p {
 
 
 .metric-val {
-
-
-
-  font-size: 1.18rem;
-
-
-
+  font-size: 1.15rem;
   font-weight: 700;
-
-
-
-  color: #fbbf24;
-
-
-
   margin-top: 4px;
-
-
-
+  color: #fbbf24 !important;
+  font-family: var(--font-mono, monospace) !important;
   font-variant-numeric: tabular-nums;
-
-
-
 }
 
 
@@ -10480,7 +10449,7 @@ main {
 /* GSEO Key Takeaways & Metrics Grid */
 .gseo-metrics-grid {
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+  grid-template-columns: repeat(4, 1fr) !important;
   gap: 12px !important;
   margin-top: 16px !important;
   width: 100% !important;
@@ -10488,6 +10457,7 @@ main {
 @media (max-width: 768px) {
   .gseo-metrics-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
   }
 }
 
@@ -10508,6 +10478,8 @@ main {
   font-size: 1.15rem;
   font-weight: 700;
   margin-top: 4px;
+  color: #fbbf24 !important;
+  font-family: var(--font-mono, monospace) !important;
   font-variant-numeric: tabular-nums;
 }
 
@@ -19485,15 +19457,15 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-                if (peMatch) kpiList.push({ label: 'P/E Định Giá', val: peMatch[1], color: '#10b981' });
+                if (peMatch) kpiList.push({ label: 'P/E Định Giá', val: peMatch[1], color: '#fbbf24' });
 
 
 
-                if (lnstMatch) kpiList.push({ label: 'Tăng Trưởng LNST', val: lnstMatch[1], color: '#10b981' });
+                if (lnstMatch) kpiList.push({ label: 'Tăng Trưởng LNST', val: lnstMatch[1], color: '#fbbf24' });
 
 
 
-                if (knMatch) kpiList.push({ label: 'Khối Ngoại Giao Dịch', val: knMatch[1], color: '#f59e0b' });
+                if (knMatch) kpiList.push({ label: 'Khối Ngoại Giao Dịch', val: knMatch[1], color: '#fbbf24' });
 
 
 
@@ -19509,7 +19481,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-                        { label: 'Định Vị Thị Trường', val: 'Vùng Chiết Khấu', color: '#10b981' },
+                        { label: 'Định Vị Thị Trường', val: 'Vùng Chiết Khấu', color: '#fbbf24' },
 
 
 
@@ -19517,11 +19489,11 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-                        { label: 'Chiến Lược', val: 'Tích Lũy Giá Trị', color: '#38bdf8' },
+                        { label: 'Chiến Lược', val: 'Tích Lũy Giá Trị', color: '#fbbf24' },
 
 
 
-                        { label: 'Quản Trị Rủi Ro', val: 'Tỷ Trọng 30-50%', color: '#a78bfa' }
+                        { label: 'Quản Trị Rủi Ro', val: 'Tỷ Trọng 30-50%', color: '#fbbf24' }
 
 
 
@@ -19549,7 +19521,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-                    const colStyle = k.color ? `color: ${k.color};` : 'color: #fbbf24;';
+                    const colStyle = 'color: #fbbf24; font-family: var(--font-mono, monospace);';
 
 
 
@@ -19561,7 +19533,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-                metricsGridHtml = `\n      <div class="gseo-metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 16px; width: 100%;">\n${cardsHtml}\n      </div>`;
+                metricsGridHtml = `\n      <div class="gseo-metrics-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; width: 100%;">\n${cardsHtml}\n      </div>`;
 
 
 
