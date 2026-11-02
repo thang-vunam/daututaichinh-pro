@@ -516,10 +516,16 @@ main {
 /* Bullet / list (nếu dùng sau này) */
 .blog-article ul {
   margin: 14px 0 18px 22px;
+  color: #cbd5e1;
 }
 
 .blog-article li {
   margin-bottom: 8px;
+  color: #cbd5e1;
+}
+
+.blog-article li::marker {
+  color: #cbd5e1;
 }
 
 /* Video box */
@@ -1331,10 +1337,10 @@ main {
 .breadcrumb-item.active {
   color: #cbd5e1;
   font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 480px;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -1343,7 +1349,8 @@ main {
     font-size: 0.82rem;
   }
   .breadcrumb-item.active {
-    max-width: 220px;
+    max-width: 100%;
+    white-space: normal;
   }
 }
 
@@ -1650,4 +1657,54 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 2px;
+}
+
+/* GSEO Key Takeaways & Metrics Grid */
+.gseo-metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 12px !important;
+  margin-top: 16px !important;
+  width: 100% !important;
+}
+
+@media (max-width: 768px) {
+  .gseo-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .gseo-metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.metric-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 8px;
+  padding: 12px 14px;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.metric-card:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  transform: translateY(-2px);
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-val {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
 }
