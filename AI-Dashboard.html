@@ -3005,93 +3005,70 @@ Bạn có thể viết:
                 // Prompt SEO Metadata & Kiến Trúc Sư Nội Dung toàn diện
 
                 const seoPrompt = `Bạn là Tổng Biên Tập và Chuyên Gia Kiến Trúc Nội Dung (Content Architect) tài chính chứng khoán cấp cao.
-
 Hôm nay là ngày ${today}.
-
 Dưới đây là một bài viết do tác giả cung cấp${keyword ? ' với từ khóa chính: "' + keyword + '"' : ''}${detectedTitle ? ' và Tiêu đề gốc của tác giả: "' + detectedTitle + '"' : ''}${lsiContext}.
 
-
-
 NHIỆM VỤ BIÊN TẬP VÀ KIẾN TRÚC NỘI DUNG:
-
 1. ĐỒNG BỘ TÍNH NHẤT QUÁN NỘI BỘ (Fact-Checking & Consistency):
-
    - Đếm chính xác số lượng luận điểm/sự thật thực tế trong thân bài. Nếu thân bài chỉ có 4 Điểm Bất Ngờ nhưng Tiêu đề hoặc Lời mở đầu lại ghi "5 Sự Thật / 5 Bất Ngờ" (hoặc ngược lại), hãy TỰ ĐỘNG ĐỒNG BỘ Tiêu đề và Lời dẫn thành con số thực tế là 4.
-
    - Tối ưu Tiêu đề chuẩn RankMath SEO, hấp dẫn nhưng giữ trọn văn phong tác giả.
 
-
-
 2. TÁI CẤU TRÚC PHÂN CẤP CHUYÊN NGHIỆP (Heading Hierarchy & Markdown Formatting):
-
    - THẺ H2 (##): Chỉ dành cho các PHẦN CHÍNH (Pillars) để hiển thị trên Mục lục (TOC), đánh số thứ tự tuần tự từ 1 đến N (ví dụ: ## 1. Lời Mở Đầu:..., ## 2. [Số] Sự Thật Ngược Đời Phía Sau Nhịp Điều Chỉnh, ## 3. Chiến Lược Giao Dịch & Quản Trị Rủi Ro..., ## 4. Kết Luận & Lời Kêu Gọi Hành Động).
-
      LƯU Ý: Phần "Kết Luận" PHẢI LÀ MỤC CUỐI CÙNG (ví dụ Mục 4 hoặc 5), TUYỆT ĐỐI KHÔNG để nhảy thành mục 7 hay 8!
-
-   - THẺ H3 (###): Dành cho các luận điểm/tiểu mục con nằm trong H2 (ví dụ: "### Điểm Bất Ngờ 1:...", "### Điểm Bất Ngờ 2:...", "### Hai Kịch Bản Thị Trường...", "### Nguyên Tắc Quản Trị Rủi Ro...", "### Nhóm Ngành Ưu Tiên Giải Ngân...").
-
-   - DANH SÁCH CON (Sub-lists): Dưới mỗi H2/H3, các ý liệt kê chi tiết (như các nguyên tắc, các nhóm ngành, các khuyến nghị) BẮT BUỘC dùng dấu gạch đầu dòng Markdown "- " hoặc chữ cái "a)", "b)". TUYỆT ĐỐI KHÔNG dùng số "1.", "2.", "3." cho danh sách con để tránh trùng lặp số với đề mục H2.
-
+   - THẺ H3 (###): Dành cho các luận điểm/tiểu mục con nằm trong H2 (ví dụ: "### Điểm Bất Ngờ 1:...", "### Điểm Bất Ngờ 2:...", "### Hai Kịch Bản Thị Trường...", "### Nguyên Tắc Quản Trị Rủi Ro...", "### Nhóm Ngành Ưu Tiên Giải Ngân..."). TUYỆT ĐỐI KHÔNG đánh số H2 cho các Điểm Bất Ngờ này.
+   - DANH SÁCH CON (Sub-lists): Dưới mỗi H2/H3, các ý liệt kê chi tiết BẮT BUỘC dùng dấu gạch đầu dòng Markdown "- " hoặc chữ cái "a)", "b)". TUYỆT ĐỐI KHÔNG dùng số "1.", "2.", "3." cho danh sách con để tránh trùng lặp số với đề mục H2.
    - TRÍCH DẪN (>): Thẻ blockquote chỉ dùng cho 1-2 câu châm ngôn/nhận định đắt giá, TUYỆT ĐỐI KHÔNG bọc tiêu đề H2/H3.
-
    - BẢNG BIỂU: Đảm bảo bảng dữ liệu được định dạng chuẩn Markdown (| Cột 1 | Cột 2 |).
 
+BẮT BUỘC TRẢ VỀ THEO ĐÚNG 2 KHỐI SAU (KHÔNG THÊM BẤT KỲ VĂN BẢN NÀO NGOÀI 2 KHỐI):
 
-
-Trả về ĐÚNG MỘT KHỐI JSON:
-
+<<<SEO_JSON>>>
 {
-
   "title": "${(detectedTitle || 'Tiêu đề chuẩn SEO, đồng bộ số liệu').replace(/"/g, '\\"')}",
-
   "slug": "url-slug-khong-dau-ngan-gon",
-
   "metaDescription": "Mô tả SEO tóm tắt nội dung bài viết, độ dài 120-155 ký tự",
-
   "imagePrompt": "10 English keywords for abstract professional finance cover image on Unsplash (e.g. stock market growth chart, modern trading office, financial district skyline, bull statue... NO text or foreign tickers)",
-
   "tags": ["tag1", "tag2", "tag3"],
-
   "hashtags": ["#tag1", "#tag2"],
-
   "keyMetrics": [
-
     {"label": "Chỉ số 1 (ví dụ P/E hoặc VN-Index)", "val": "Giá trị (ví dụ 10.3x hoặc 1.741đ)"},
-
     {"label": "Chỉ số 2 (ví dụ LNST hoặc Khối ngoại)", "val": "Giá trị (ví dụ +45.4% hoặc 120.000 tỷ)"},
-
     {"label": "Chỉ số 3 (ví dụ Vùng mua hoặc Hỗ trợ)", "val": "Giá trị (ví dụ 1.720 - 1.740)"},
-
     {"label": "Chỉ số 4 (ví dụ Kịch bản hoặc Biên an toàn)", "val": "Giá trị (ví dụ Xác suất 60% hoặc 18%)"}
-
-  ],
-
-  "structuredMarkdown": "Toàn bộ nội dung bài viết đã được biên tập và tái cấu trúc hoàn chỉnh bằng Markdown (## H2, ### H3, - bullet lists, > blockquotes, | bảng biểu |)"
-
+  ]
 }
+<<<END_SEO_JSON>>>
 
-CHỈ TRẢ VỀ JSON HỢP LỆ, TUYỆT ĐỐI KHÔNG THÊM BẤT KỲ VĂN BẢN NGOÀI JSON.
+<<<STRUCTURED_BODY>>>
+[Toàn bộ nội dung bài viết của tác giả đã được biên tập và tái cấu trúc hoàn chỉnh bằng Markdown chuẩn: H2 cho các phần lớn tuần tự 1..N, H3 cho các điểm bất ngờ/tiểu mục, bullet - cho danh sách con, bảng biểu |..|, trích dẫn >]
+<<<END_STRUCTURED_BODY>>>
 
 Nội dung bài viết (trích đoạn):
-
 ${contentForBody.substring(0, 35000)}`;
 
-
-
-                let seo;
-
+                let seo = null;
+                let structuredBodyFromAi = "";
                 try {
-
                     const resp = await callGemini(key, seoPrompt, null, 90000);
+                    // 1. Tách khối JSON nhỏ an toàn tuyệt đối
+                    const jsonMatch = resp.match(/<<<SEO_JSON>>>([\s\S]*?)<<<END_SEO_JSON>>>/);
+                    if (jsonMatch) {
+                        let jsonStr = jsonMatch[1].trim();
+                        jsonStr = jsonStr.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ch : ' ');
+                        seo = JSON.parse(jsonStr);
+                    } else {
+                        const fbJson = resp.match(/```json([\s\S]*?)```/);
+                        if (fbJson) seo = JSON.parse(fbJson[1].trim());
+                    }
 
-                    let cleaned = resp.replace(/```json/g, '').replace(/```html/g, '').replace(/```/g, '').trim();
+                    // 2. Tách khối Markdown lớn nguyên vẹn
+                    const bodyMatch = resp.match(/<<<STRUCTURED_BODY>>>([\s\S]*?)<<<END_STRUCTURED_BODY>>>/);
+                    if (bodyMatch) {
+                        structuredBodyFromAi = bodyMatch[1].trim();
+                    }
 
-                    cleaned = cleaned.replace(/[\x00-\x1F\x7F]/g, (ch) => (ch === '\n' || ch === '\r' || ch === '\t') ? ch : ' ');
-
-                    seo = JSON.parse(cleaned);
-
-                    if (detectedTitle && !seo.title) seo.title = detectedTitle;
-
+                    if (detectedTitle && seo && !seo.title) seo.title = detectedTitle;
                 } catch(aiErr) {
 
                     console.warn("AI Busy / Error -> Using smart local extraction:", aiErr);
@@ -3136,7 +3113,13 @@ ${contentForBody.substring(0, 35000)}`;
 
                 // Tự động sử dụng nội dung đã được Kiến Trúc Sư AI tái cấu trúc chuẩn mực
 
-                const bodySource = (seo && seo.structuredMarkdown && seo.structuredMarkdown.length > 100) ? seo.structuredMarkdown : contentForBody;
+                const bodySource = (structuredBodyFromAi && structuredBodyFromAi.length > 100) ? structuredBodyFromAi : ((seo && seo.structuredMarkdown && seo.structuredMarkdown.length > 100) ? seo.structuredMarkdown : contentForBody);
+                
+                // Cập nhật lại khung Editor với nội dung đã được Kiến Trúc Sư AI biên tập hoàn mỹ
+                if (structuredBodyFromAi && structuredBodyFromAi.length > 100) {
+                    const editorEl = document.getElementById('manual-content');
+                    if (editorEl) editorEl.value = structuredBodyFromAi;
+                }
 
                 let htmlBody = formatRawTextToHtml(bodySource);
 
@@ -3338,16 +3321,19 @@ ${contentForBody.substring(0, 35000)}`;
 
 
 
-            // 1. Markdown headings #, ##, ###, ####, #####
-
+                        // 1. Markdown headings #, ##, ###, ####, #####
             res = res.replace(/(^|\n)#####\s+([^\n<]+)/g, '$1<h5>$2</h5>');
-
             res = res.replace(/(^|\n)####\s+([^\n<]+)/g, '$1<h4>$2</h4>');
 
-            res = res.replace(/(^|\n)###\s+(\d+[\.\)]\s+[^\n<]+)/g, '$1<h2>$2</h2>'); // Các mục 1., 2., 3. lớn chuyển thành h2
+            // CÁC TIỂU MỤC CON (Điểm bất ngờ, Sự thật, Kịch bản, Trụ cột, Nguyên tắc, Nhóm ngành...) -> BẮT BUỘC LÀ H3, TUYỆT ĐỐI KHÔNG LÊN H2
+            res = res.replace(/(^|\n)###\s+(\d+[\.\)]\s+)?(điểm bất ngờ|sự thật|kịch bản|trụ cột|nguyên tắc|nhóm ngành)[^\n<]*/gi, (m) => {
+                let cleanText = m.replace(/(^|\n)###\s+/, '').replace(/(\d+)\\\./g, '$1.').trim();
+                return `\n<h3>${cleanText}</h3>`;
+            });
 
+            // Chỉ các Đề mục lớn thực sự (Lời mở đầu, Chiến lược, Kết luận, Tổng kết...) mới chuyển thành H2
+            res = res.replace(/(^|\n)###\s+(\d+[\.\)]\s+(lời mở đầu|chiến lược|kết luận|tổng kết|khuyến nghị|nhận định|phần|chương)[^\n<]*)/gi, '$1<h2>$2</h2>');
             res = res.replace(/(^|\n)###\s+([^\n<]+)/g, '$1<h3>$2</h3>');
-
             res = res.replace(/(^|\n)##\s+([^\n<]+)/g, '$1<h2>$2</h2>');
 
             res = res.replace(/(^|\n)#\s+([^\n<]+)/g, ''); // Bỏ qua H1 Markdown trong body vì bài viết đã có <h1> từ title
@@ -3556,18 +3542,18 @@ ${contentForBody.substring(0, 35000)}`;
 
 
 
-                // 3. Dò tìm Tiêu đề H2 / H3 chuẩn SEO (để tự động sinh Mục lục TOC Menu và phân cấp nội dung)
-
+                                // 3. Dò tìm Tiêu đề H2 / H3 chuẩn SEO (để tự động sinh Mục lục TOC Menu và phân cấp nội dung)
                 const heading = detectHeading(line);
-
                 if (heading) {
-
+                    // Tự động bổ sung Đề mục lớn H2 cho các Điểm Bất Ngờ nếu tác giả chưa khai báo H2 cha
+                    if (heading.tag === 'h3' && /^(điểm bất ngờ|sự thật)\s*1/i.test(heading.text.replace(/^\d+[\.\)]\s*/, ''))) {
+                        if (!resultHtml.some(h => h.includes('Sự Thật Ngược Đời') || h.includes('Điểm Bất Ngờ'))) {
+                            resultHtml.push('<h2>2. 4 Sự Thật Ngược Đời Phía Sau Nhịp Điều Chỉnh Thị Trường</h2>');
+                        }
+                    }
                     resultHtml.push(`<${heading.tag}>${heading.text}</${heading.tag}>`);
-
                     i++;
-
                     continue;
-
                 }
 
 
@@ -3741,21 +3727,17 @@ ${contentForBody.substring(0, 35000)}`;
             if (/^####\s+/.test(trimmed)) return { tag: 'h4', text: trimmed.replace(/^####\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
 
             if (/^###\s+/.test(trimmed)) {
-
-                let hText = trimmed.replace(/^###\s+/, '').replace(/(\d+)\\\./g, '$1.').trim();
-
-                // Nếu là đề mục lớn (1. , 2. , 3. ...) thì chuyển thành h2 để đưa vào Mục lục TOC chuẩn
-
-                if (/^\d+[\.\)]\s+/.test(hText) || /^[IVXLCDM]+[\.\)]\s+/.test(hText)) {
-
-                    return { tag: 'h2', text: hText };
-
+                let hText = trimmed.replace(/^###\s+/, '').replace(/(\d+)\\\./g, '.').trim();
+                // CÁC TIỂU MỤC CON: Điểm bất ngờ, Sự thật, Kịch bản, Trụ cột, Nguyên tắc, Nhóm ngành... -> BẮT BUỘC LÀ H3!
+                if (/^(\d+[\.\)]\s+)?(điểm bất ngờ|sự thật|kịch bản|trụ cột|nguyên tắc|nhóm ngành)/i.test(hText)) {
+                    return { tag: 'h3', text: hText };
                 }
-
+                // Nếu là đề mục lớn (1. , 2. , 3. ...) thì chuyển thành h2 để đưa vào Mục lục TOC chuẩn
+                if (/^\d+[\.\)]\s+/.test(hText) || /^[IVXLCDM]+[\.\)]\s+/.test(hText)) {
+                    return { tag: 'h2', text: hText };
+                }
                 return { tag: 'h3', text: hText };
-
             }
-
             if (/^##\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^##\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
 
             if (/^#\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^#\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
@@ -3776,7 +3758,7 @@ ${contentForBody.substring(0, 35000)}`;
 
             // SMART HEURISTIC: Các tiểu mục con (Điểm bất ngờ 1..4, Kịch bản 1..2, v.v.)
 
-            if (/^(điểm bất ngờ|sự thật|kịch bản|trụ cột|nguyên tắc|nhóm ngành)\s+\d+[:\s]/i.test(trimmed) ||
+            if (/^(\d+[\.\)]\s+)?(điểm bất ngờ|sự thật|kịch bản|trụ cột|nguyên tắc|nhóm ngành)\s*\d*[:\s]/i.test(trimmed) ||
 
                 /^(hai kịch bản|nguyên tắc quản trị|nhóm ngành ưu tiên)/i.test(trimmed)) {
 
@@ -8923,37 +8905,30 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             // 3. Trích xuất H2, H3 để gắn ID và tạo Mục lục (Table of Contents - TOC)
 
             const headingRegex = /<(h2)([^>]*)>(.*?)<\/h2>/gi; // Chỉ đưa các đề mục chính H2 vào Mục lục để tinh gọn
-
             let headingsList = [];
-
             let headingIdx = 0;
-
-
+            let bodyH2Count = 1;
 
             processedBody = processedBody.replace(headingRegex, (match, tag, attrs, inner) => {
-
                 const cleanTag = tag.toLowerCase();
+                let plainText = inner.replace(/<[^>]+>/g, '').trim();
 
-                const plainText = inner.replace(/<[^>]+>/g, '').trim();
-
-
-
-                let headingId = `heading-${headingIdx}`;
-
-                const idMatch = attrs.match(/id=["']([^"']+)["']/i);
-
-                if (idMatch) {
-
-                    headingId = idMatch[1];
-
-                } else {
-
-                    attrs = ` id="${headingId}"${attrs}`;
-
+                // Chuẩn hóa số thứ tự H2 tuần tự (1., 2., 3., 4.) trong cả thân bài viết
+                if (/^\d+[\.\)]\s*/.test(plainText)) {
+                    const cleanH2Name = plainText.replace(/^\d+[\.\)]\s*/, '').trim();
+                    inner = `${bodyH2Count}. ${cleanH2Name}`;
+                    plainText = inner;
+                    bodyH2Count++;
                 }
 
-
-
+                let headingId = `heading-${headingIdx}`;
+                const idMatch = attrs.match(/id=["']([^"']+)["']/i);
+                if (idMatch) {
+                    headingId = idMatch[1];
+                } else {
+                    attrs = ` id="${headingId}"${attrs}`;
+                }
+                headingIdx++;
                 headingsList.push({
 
                     tag: cleanTag,
@@ -9104,12 +9079,17 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
             if (headingsList.length >= 2) {
 
+                                let h2Counter = 1;
                 const tocItems = headingsList.map(h => {
-
                     const cls = h.tag === 'h2' ? 'toc-h2' : 'toc-h3';
-
-                    return `        <li class="${cls}"><a href="#${h.id}">${h.text}</a></li>`;
-
+                    let displayText = h.text;
+                    if (h.tag === 'h2') {
+                        // Chuẩn hóa số thứ tự H2 trong Mục lục: 1. , 2. , 3. ... tuần tự tuyệt đối
+                        const cleanLabel = displayText.replace(/^\d+[\.\)]\s*/, '').trim();
+                        displayText = `${h2Counter}. ${cleanLabel}`;
+                        h2Counter++;
+                    }
+                    return `        <li class="${cls}"><a href="#${h.id}">${displayText}</a></li>`;
                 }).join('\n');
 
 
