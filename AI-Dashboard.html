@@ -1643,9 +1643,10 @@ ${contentForBody.substring(0, 35000)}`;
             if (!html) return '';
             let res = html;
             
-            // 0. Làm sạch escape 1\. -> 1. và bọc bold **...**
+            // 0. Làm sạch escape 1\. -> 1. và bọc bold **...** / italic *...*
             res = res.replace(/(\d+)\\\./g, '$1.');
             res = res.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            res = res.replace(/(^|[^\*])\*([^\*]+?)\*([^\*]|$)/g, '$1<em>$2</em>$3');
 
             // 1. Markdown headings #, ##, ###, ####, #####
             res = res.replace(/(^|\n)#####\s+([^\n<]+)/g, '$1<h5>$2</h5>');
@@ -1653,13 +1654,14 @@ ${contentForBody.substring(0, 35000)}`;
             res = res.replace(/(^|\n)###\s+(\d+[\.\)]\s+[^\n<]+)/g, '$1<h2>$2</h2>'); // Các mục 1., 2., 3. lớn chuyển thành h2
             res = res.replace(/(^|\n)###\s+([^\n<]+)/g, '$1<h3>$2</h3>');
             res = res.replace(/(^|\n)##\s+([^\n<]+)/g, '$1<h2>$2</h2>');
-            res = res.replace(/(^|\n)#\s+([^\n<]+)/g, '$1<h2>$2</h2>');
+            res = res.replace(/(^|\n)#\s+([^\n<]+)/g, ''); // Bỏ qua H1 Markdown trong body vì bài viết đã có <h1> từ title
             
-            // Đảm bảo không biến list item <ol><li> thành heading
             return res;
         }
 
         function formatRawTextToHtml(rawText) {
+            if (!rawText) return '';
+            rawText = rawText.replace(/(\d+)\\\./g, '$1.');
             const lines = rawText.split('\n');
             let resultHtml = [];
             let i = 0;
@@ -1778,18 +1780,22 @@ ${contentForBody.substring(0, 35000)}`;
                     continue;
                 }
 
-                // 3.6. Dò tìm Danh sách có thứ tự (1. , 2. , 3. )
+                // 3.6. Dò tìm Danh sách các ý / tiểu mục (1., 2., 3. hoặc a., b., c.)
+                // Render thành container <div class="article-sub-list"> với các thẻ <p> có ký hiệu ▸
+                // Giải pháp phổ quát: Không dùng <ol> để triệt tiêu vĩnh viễn xung đột số thứ tự với tiêu đề H2,
+                // đồng thời cho phép injectSmartTickers và applySmartLinking tự động gắn badge mã chứng khoán.
                 if (/^\d+[\.\)]\s+/.test(line) && !detectHeading(line)) {
                     let listItems = [];
                     while (i < lines.length && /^\d+[\.\)]\s+/.test(lines[i].trim()) && !detectHeading(lines[i].trim())) {
                         let itemText = lines[i].trim().replace(/^\d+[\.\)]\s+/, '');
                         itemText = itemText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                        itemText = itemText.replace(/(^|[^\*])\*([^\*]+?)\*([^\*]|$)/g, '$1<em>$2</em>$3');
                         itemText = itemText.replace(/(\d+)\\\./g, '$1.');
-                        listItems.push(`  <li>${itemText}</li>`);
+                        listItems.push(`  <p style="margin: 10px 0; padding-left: 22px; position: relative; line-height: 1.7; color: #cbd5e1;"><span style="position: absolute; left: 0; color: #fbbf24; font-weight: 700;">▸</span>${itemText}</p>`);
                         i++;
                     }
                     if (listItems.length > 0) {
-                        resultHtml.push(`<ol style="padding-left: 22px; margin: 15px 0; color: #cbd5e1; line-height: 1.7;">\n${listItems.join('\n')}\n</ol>`);
+                        resultHtml.push(`<div class="article-sub-list" style="margin: 18px 0; padding-left: 6px; border-left: 2px solid rgba(251, 191, 36, 0.25);">\n${listItems.join('\n')}\n</div>`);
                         continue;
                     }
                 }
@@ -1798,16 +1804,24 @@ ${contentForBody.substring(0, 35000)}`;
                 if (/^[-*•+]\s+/.test(line)) {
                     let listItems = [];
                     while (i < lines.length && /^[-*•+]\s+/.test(lines[i].trim())) {
-                        const itemText = lines[i].trim().replace(/^[-*•+]\s*/, '');
-                        listItems.push(`  <li>${itemText}</li>`);
+                        let itemText = lines[i].trim().replace(/^[-*•+]\s*/, '');
+                        itemText = itemText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                        itemText = itemText.replace(/(^|[^\*])\*([^\*]+?)\*([^\*]|$)/g, '$1<em>$2</em>$3');
+                        itemText = itemText.replace(/(\d+)\\\./g, '$1.');
+                        listItems.push(`  <p style="margin: 10px 0; padding-left: 22px; position: relative; line-height: 1.7; color: #cbd5e1;"><span style="position: absolute; left: 0; color: #fbbf24; font-weight: 700;">•</span>${itemText}</p>`);
                         i++;
                     }
-                    resultHtml.push(`<ul>\n${listItems.join('\n')}\n</ul>`);
-                    continue;
+                    if (listItems.length > 0) {
+                        resultHtml.push(`<div class="article-sub-list" style="margin: 18px 0; padding-left: 6px; border-left: 2px solid rgba(251, 191, 36, 0.25);">\n${listItems.join('\n')}\n</div>`);
+                        continue;
+                    }
                 }
 
                 // 5. Đoạn văn thông thường (<p>) - ĐẢM BẢO 100% KHÔNG BAO GIỜ BỎ SÓT DÒNG NÀO
-                resultHtml.push(`<p>${line}</p>`);
+                let pText = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                               .replace(/(^|[^\*])\*([^\*]+?)\*([^\*]|$)/g, '$1<em>$2</em>$3')
+                               .replace(/(\d+)\\\./g, '$1.');
+                resultHtml.push(`<p>${pText}</p>`);
                 i++;
             }
 
@@ -4328,7 +4342,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                 'SAB', 'SHB', 'SSB', 'SSI', 'STB', 'TCB', 'VCB', 'VHM', 'VIB', 
                 'VIC', 'VJC', 'VNM', 'VPB', 'VRE'
             ];
-            return html.replace(/<p([^>]*)>([\s\S]*?)<\/p>/gi, (pMatch, pAttrs, pInner) => {
+            return html.replace(/<(p|li)([^>]*)>([\s\S]*?)<\/\1>/gi, (pMatch, pTag, pAttrs, pInner) => {
                 let modifiedInner = pInner;
                 tickers.forEach(tk => {
                     // Tự động nâng cấp các link cũ thành huy hiệu vàng có icon
@@ -4345,7 +4359,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                         }
                     }
                 });
-                return `<p${pAttrs}>${modifiedInner}<\/p>`;
+                return `<${pTag}${pAttrs}>${modifiedInner}<\/${pTag}>`;
             });
         }
 
@@ -4660,6 +4674,8 @@ body { background: #0b1120; color: #cbd5e1; font-family: 'Inter', system-ui, san
 /* Table of Contents & Tables */
 .seo-toc-container { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 18px 20px; margin: 25px 0 30px; }
 .toc-title { font-weight: 700; color: #fbbf24; }
+.article-sub-list { margin: 20px 0; padding-left: 6px; border-left: 2px solid rgba(251, 191, 36, 0.25); }
+.article-sub-list p { margin: 10px 0; padding-left: 22px; position: relative; line-height: 1.7; color: #cbd5e1; }
 .article-table-wrap { width: 100% !important; overflow-x: auto !important; margin: 28px 0 !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.08) !important; background: #0f172a !important; }
 table { width: 100% !important; border-collapse: collapse !important; text-align: left !important; font-size: 0.95rem !important; }
 th { background: #151f32 !important; color: #94a3b8 !important; font-weight: 600 !important; padding: 14px 18px !important; border-bottom: 1px solid rgba(255,255,255,0.12) !important; }
@@ -5137,7 +5153,7 @@ function toggleFaq(el) {
                 <button type="button" class="btn" onclick="downloadCurrentCoverPng()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff;">
                     <i class="fa-solid fa-download"></i> Tải File PNG (1200x630)
                 </button>
-                <button type="button" class="btn btn-primary" onclick="applyStudioCoverToArticle()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b1120; font-weight: 700; border: none; padding: 10px 20px;">
+                <button type="button" class="btn btn-primary" id="btn-apply-studio-cover" onclick="applyStudioCoverToArticle()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #0b1120; font-weight: 700; border: none; padding: 10px 20px;">
                     <i class="fa-solid fa-check"></i> Áp Dụng Cho Bài Viết Hiện Tại
                 </button>
             </div>
