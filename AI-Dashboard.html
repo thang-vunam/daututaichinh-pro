@@ -1464,7 +1464,7 @@ Bạn có thể viết:
 
                 if (nonEmptyLines.length > 0) {
                     let firstLine = nonEmptyLines[0];
-                    let cleanFirst = firstLine.replace(/^#+\s*/, '').replace(/^\*+|\*+$/g, '').trim();
+                    let cleanFirst = firstLine.replace(/^#+\s*/, '').replace(/<[^>]+>/g, '').replace(/^\*+|\*+$/g, '').trim();
                     if ((cleanFirst.startsWith('"') && cleanFirst.endsWith('"')) || (cleanFirst.startsWith('“') && cleanFirst.endsWith('”'))) {
                         cleanFirst = cleanFirst.substring(1, cleanFirst.length - 1).trim();
                     }
@@ -1549,7 +1549,7 @@ ${contentForBody.substring(0, 35000)}`;
                     seo = {
                         title: cleanTitle,
                         slug: cleanSlug || ('bai-viet-' + Date.now()),
-                        metaDescription: cleanFallbackDesc || (detectedTitle + ' - Phân tích thị trường tài chính chuyên sâu'),
+                        metaDescription: cleanFallbackDesc || (cleanTitle + ' - Phân tích thị trường tài chính chuyên sâu'),
                         imagePrompt: keyword ? `${keyword} stock market finance` : 'finance investment stock market chart',
                         tags: [keyword || 'Chứng khoán', 'Đầu tư tài chính', 'Thị trường'],
                         hashtags: ['#chungkhoan', '#dautu']
@@ -1557,8 +1557,9 @@ ${contentForBody.substring(0, 35000)}`;
                 }
 
                 // Đảm bảo không còn tiêu đề bị lặp ở đầu body
-                const finalTitle = detectedTitle || seo.title || keyword || 'Nhận định & Phân tích thị trường';
+                const finalTitle = (detectedTitle || seo.title || keyword || 'Nhận định & Phân tích thị trường').replace(/<[^>]+>/g, '').trim();
                 seo.title = finalTitle;
+                if (seo.metaDescription) seo.metaDescription = seo.metaDescription.replace(/<[^>]+>/g, '').trim();
                 
                 // Nếu chưa có slug hợp lệ thì sinh tự động từ finalTitle
                 if (!seo.slug || seo.slug.length < 4) {
@@ -1577,9 +1578,9 @@ ${contentForBody.substring(0, 35000)}`;
                 }
 
                 // Điền vào review panel
-                document.getElementById('review-title').value = finalTitle;
-                document.getElementById('review-slug').value = seo.slug || '';
-                document.getElementById('review-desc').value = seo.metaDescription || '';
+                document.getElementById('review-title').value = finalTitle.replace(/<[^>]+>/g, '').trim();
+                document.getElementById('review-slug').value = (seo.slug || '').replace(/<[^>]+>/g, '').trim();
+                document.getElementById('review-desc').value = (seo.metaDescription || '').replace(/<[^>]+>/g, '').trim();
 
                 // Đồng bộ category
                 document.getElementById('input-category').value = category;
@@ -4847,8 +4848,12 @@ function toggleFaq(el) {
 
         function openCoverStudioModal() {
             const cat = document.getElementById('input-category')?.value || 'blog';
-            const title = document.getElementById('review-title')?.value || document.getElementById('input-topic')?.value || 'Bài Viết Đầu Tư Tài Chính';
-            const desc = document.getElementById('review-desc')?.value || '';
+            let title = document.getElementById('review-title')?.value || document.getElementById('input-topic')?.value || 'Bài Viết Đầu Tư Tài Chính';
+            let desc = document.getElementById('review-desc')?.value || '';
+
+            // Triệt để làm sạch mọi thẻ HTML <p>, </p>, <h1>... để ảnh bìa luôn là văn bản thuần đẹp mắt
+            title = title.replace(/<[^>]+>/g, '').trim();
+            desc = desc.replace(/<[^>]+>/g, '').trim();
 
             const badgeSelect = document.getElementById('studio-cover-badge');
             if (badgeSelect) {
@@ -4898,9 +4903,9 @@ function toggleFaq(el) {
             canvas.width = W;
             canvas.height = H;
 
-            const badgeText = document.getElementById('studio-cover-badge')?.value || 'CHUYÊN MỤC BLOG';
-            const titleText = document.getElementById('studio-cover-title')?.value || 'Tiêu Đề Bài Viết';
-            const subText = document.getElementById('studio-cover-sub')?.value || '';
+            const badgeText = (document.getElementById('studio-cover-badge')?.value || 'CHUYÊN MỤC BLOG').replace(/<[^>]+>/g, '').trim();
+            const titleText = (document.getElementById('studio-cover-title')?.value || 'Tiêu Đề Bài Viết').replace(/<[^>]+>/g, '').trim();
+            const subText = (document.getElementById('studio-cover-sub')?.value || '').replace(/<[^>]+>/g, '').trim();
 
             // 1. Background gradient Dark Navy
             const bgGrad = ctx.createRadialGradient(W * 0.15, H * 0.2, 50, W * 0.5, H * 0.5, W * 0.85);
