@@ -1464,14 +1464,12 @@ Bạn có thể viết:
 
                 if (nonEmptyLines.length > 0) {
                     let firstLine = nonEmptyLines[0];
-                    let cleanFirst = firstLine.replace(/^\*+|\*+$/g, '').trim();
+                    let cleanFirst = firstLine.replace(/^#+\s*/, '').replace(/^\*+|\*+$/g, '').trim();
                     if ((cleanFirst.startsWith('"') && cleanFirst.endsWith('"')) || (cleanFirst.startsWith('“') && cleanFirst.endsWith('”'))) {
                         cleanFirst = cleanFirst.substring(1, cleanFirst.length - 1).trim();
                     }
-                    // Nếu dòng đầu ngắn (dưới 150 ký tự), không kết thúc bằng dấu chấm câu đoạn văn
-                    if (cleanFirst.length >= 5 && cleanFirst.length < 150 && !/[.,;!?…]$/.test(cleanFirst) && cleanFirst.split(/\s+/).length <= 22) {
+                    if (cleanFirst.length >= 5 && cleanFirst.length < 150 && !/[.,;!?…]$/.test(cleanFirst)) {
                         detectedTitle = cleanFirst;
-                        // Tách bỏ dòng tiêu đề này khỏi nội dung body để không bị trùng lặp thành một thẻ <p>
                         const firstLineIdx = content.indexOf(firstLine);
                         if (firstLineIdx !== -1) {
                             contentForBody = content.substring(firstLineIdx + firstLine.length).trim();
@@ -1479,6 +1477,29 @@ Bạn có thể viết:
                     }
                 }
 
+                // Tự động trích xuất đoạn văn mở đầu sạch sẽ (bỏ qua các thẻ Heading) cho Meta Description
+                let proseSnippet = '';
+                const bodyLines = contentForBody.split('\n');
+                for (let bl of bodyLines) {
+                    let btr = bl.trim();
+                    if (!btr || btr.startsWith('#') || btr.startsWith('---') || /^\d+[\.\)]\s+/.test(btr)) continue;
+                    proseSnippet = btr;
+                    break;
+                }
+                let cleanFallbackDesc = proseSnippet.replace(/\*\*(.*?)\*\*/g, '$1')
+                    .replace(/\*(.*?)\*/g, '$1')
+                    .replace(/<[^>]+>/g, '')
+                    .replace(/(\d+)\\\./g, '$1.')
+                    .trim();
+
+                // Cắt theo ranh giới từ nguyên vẹn (word boundary), không bao giờ cắt cụt chữ
+                if (cleanFallbackDesc.length > 155) {
+                    let cut = cleanFallbackDesc.substring(0, 155);
+                    let lastSp = cut.lastIndexOf(' ');
+                    if (lastSp > 80) cut = cut.substring(0, lastSp);
+                    cleanFallbackDesc = cut + '...';
+                }
+                
                 const isRawText = !contentForBody.includes('<p>') && !contentForBody.includes('<h2>') && !contentForBody.includes('<div>');
                 let htmlBody = isRawText ? formatRawTextToHtml(contentForBody) : contentForBody;
                 htmlBody = ensureSemanticHeadings(htmlBody);
@@ -1528,7 +1549,7 @@ ${contentForBody.substring(0, 35000)}`;
                     seo = {
                         title: cleanTitle,
                         slug: cleanSlug || ('bai-viet-' + Date.now()),
-                        metaDescription: contentForBody.substring(0, 155).replace(/\n/g, ' ').trim(),
+                        metaDescription: cleanFallbackDesc || (detectedTitle + ' - Phân tích thị trường tài chính chuyên sâu'),
                         imagePrompt: keyword ? `${keyword} stock market finance` : 'finance investment stock market chart',
                         tags: [keyword || 'Chứng khoán', 'Đầu tư tài chính', 'Thị trường'],
                         hashtags: ['#chungkhoan', '#dautu']
@@ -1628,38 +1649,15 @@ ${contentForBody.substring(0, 35000)}`;
             // 1. Markdown headings #, ##, ###, ####, #####
             res = res.replace(/(^|\n)#####\s+([^\n<]+)/g, '$1<h5>$2</h5>');
             res = res.replace(/(^|\n)####\s+([^\n<]+)/g, '$1<h4>$2</h4>');
+            res = res.replace(/(^|\n)###\s+(\d+[\.\)]\s+[^\n<]+)/g, '$1<h2>$2</h2>'); // Các mục 1., 2., 3. lớn chuyển thành h2
             res = res.replace(/(^|\n)###\s+([^\n<]+)/g, '$1<h3>$2</h3>');
             res = res.replace(/(^|\n)##\s+([^\n<]+)/g, '$1<h2>$2</h2>');
             res = res.replace(/(^|\n)#\s+([^\n<]+)/g, '$1<h2>$2</h2>');
             
-            // 2. Sub-headings (1.1, 1.1., a), b)...) dạng in đậm hoặc đoạn văn (không kết thúc bằng dấu chấm câu)
-            const subPattern = '(\\d+(\\.\\d+)+[\\.\\)\\/:\\-]?|[a-d]\\))';
-            res = res.replace(new RegExp('<p>\\s*<(?:strong|b)>\\s*(' + subPattern + '\\s*[^<]+)<\\/(?:strong|b)>\\s*<\\/p>', 'gi'), '<h3>$1</h3>');
-            res = res.replace(new RegExp('<p>\\s*(' + subPattern + '\\s+[^\n<.]{3,120})<\\/p>', 'gi'), '<h3>$1</h3>');
-            
-            // 3. Main headings (1., 2., 3., I., II., Phần 1, Điểm nhấn 1...)
-            // CHÚ Ý: Tuyệt đối KHÔNG biến các câu danh sách kết thúc bằng dấu chấm thành <h2>
-            const mainPattern = '(\\d+[\\.\\)\\/:\\-](?!\\d)|[IVXLCDM]+[\\.\\)\\/:\\-]|Phần\\s+\\d+|Điểm\\s+nhấn\\s+\\d+|Mục\\s+\\d+|Bước\\s+\\d+|Bài\\s+học\\s+\\d+|Chương\\s+\\d+)';
-            res = res.replace(new RegExp('<p>\\s*<(?:strong|b)>\\s*(' + mainPattern + '[^<:]+[:\-–—][^<]+)<\\/(?:strong|b)>\\s*<\\/p>', 'gi'), '<h2>$1</h2>');
-            res = res.replace(new RegExp('<p>\\s*(' + mainPattern + '\\s+[^\n<]{3,140})<\\/p>', 'gi'), (m, p1) => {
-                const textAfter = p1.trim();
-                // Nếu kết thúc bằng dấu chấm câu hoặc không có dấu hai chấm/gạch nối thì giữ nguyên là đoạn văn hoặc list item
-                if (textAfter.endsWith('.') && !/[:\-–—]/.test(textAfter)) return m;
-                if (textAfter.length < 25 && !/[:\-–—]/.test(textAfter)) return m;
-                return `<h2>${p1}</h2>`;
-            });
-            
-            // 4. Đoạn văn bọc in đậm ngắn đứng riêng không có dấu chấm kết thúc
-            res = res.replace(/<p>\s*<(?:strong|b)>\s*([^<.,;!?…]{3,95})\s*<\/(?:strong|b)>\s*<\/p>/gi, (match, inner) => {
-                const trimmedInner = inner.trim();
-                if (trimmedInner.endsWith(':') || trimmedInner.startsWith('-') || trimmedInner.startsWith('•')) return match;
-                return `<h2>${trimmedInner}</h2>`;
-            });
-            
+            // Đảm bảo không biến list item <ol><li> thành heading
             return res;
         }
 
-        // Helper format văn bản thô thành HTML chuẩn nhanh chóng & chính xác (Bảo toàn 100% nội dung)
         function formatRawTextToHtml(rawText) {
             const lines = rawText.split('\n');
             let resultHtml = [];
@@ -1832,46 +1830,37 @@ ${contentForBody.substring(0, 35000)}`;
                 return null;
             }
             
-            // Markdown Headings (Hỗ trợ từ # đến ##### và làm sạch escape \.)
+            // Markdown Headings CHÍNH THỨC (Chỉ công nhận dòng có ký hiệu Markdown rõ ràng)
             if (/^#####\s+/.test(trimmed)) return { tag: 'h5', text: trimmed.replace(/^#####\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
             if (/^####\s+/.test(trimmed)) return { tag: 'h4', text: trimmed.replace(/^####\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
-            if (/^###\s+/.test(trimmed)) return { tag: 'h3', text: trimmed.replace(/^###\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
+            if (/^###\s+/.test(trimmed)) {
+                let hText = trimmed.replace(/^###\s+/, '').replace(/(\d+)\\\./g, '$1.').trim();
+                // Nếu là đề mục lớn (1. , 2. , 3. ...) thì chuyển thành h2 để đưa vào Mục lục TOC chuẩn
+                if (/^\d+[\.\)]\s+/.test(hText) || /^[IVXLCDM]+[\.\)]\s+/.test(hText)) {
+                    return { tag: 'h2', text: hText };
+                }
+                return { tag: 'h3', text: hText };
+            }
             if (/^##\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^##\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
             if (/^#\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^#\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
             
-            // Loại bỏ bọc in đậm markdown nếu có: **1. Tiêu đề** -> 1. Tiêu đề
+            // Nếu dòng chỉ là số thứ tự 1., 2., 3. KHÔNG CÓ DẤU # ở đầu:
+            // ĐÂY LÀ LIST ITEM, TUYỆT ĐỐI KHÔNG COI LÀ HEADING ĐỂ TRÁNH NHẢY VÀO MỤC LỤC
+            if (/^\d+[\.\)]\s+/.test(trimmed) || /^[a-z][\.\)]\s+/i.test(trimmed)) {
+                return null;
+            }
+            
+            // Loại bỏ bọc in đậm markdown nếu có: **Tiêu đề**
             let cleanLine = trimmed.replace(/^\*+|\*+$/g, '').trim();
             if ((cleanLine.startsWith('"') && cleanLine.endsWith('"')) || (cleanLine.startsWith('“') && cleanLine.endsWith('”'))) {
                 cleanLine = cleanLine.substring(1, cleanLine.length - 1).trim();
             }
             
-            // 1. Tiêu đề phụ (1.1, 1.2, 2.1, a), b)...)
-            if (/^(\d+(\.\d+)+[\.\)\/:\-]?|[a-d]\))\s*/i.test(cleanLine) && cleanLine.length < 130 && !cleanLine.endsWith('.')) {
-                return { tag: 'h3', text: cleanLine };
-            }
-            
-            // 2. Tiêu đề chính mục (1., 2., 3., I., II., Phần 1, Điểm nhấn 1...)
-            // CHÚ Ý: Nếu kết thúc bằng dấu chấm câu (.) hoặc là câu văn dài > 60 ký tự thì đó là item danh sách, KHÔNG PHẢI HEADING H2
-            const isNumberedHeading = /^((\d+[\.\)\/:\-](?!\d)|[IVXLCDM]+[\.\)\/:\-]|Phần\s+\d+|Điểm\s+nhấn\s+\d+|Mục\s+\d+|Bước\s+\d+|Bài\s+học\s+\d+|Chương\s+\d+)\s*)/i.test(cleanLine);
-            if (isNumberedHeading && cleanLine.length < 160) {
-                if (cleanLine.endsWith('.') && !/[:\-–—]/.test(cleanLine)) {
-                    return null; // Giữ nguyên là danh sách hoặc đoạn văn
-                }
+            // Tiêu đề dạng chữ in hoa đứng riêng không có dấu chấm
+            if (cleanLine === cleanLine.toUpperCase() && cleanLine.length >= 6 && cleanLine.length < 80 && !/[.,;!?…]$/.test(cleanLine)) {
                 return { tag: 'h2', text: cleanLine };
             }
-            
-            // 3. Tiêu đề H2 tự do (dòng ngắn đứng riêng, không phải gạch đầu dòng, không có dấu chấm câu kết thúc)
-            if (!cleanLine.startsWith('-') && !cleanLine.startsWith('•') && !cleanLine.startsWith('*') && !cleanLine.startsWith('+')) {
-                const words = cleanLine.split(/\s+/).length;
-                const endsPunc = /[.,;!?…]$/.test(cleanLine);
-                const endsColon = cleanLine.endsWith(':');
-                
-                // Dòng tiêu đề độc lập: từ 1 đến 18 từ, độ dài 3-110 ký tự, không kết thúc bằng dấu ngắt câu hoặc dấu hai chấm
-                if (!endsPunc && !endsColon && words >= 1 && words <= 18 && cleanLine.length >= 3 && cleanLine.length < 110) {
-                    return { tag: 'h2', text: cleanLine };
-                }
-            }
-            
+
             return null;
         }
 
@@ -3902,7 +3891,7 @@ ${subCardsHtml}
             const newFigure = `<figure class="article-cover-figure">
           <img src="${imageUrl}" alt="${title.replace(/"/g, '&quot;')}" loading="eager" fetchpriority="high">
           <figcaption class="article-cover-caption">
-              ${desc}${captionCredit}
+              Dữ liệu thị trường và phân tích chiến lược tài chính${captionCredit}
           </figcaption>
       </figure>`;
 
@@ -4449,6 +4438,8 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             headingsList = headingsList.filter(h => {
                 const t = h.text;
                 if (!t || t.length < 3) return false;
+                // Bỏ qua nếu trùng với Tiêu đề chính H1 của bài viết
+                if (title && (t.toLowerCase() === title.toLowerCase() || t.includes(title.substring(0, 35)) || title.includes(t.substring(0, 35)))) return false;
                 if (/[│─┌┐└┘├┤┬┴┼▼▲►◄═║]/.test(t)) return false;
                 if (/^\s*\[.*\]\s*$/.test(t)) return false;
                 if (/^(BÁO CÁO PHÂN TÍCH|BÀI VIẾT PHÂN TÍCH|TỔNG HỢP NHẬN ĐỊNH)/i.test(t)) return false;
