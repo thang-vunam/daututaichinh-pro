@@ -1,5 +1,5 @@
 /**
- * stock-realtime.js — Real-time Market Session & Client-side Price Sync Engine
+ * stock-realtime.js — Real-time Market Session & Live Intraday/ATC Price Sync Engine
  * daututaichinh.pro • Data Hub
  */
 
@@ -79,7 +79,9 @@
       let refText = '';
       if (stockData && stockData.ref_price && stockData.current_price) {
         const diff = stockData.current_price - stockData.ref_price;
-        const diffPct = stockData.price_change_pct || ((diff / stockData.ref_price) * 100).toFixed(2);
+        const diffPct = stockData.price_change_pct !== undefined 
+          ? stockData.price_change_pct 
+          : ((diff / stockData.ref_price) * 100).toFixed(2);
         const sign = diff > 0 ? '+' : '';
         const color = diff > 0 ? '#34d399' : (diff < 0 ? '#ef4444' : '#fbbf24');
         refText = ` &bull; <span style="color:${color}; font-weight:600;">${sign}${diff.toLocaleString('vi-VN')} đ (${sign}${diffPct}%)</span> &bull; Tham chiếu: ${stockData.ref_price.toLocaleString('vi-VN')} đ`;
@@ -94,7 +96,7 @@
       }
 
       let label = session.label;
-      if (stockData && stockData.last_updated && label.includes('Ngày')) {
+      if (!session.isLive && stockData && stockData.last_updated && label.includes('Ngày')) {
         const parts = stockData.last_updated.split('-');
         if (parts.length === 3) {
           const dateStr = `${parts[2]}/${parts[1]}/${parts[0]}`;
@@ -105,23 +107,50 @@
     }
   }
 
-  // Sync latest price from /data/stocks.json
+  // Sync latest price from /api/stock-live (Real-time in session / ATC after hours) with fallback to /data/stocks.json
   async function syncLatestPrice() {
     try {
       const tickerEl = document.querySelector('.ticker-code');
       if (!tickerEl) return;
       const currentTicker = tickerEl.innerText.trim().toUpperCase();
 
-      // Fetch same-origin stocks.json (cache-friendly, non-blocking)
-      const res = await fetch(`/data/stocks.json?t=${Date.now()}`);
-      if (!res.ok) return;
-      const stocks = await res.json();
-      const currentStock = stocks.find(s => s.ticker === currentTicker);
-      if (!currentStock || !currentStock.current_price) return;
+      // 1. Load baseline stock data from stocks.json
+      let currentStock = null;
+      try {
+        const res = await fetch(`/data/stocks.json?t=${Date.now()}`);
+        if (res.ok) {
+          const stocks = await res.json();
+          currentStock = stocks.find(s => s.ticker === currentTicker);
+        }
+      } catch (e) {}
 
-      const newPrice = currentStock.current_price;
+      if (!currentStock) return;
+
+      let newPrice = currentStock.current_price;
+
+      // 2. Try fetching live real-time price from serverless endpoint /api/stock-live
+      try {
+        const liveRes = await fetch(`/api/stock-live?ticker=${currentTicker}&t=${Date.now()}`);
+        if (liveRes.ok) {
+          const liveData = await liveRes.json();
+          if (liveData && liveData.success && liveData.currentPrice > 0) {
+            newPrice = liveData.currentPrice;
+            currentStock.current_price = newPrice;
+            if (currentStock.ref_price > 0) {
+              const diff = newPrice - currentStock.ref_price;
+              currentStock.price_change_pct = ((diff / currentStock.ref_price) * 100).toFixed(2);
+            }
+            if (currentStock.eps && currentStock.eps > 0) {
+              currentStock.pe = (newPrice / currentStock.eps).toFixed(2);
+            }
+          }
+        }
+      } catch (liveErr) {
+        // Fallback silently to baseline stocks.json
+      }
+
+      // 3. Update DOM with latest price
       const priceEl = document.getElementById('current-market-price');
-
       if (priceEl && newPrice > 0) {
         priceEl.innerHTML = `${newPrice.toLocaleString('vi-VN')} <span style="font-size:1.1rem; font-weight:500; color:#94a3b8;">VNĐ</span>`;
         if (typeof CURRENT_PRICE !== 'undefined') {
@@ -141,7 +170,6 @@
 
       updateSessionBadge(currentStock);
     } catch (e) {
-      // Graceful fallback: silently keep static HTML price
       updateSessionBadge();
     }
   }
@@ -157,12 +185,10 @@
     syncLatestPrice();
   }
 
-  // Auto-refresh every 60s if market is open
+  // Auto-refresh every 30s during market hours, or 60s otherwise
   setInterval(() => {
     const session = getMarketSessionInfo();
     updateSessionBadge();
-    if (session.isLive) {
-      syncLatestPrice();
-    }
-  }, 60000);
+    syncLatestPrice();
+  }, 30000);
 })();
