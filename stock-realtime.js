@@ -84,13 +84,13 @@
           : ((diff / stockData.ref_price) * 100).toFixed(2);
         const sign = diff > 0 ? '+' : '';
         const color = diff > 0 ? '#34d399' : (diff < 0 ? '#ef4444' : '#fbbf24');
-        refText = ` &bull; <span style="color:${color}; font-weight:600;">${sign}${diff.toLocaleString('vi-VN')} đ (${sign}${diffPct}%)</span> &bull; Tham chiếu: ${stockData.ref_price.toLocaleString('vi-VN')} đ`;
+        refText = `<span style="color:${color}; font-weight:700;">${sign}${diff.toLocaleString('vi-VN')} đ (${sign}${diffPct}%)</span> &bull; <span style="color:#94a3b8;">Tham chiếu: ${stockData.ref_price.toLocaleString('vi-VN')} đ</span>`;
       } else {
         const origText = badgeEl.innerText || badgeEl.textContent || '';
         if (origText.includes('Tham chiếu:')) {
           const m = origText.match(/Tham chiếu:\s*([0-9.,]+)\s*đ?/i);
           if (m) {
-            refText = ` &bull; Tham chiếu: ${m[1]} đ`;
+            refText = `<span style="color:#94a3b8;">Tham chiếu: ${m[1]} đ</span>`;
           }
         }
       }
@@ -103,8 +103,10 @@
           label = label.replace(/Ngày\s+\d{2}\/\d{2}\/\d{4}/, `Ngày ${dateStr}`);
         }
       }
-      badgeEl.innerHTML = `<span style="color:${session.color}; font-weight:600;">${label}</span>${refText}`;
+      badgeEl.innerHTML = `<div style="color:${session.color}; font-weight:600; font-size:0.85rem; line-height:1.35;">${label}</div>` +
+        (refText ? `<div style="font-size:0.85rem; line-height:1.35; margin-top:2px;">${refText}</div>` : '');
     }
+  }
   }
 
   // Sync latest price from /api/stock-live (Real-time in session / ATC after hours) with fallback to /data/stocks.json
