@@ -1704,3 +1704,108 @@ main {
   margin-top: 4px;
   font-variant-numeric: tabular-nums;
 }
+
+
+/* ==========================================================================
+   DATA HUB STOCK HERO HEADER - HORIZONTAL ALIGNMENT (TICKER & PRICE)
+   ========================================================================== */
+.stock-title-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  flex-wrap: nowrap !important;
+  gap: 16px 24px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.stock-title-row > div:first-child {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.live-price-box {
+  flex: 0 0 auto !important;
+  text-align: right !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+}
+
+.ticker-code {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  color: #fbbf24 !important;
+  letter-spacing: -0.5px;
+  line-height: 1 !important;
+  display: inline-block !important;
+}
+
+.current-price {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  color: #fbbf24 !important;
+  line-height: 1 !important;
+  margin-top: 0 !important;
+  display: inline-block !important;
+}
+
+.stock-badge-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-bottom: 8px !important;
+  min-height: 38px !important;
+}
+
+.company-name {
+  font-size: 1.15rem !important;
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin: 0 0 4px 0 !important;
+}
+
+.company-sector {
+  font-size: 0.85rem !important;
+  color: #94a3b8 !important;
+  line-height: 1.4 !important;
+}
+
+.price-change {
+  font-size: 0.85rem !important;
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+  margin-top: 6px !important;
+  text-align: right !important;
+}
+
+.valuation-status-pill {
+  display: inline-block !important;
+  margin-top: 8px !important;
+  font-size: 0.8rem !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+}
+
+@media (max-width: 640px) {
+  .stock-title-row {
+    gap: 12px !important;
+  }
+  .ticker-code, .current-price {
+    font-size: 1.65rem !important;
+  }
+  .company-name {
+    font-size: 0.95rem !important;
+  }
+  .company-sector {
+    font-size: 0.78rem !important;
+  }
+  .price-change {
+    font-size: 0.78rem !important;
+  }
+}
