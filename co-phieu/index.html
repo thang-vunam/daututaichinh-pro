@@ -225,11 +225,12 @@
     @media (max-width: 991px) {
       .stocks-table-card {
         overflow-x: auto;
-        overflow-y: auto;
-        max-height: 75vh;
+        overflow-y: visible;
+        max-height: none;
         -webkit-overflow-scrolling: touch;
       }
       .hub-table thead th {
+        position: sticky;
         top: 0;
       }
       /* Freeze first column (Mã CP) on mobile & tablets */
@@ -897,5 +898,68 @@
 <script src="/ticker-live.js" defer></script>
 
   <script src="/stock-realtime.js"></script>
+
+  <!-- FLOATING SYNCED TABLE HEADER ON SCROLL -->
+  <div id="floating-hub-header" style="position:fixed; left:16px; right:16px; z-index:85; display:none; overflow:hidden; background:#141e34; border:1px solid rgba(255,255,255,0.12); border-bottom:2px solid rgba(245,158,11,0.5); border-radius:12px 12px 0 0; box-shadow:0 8px 20px rgba(0,0,0,0.5);">
+    <table class="hub-table" id="floating-table-clone" style="margin-bottom:0; width:100%;">
+      <thead>
+        <tr>
+          <th>Mã CP</th>
+          <th>Ngành Nghề</th>
+          <th>Thị Giá (VNĐ)</th>
+          <th>P/E</th>
+          <th>P/B</th>
+          <th>EPS (VNĐ)</th>
+          <th>Vốn Hóa</th>
+          <th>Hành Động</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+  <script>
+    (function() {
+      const origTable = document.getElementById('stocks-table');
+      const card = document.querySelector('.stocks-table-card');
+      const floatWrap = document.getElementById('floating-hub-header');
+      const floatTable = document.getElementById('floating-table-clone');
+      if (!origTable || !card || !floatWrap || !floatTable) return;
+
+      function syncFloatingHeader() {
+        const topBar = document.querySelector('.top-bar');
+        const topBarH = topBar ? topBar.offsetHeight : 105;
+        floatWrap.style.top = topBarH + 'px';
+        
+        const cardRect = card.getBoundingClientRect();
+        const origRect = origTable.getBoundingClientRect();
+        
+        const origThead = origTable.querySelector('thead');
+        const origTheadRect = origThead.getBoundingClientRect();
+        // Show floating header seamlessly when original thead reaches or goes under topBar
+        if (origTheadRect.top <= topBarH && origRect.bottom >= topBarH + 90) {
+          floatWrap.style.display = 'block';
+          floatTable.style.width = origTable.offsetWidth + 'px';
+          
+          const origThs = origTable.querySelectorAll('thead th');
+          const cloneThs = floatTable.querySelectorAll('thead th');
+          origThs.forEach((th, i) => {
+            if (cloneThs[i]) {
+              cloneThs[i].style.width = th.offsetWidth + 'px';
+              cloneThs[i].style.minWidth = th.offsetWidth + 'px';
+            }
+          });
+          floatWrap.scrollLeft = card.scrollLeft;
+        } else {
+          floatWrap.style.display = 'none';
+        }
+      }
+
+      window.addEventListener('scroll', syncFloatingHeader, { passive: true });
+      window.addEventListener('resize', syncFloatingHeader, { passive: true });
+      card.addEventListener('scroll', function() {
+        floatWrap.scrollLeft = card.scrollLeft;
+      }, { passive: true });
+    })();
+  </script>
+
 </body>
 </html>

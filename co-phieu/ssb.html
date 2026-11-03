@@ -616,11 +616,11 @@
       border-radius: 8px;
     }
     .valuation-widget-card {
-      background: #141a24;
+      background: #1e293b; /* CÙNG MÀU NỀN CŨ VỚI TABLE-CONTAINER */
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
       padding: 18px 20px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
     .vcard-row {
       display: flex;
@@ -646,13 +646,44 @@
     .vcard-section-title {
       font-size: 0.78rem;
       font-weight: 700;
-      color: #64748b;
+      color: #f59e0b;
       letter-spacing: 0.06em;
       margin-top: 14px;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       text-transform: uppercase;
     }
 
+    /* Mobile Header Alignment Fix */
+    @media (max-width: 768px) {
+      .pseo-container {
+        padding-top: 155px !important;
+      }
+      .stock-title-row {
+        flex-direction: column !important;
+        gap: 14px !important;
+        align-items: stretch !important;
+      }
+      .stock-title-row > div:first-child {
+        width: 100% !important;
+      }
+      .company-name {
+        font-size: 1.3rem !important;
+        line-height: 1.4 !important;
+        word-break: normal !important;
+        margin-bottom: 6px !important;
+      }
+      .company-sector {
+        font-size: 0.82rem !important;
+        color: #94a3b8 !important;
+      }
+      .live-price-box {
+        align-items: flex-start !important;
+        text-align: left !important;
+        width: 100% !important;
+        padding-top: 12px !important;
+        border-top: 1px dashed rgba(255, 255, 255, 0.1) !important;
+      }
+    }
   </style>
 </head>
 <body data-lead-popup>
@@ -964,17 +995,13 @@
         </div>
       </div>
       <aside class="valuation-widget-card">
-        <div class="vcard-row"><span class="vcard-label">Vốn hóa</span><span class="vcard-val">52,032 tỷ</span></div>
-        <div class="vcard-row"><span class="vcard-label">P/E</span><span class="vcard-val">16.0x</span></div>
-        <div class="vcard-row"><span class="vcard-label">P/B</span><span class="vcard-val">1.20x</span></div>
-        <div class="vcard-row"><span class="vcard-label">EPS (TTM)</span><span class="vcard-val">939</span></div>
+        <div class="vcard-section-title" style="margin-top:0;">⚡ CHỈ SỐ TÀI CHÍNH BỔ SUNG</div>
         <div class="vcard-row"><span class="vcard-label">Cổ tức tiền / Tỷ suất</span><span class="vcard-val">0 / 0.0%</span></div>
         <div class="vcard-row"><span class="vcard-label">ROE / ROA</span><span class="vcard-val">7.8% / 0.8%</span></div>
         <div class="vcard-row"><span class="vcard-label">Biên LN ròng</span><span class="vcard-val">10.7%</span></div>
         <div class="vcard-row"><span class="vcard-label">Nợ / Vốn chủ</span><span class="vcard-val">—</span></div>
 
-        <div class="vcard-section-title">SỞ HỮU</div>
-
+        <div class="vcard-section-title">📊 CƠ CẤU SỞ HỮU</div>
         <div class="vcard-row"><span class="vcard-label">CP lưu hành</span><span class="vcard-val">3.47 tỷ</span></div>
         <div class="vcard-row"><span class="vcard-label">Free float</span><span class="vcard-val">92.0%</span></div>
         <div class="vcard-row"><span class="vcard-label">Nước ngoài</span><span class="vcard-val">0.8%</span></div>
