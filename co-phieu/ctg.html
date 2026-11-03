@@ -595,6 +595,64 @@
         font-size: 1.8rem;
       }
     }
+  
+    /* Valuation & Ownership Grid Layout */
+    .valuation-flex-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+      margin-top: 16px;
+    }
+    @media (max-width: 991px) {
+      .valuation-flex-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+    .matrix-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 8px;
+    }
+    .valuation-widget-card {
+      background: #141a24;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+    .vcard-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.88rem;
+    }
+    .vcard-row:last-child {
+      border-bottom: none;
+    }
+    .vcard-label {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .vcard-val {
+      color: #f1f5f9;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: right;
+    }
+    .vcard-section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.06em;
+      margin-top: 14px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
   </style>
 </head>
 <body data-lead-popup>
@@ -857,8 +915,11 @@
         🔥 Dữ liệu chuẩn hóa sàn HOSE
       </span>
     </h2>
-    <div class="mobile-scroll-hint" style="display:none; font-size:0.75rem; color:#94a3b8; margin-bottom:8px;">👉 <em>Vuốt ngang để xem đủ các chỉ số tài chính</em></div>
-    <table class="matrix-table">
+    <div class="valuation-flex-layout">
+      <div class="table-side">
+        <div class="mobile-scroll-hint" style="display:none; font-size:0.75rem; color:#94a3b8; margin-bottom:8px;">👉 <em>Vuốt ngang để xem đủ các chỉ số tài chính</em></div>
+        <div class="matrix-table-wrap">
+          <table class="matrix-table">
       <thead>
         <tr>
           <th>Chỉ Tiêu Định Giá</th>
@@ -900,6 +961,27 @@
         </tr>
       </tbody>
     </table>
+        </div>
+      </div>
+      <aside class="valuation-widget-card">
+        <div class="vcard-row"><span class="vcard-label">Vốn hóa</span><span class="vcard-val">233,397 tỷ</span></div>
+        <div class="vcard-row"><span class="vcard-label">P/E</span><span class="vcard-val">5.5x</span></div>
+        <div class="vcard-row"><span class="vcard-label">P/B</span><span class="vcard-val">1.13x</span></div>
+        <div class="vcard-row"><span class="vcard-label">EPS (TTM)</span><span class="vcard-val">5,478</span></div>
+        <div class="vcard-row"><span class="vcard-label">Cổ tức tiền / Tỷ suất</span><span class="vcard-val">450 / 1.5%</span></div>
+        <div class="vcard-row"><span class="vcard-label">ROE / ROA</span><span class="vcard-val">22.6% / 1.5%</span></div>
+        <div class="vcard-row"><span class="vcard-label">Biên LN ròng</span><span class="vcard-val">21.9%</span></div>
+        <div class="vcard-row"><span class="vcard-label">Nợ / Vốn chủ</span><span class="vcard-val">—</span></div>
+
+        <div class="vcard-section-title">SỞ HỮU</div>
+
+        <div class="vcard-row"><span class="vcard-label">CP lưu hành</span><span class="vcard-val">7.77 tỷ</span></div>
+        <div class="vcard-row"><span class="vcard-label">Free float</span><span class="vcard-val">13.4%</span></div>
+        <div class="vcard-row"><span class="vcard-label">Nước ngoài</span><span class="vcard-val">24.5%</span></div>
+        <div class="vcard-row"><span class="vcard-label">Nhà nước</span><span class="vcard-val">64.5%</span></div>
+        <div class="vcard-row"><span class="vcard-label">Tổ chức</span><span class="vcard-val">85.3%</span></div>
+      </aside>
+    </div>
   </section>
 
   <!-- SMART INTERNAL LINKING: PHÂN TÍCH & BÀI VIẾT THỰC TẾ -->
