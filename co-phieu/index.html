@@ -926,41 +926,6 @@
 </script>
 <script src="/ticker-live.js" defer></script>
 
-  <!-- Live Data Hub Portal Sync Engine -->
-  <script>
-    async function syncPortalLive() {
-      try {
-        const res = await fetch('/data/stocks.json?t=' + Date.now());
-        if (!res.ok) return;
-        const stocks = await res.json();
-        const map = {};
-        stocks.forEach(s => { map[s.ticker] = s; });
-
-        document.querySelectorAll('tr[data-ticker]').forEach(row => {
-          const t = row.getAttribute('data-ticker');
-          const s = map[t];
-          if (!s) return;
-
-          const priceEl = row.querySelector('.cell-price');
-          if (priceEl && s.current_price) {
-            priceEl.innerText = Number(s.current_price).toLocaleString('vi-VN');
-          }
-          const peEl = row.querySelector('.cell-pe');
-          if (peEl && s.pe) {
-            peEl.innerText = s.pe + 'x';
-          }
-          const mcapEl = row.querySelector('.cell-mcap');
-          if (mcapEl && s.market_cap) {
-            mcapEl.innerText = s.market_cap;
-          }
-        });
-      } catch(e) {}
-    }
-    document.addEventListener('DOMContentLoaded', () => {
-      syncPortalLive();
-      setInterval(syncPortalLive, 20000);
-    });
-  </script>
-
+  <script src="/stock-realtime.js"></script>
 </body>
 </html>
