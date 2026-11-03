@@ -19,7 +19,8 @@ export default async function handler(req) {
       const vpsResp = await fetch(`https://bgapidatafeed.vps.com.vn/getliststockdata/${ticker}`, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
+        },
+        signal: AbortSignal.timeout(2500)
       });
 
       if (vpsResp.ok) {
@@ -66,6 +67,7 @@ export default async function handler(req) {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Content-Type': 'application/json'
       },
+      signal: AbortSignal.timeout(2500),
       body: JSON.stringify({
         symbol: ticker,
         limit: 1
