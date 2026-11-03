@@ -159,14 +159,25 @@
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
     .stock-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 16px;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: flex-start !important;
+      flex-wrap: nowrap !important;
+      gap: 16px 24px !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       padding-bottom: 20px;
       margin-bottom: 20px;
+    }
+    .stock-title-row > div:first-child {
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+    }
+    .live-price-box {
+      flex: 0 0 auto !important;
+      text-align: right !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-end !important;
     }
     .stock-badge-group {
       display: flex;
