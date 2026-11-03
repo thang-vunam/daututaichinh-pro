@@ -11076,123 +11076,60 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
 
 
 
-        async function publishToGithub() {
-
-
-
+                async function publishToGithub() {
+            const btn = document.getElementById('btn-publish');
             const token = getItemSafe('github_token');
-
-
-
             const owner = getItemSafe('github_owner') || 'thang-vunam';
-
-
-
             const repo = 'daututaichinh-pro';
-
-
-
             if(!token) return alert("Vui lòng cấu hình GitHub Personal Access Token trước!");
 
-
-
-
-
-
-
-            const slug = document.getElementById('review-slug').value;
-
-
-
-            const content = document.getElementById('review-html').value;
-
-
-
+            const slug = document.getElementById('review-slug').value.trim();
+            let content = document.getElementById('review-html').value;
             const category = document.getElementById('input-category').value;
-
-
-
-            const title = document.getElementById('review-title').value;
-
-
-
-            const desc = document.getElementById('review-desc').value;
-
-
-
+            const title = document.getElementById('review-title').value.trim();
+            const desc = document.getElementById('review-desc').value.trim();
             
-
-
-
             if(!slug || !content) return alert("Thiếu slug hoặc nội dung bài viết!");
 
-
-
-
-
-
-
             const path = `${category}/${slug}.html`;
+            const coverPath = `images/cover-${slug}.png`;
+            const publicCoverUrl = `https://daututaichinh.pro/${coverPath}`;
+            const relativeCoverUrl = `/${coverPath}`;
 
-
-
-            
-
-
-
-            // BƯỚC 0: Tự động Upload Ảnh Bìa Thương Hiệu nếu được tạo bằng Studio
-
-
-
-            if (currentArticleData && currentArticleData.coverBase64Payload) {
-
-
-
-                try {
-
-
-
-                    const coverPath = `images/cover-${slug}.png`;
-
-
-
-                    btn.innerHTML = '<div class="loader"></div> Đang Upload Ảnh Bìa Thương Hiệu...';
-
-
-
-                    await uploadBinaryFileToGithub(owner, repo, coverPath, currentArticleData.coverBase64Payload, `Cover Studio: Thêm ảnh bìa cover-${slug}.png`, token);
-
-
-
-                } catch(coverErr) {
-
-
-
-                    console.warn("Không thể upload ảnh bìa tự động, tiếp tục xuất bản HTML:", coverErr);
-
-
-
+            // BƯỚC 0: Tự động trích xuất và Upload Ảnh Bìa Thương Hiệu nếu có base64
+            let base64Payload = (currentArticleData && currentArticleData.coverBase64Payload) ? currentArticleData.coverBase64Payload : null;
+            if (!base64Payload && content.includes('data:image/')) {
+                const b64Match = content.match(/data:image\/[a-zA-Z]+;base64,([A-Za-z0-9+/=]+)/);
+                if (b64Match) {
+                    base64Payload = b64Match[1];
                 }
-
-
-
             }
 
+            if (base64Payload) {
+                try {
+                    if (btn) {
+                        btn.innerHTML = '<div class="loader"></div> Đang Upload Ảnh Bìa Thương Hiệu...';
+                        btn.disabled = true;
+                    }
+                    await uploadBinaryFileToGithub(owner, repo, coverPath, base64Payload, `Cover Studio: Thêm ảnh bìa cover-${slug}.png`, token);
+                } catch(coverErr) {
+                    console.warn("Không thể upload ảnh bìa tự động, tiếp tục xuất bản HTML:", coverErr);
+                }
 
-
+                // SANITIZE: Loại bỏ hoàn toàn data:image base64 trong HTML để tuân thủ 100% chuẩn Google Search Console (Schema.org)
+                content = content.replace(/"image":\s*"data:image\/[^"]+"/g, `"image": "${publicCoverUrl}"`);
+                content = content.replace(/<meta\s+property=["']og:image["']\s+content=["']data:image\/[^"']+["']/g, `<meta property="og:image" content="${publicCoverUrl}"`);
+                content = content.replace(/<meta\s+name=["']twitter:image["']\s+content=["']data:image\/[^"']+["']/g, `<meta name="twitter:image" content="${publicCoverUrl}"`);
+                content = content.replace(/<img\s+src="data:image\/[^"]+"/g, `<img src="${relativeCoverUrl}"`);
+                
+                // Đồng bộ ngược lại ô review-html
+                document.getElementById('review-html').value = content;
+            }
             
-
-
-
-            const btn = document.getElementById('btn-publish');
-
-
-
-            btn.innerHTML = '<div class="loader"></div> Bước 1/4: Đang Push bài viết...';
-
-
-
-            btn.disabled = true;
+            if (btn) {
+                btn.innerHTML = '<div class="loader"></div> Bước 1/4: Đang Push bài viết...';
+                btn.disabled = true;
+            }
 
 
 
@@ -21695,82 +21632,27 @@ function toggleFaq(el) {
 
 
 
-        function applyStudioCoverToArticle() {
-
-
-
+                function applyStudioCoverToArticle() {
             if (!currentBrandCoverBase64) renderStudioCover();
-
-
-
             
-
-
-
             const slug = document.getElementById('review-slug')?.value || 'bai-viet';
-
-
-
             const coverRelativeUrl = `/images/cover-${slug}.png`;
-
-
-
+            const coverAbsoluteUrl = `https://daututaichinh.pro${coverRelativeUrl}`;
             
-
-
-
             const urlInput = document.getElementById('review-image-url');
-
-
-
             if (urlInput) urlInput.value = coverRelativeUrl;
-
-
-
             
-
-
-
-            applyCoverImageToHtml(currentBrandCoverBase64, 'Đầu Tư Tài Chính .pro', 'https://daututaichinh.pro');
-
-
-
+            // Dùng URL chuẩn cho OpenGraph / Twitter / Schema.org để Google Search Console không báo lỗi Incorrect value type
+            applyCoverImageToHtml(coverAbsoluteUrl, 'Đầu Tư Tài Chính .pro', 'https://daututaichinh.pro');
             
-
-
-
             if (typeof currentArticleData !== 'undefined' && currentArticleData) {
-
-
-
                 currentArticleData.coverBase64Payload = currentBrandCoverBase64.split(',')[1];
-
-
-
                 currentArticleData.coverTargetFilename = `cover-${slug}.png`;
-
-
-
                 currentArticleData.imageUrl = coverRelativeUrl;
-
-
-
             }
 
-
-
-
-
-
-
             closeCoverStudioModal();
-
-
-
             alert("Đã áp dụng Ảnh Bìa Thương Hiệu thành công! Ảnh sẽ tự động được tải lên GitHub khi bạn bấm Xuất bản.");
-
-
-
         }
 
 
