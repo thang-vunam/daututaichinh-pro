@@ -26,7 +26,7 @@
     if (timeNum < 900) {
       return { 
         status: 'pre_market', 
-        label: `⏳ Chờ mở phiên (09:00) &bull; Giá chốt phiên ATC hôm trước`, 
+        label: `⏰ Chờ mở phiên (09:00) &bull; Giá chốt phiên ATC hôm trước`, 
         color: '#fbbf24',
         isLive: false 
       };
@@ -107,9 +107,8 @@
         (refText ? `<div style="font-size:0.85rem; line-height:1.35; margin-top:2px;">${refText}</div>` : '');
     }
   }
-  }
 
-  // Sync latest price from /api/stock-live (Real-time in session / ATC after hours) with fallback to /data/stocks.json
+  // Sync latest price from /api/stock-live (Real-time VPS / Vietcap fallback) with baseline from /data/stocks.json
   async function syncLatestPrice() {
     try {
       const tickerEl = document.querySelector('.ticker-code');
@@ -138,7 +137,14 @@
           if (liveData && liveData.success && liveData.currentPrice > 0) {
             newPrice = liveData.currentPrice;
             currentStock.current_price = newPrice;
-            if (currentStock.ref_price > 0) {
+            
+            // Cập nhật giá tham chiếu chính thức từ sàn nếu có
+            if (liveData.refPrice && liveData.refPrice > 0) {
+              currentStock.ref_price = liveData.refPrice;
+            }
+            if (liveData.priceChangePct !== undefined) {
+              currentStock.price_change_pct = liveData.priceChangePct;
+            } else if (currentStock.ref_price > 0) {
               const diff = newPrice - currentStock.ref_price;
               currentStock.price_change_pct = ((diff / currentStock.ref_price) * 100).toFixed(2);
             }
@@ -187,10 +193,10 @@
     syncLatestPrice();
   }
 
-  // Auto-refresh every 30s during market hours, or 60s otherwise
+  // Auto-refresh every 15s during market hours, or 60s otherwise
   setInterval(() => {
     const session = getMarketSessionInfo();
     updateSessionBadge();
     syncLatestPrice();
-  }, 30000);
+  }, 15000);
 })();
