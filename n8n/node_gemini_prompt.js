@@ -105,6 +105,9 @@ TIÊU CHUẨN NỘI DUNG CHUYÊN NGHIỆP:
 
 QUY TẮC ĐỊNH DẠNG JSON ĐẦU RA BẮT BUỘC (CRITICAL):
 - BẮT BUỘC ĐẦU RA LÀ 1 CHUỖI JSON HỢP LỆ DUY NHẤT bọc trong thẻ json chuẩn. TUYỆT ĐỐI KHÔNG viết bất kỳ câu chữ nào bên ngoài khối JSON.
+- NGUYÊN TẮC PHÂN MỤC: TUYỆT ĐỐI KHÔNG dùng dấu gạch ngang phân cách thô '---' giữa các phần để tránh tạo khoảng trắng khổng lồ; phân chia bài viết mạch lạc bằng các thẻ <h2> và <h3>.
+- KHỐI TRÍCH DẪN (blockquote): Nếu trích dẫn lời chuyên gia, chỉ dùng 1-2 câu châm ngôn ngắn gọn đắt giá, hệ thống sẽ tự động định dạng thanh viền màu trắng tinh tế.
+- BỘ CÂU HỎI THƯỜNG GẶP (faqs - TỰ ĐỘNG HÓA 100%): BẮT BUỘC tự động tạo ĐÚNG 3 câu hỏi và câu trả lời thực tế, bám sát các số liệu, nghịch lý và vấn đề cốt lõi nhất của bài viết. TUYỆT ĐỐI KHÔNG tạo câu hỏi chung chung vô thưởng vô phạt.
 Trả về ĐÚNG 1 chuỗi JSON hợp lệ duy nhất:
 {
   "title": "Tiêu đề chuẩn tài chính, BẮT BUỘC dạng Sentence Case (chỉ viết hoa chữ đầu câu và tên riêng/mã CK như VN-Index, SSI; TUYỆT ĐỐI KHÔNG viết hoa từng chữ). Độ dài 35-55 ký tự khớp 100% nội dung phân tích",

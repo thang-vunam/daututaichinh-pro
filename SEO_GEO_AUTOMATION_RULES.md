@@ -65,8 +65,29 @@ Mọi bài viết sinh ra (từ AI Dashboard hoặc n8n) **BẮT BUỘC** tích 
   2. *CTR & Tâm lý độc giả:* Tiếng Việt dùng Sentence Case tạo cảm giác tự nhiên, tin cậy, chuẩn báo chí tài chính chuyên nghiệp; Title Case gây cảm giác spam, giật cục và giảm tỷ lệ nhấp chuột.
   3. *Tránh Google Title Rewrite:* Tránh việc thuật toán Google tự động viết lại tiêu đề khác ý đồ tác giả do viết hoa bất thường.
 
+### 2.7. Quy Chuẩn Khối Trích Dẫn (Blockquote Styling)
+- **Thanh viền bên trái (Accent Bar):** BẮT BUỘC dùng **màu trắng tinh tế** `border-left: 3px solid #ffffff;`. TUYỆT ĐỐI KHÔNG dùng viền màu vàng (`#fbbf24`) gây chói mắt và rối giao diện.
+- **Màu nền:** Dùng nền kính tối nhẹ trung tính `rgba(255, 255, 255, 0.03);` (loại bỏ hoàn toàn dải màu vàng `linear-gradient yellow`).
+- **Khoảng cách:** `margin: 18px 0; padding: 12px 18px;` tạo sự thanh thoát, gọn gàng và tôn vinh nội dung câu trích dẫn.
+
+### 2.8. Quy Chuẩn Khoảng Cách & Phân Mục (Spacing & Typography)
+- **Cấm tuyệt đối dấu gạch ngang thô (`---`):** Không dùng `---` hoặc `<p>---</p>` để phân cách đoạn văn; các phân mục nội dung phải được dẫn dắt tự nhiên bằng các thẻ `<h2>` và `<h3>`.
+- **Gắn kết tiêu đề mục con:** Áp dụng `h2 + h3 { margin-top: 8px !important; }` để khi mục `<h3>` nằm ngay sau `<h2>`, khoảng cách hiển thị gắn kết chặt chẽ như tiêu đề chương và phân mục, không tạo khoảng trống đứt gãy.
+- **Khoảng cách tiêu chuẩn:**
+  - `h2`: `margin: 30px 0 12px;`
+  - `h3`: `margin: 20px 0 10px;`
+  - Đoạn văn `<p>`: `margin: 0 0 15px;`
+  - Danh sách ý (`.article-sub-list`): `margin: 10px 0;` (các mục con `margin: 6px 0;`).
+
+### 2.9. Quy Chuẩn Tự Động Hóa FAQ & Rich Snippets (Automated FAQ - 100% Tự Động)
+- **Cơ chế tự động hóa hoàn toàn:** Hệ thống n8n tự động phân tích toàn bộ nội dung bài viết để sinh ĐÚNG 3 câu hỏi và câu trả lời thường gặp (FAQ) thiết thực nhất, đào sâu trực tiếp vào các nghịch lý, số liệu hoặc vấn đề trọng tâm của bài. Người dùng KHÔNG CẦN customize thủ công.
+- **Tiêu chuẩn Schema.org FAQPage:** Tự động trích xuất các cặp Hỏi - Đáp này thành Schema JSON-LD `FAQPage` nhúng vào `<head>` để Google hiển thị Rich Snippets trực tiếp trên SERP.
+- **Cơ chế Accordion tương tác:**
+  - Không nhúng thuộc tính nội dòng `style="display:none"` làm kẹt trạng thái mở.
+  - Sử dụng class `.active` với `.faq-item.active .faq-answer { display: block !important; }` và hiệu ứng xoay mũi tên chevron `.fa-chevron-down` mượt mà.
+
 ---
 
 ## 3. Trạng Thái Hệ Thống Tự Động Hóa (Đã kích hoạt trên Live Production)
-- **AI Dashboard (`AI-Dashboard.html`):** Đã tích hợp quy trình 5 bước tự động (Push bài $\rightarrow$ Catalog $\rightarrow$ Homepage DD/MM/YYYY $\rightarrow$ Sitemap.xml $\rightarrow$ llms.txt) và Prompt Smart Linking 3 tầng.
-- **n8n Automation (`n8n.kotaduck.cc` - ID: `I1s1oP386rgDTF0F`):** Gemini Prompt và Node `GitHub API Auto-Publish & Catalog Sync` đã được cập nhật trực tiếp để tự động chèn liên kết thông minh, cập nhật `sitemap.xml`, `llms.txt` và `index.html`.
+- **AI Dashboard (`AI-Dashboard.html`):** Đã tích hợp quy trình 5 bước tự động, bộ lọc `formatSentenceCase()`, FAQ Studio tương tác AI và chuẩn hóa khoảng cách/blockquote trắng.
+- **n8n Automation (`n8n.kotaduck.cc` - ID: `I1s1oP386rgDTF0F`):** Gemini Prompt, HTML Packager và Schema Engine đã được đồng bộ 100% tự động sinh FAQ theo nội dung bài viết, chuẩn hóa Sentence Case và định dạng giao diện đồng bộ.
