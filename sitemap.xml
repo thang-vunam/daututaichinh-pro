@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://daututaichinh.pro/</loc>
-    <lastmod>2026-11-02</lastmod>
+    <lastmod>2026-11-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -14,7 +14,7 @@
   </url>
   <url>
     <loc>https://daututaichinh.pro/blog/</loc>
-    <lastmod>2026-10-27</lastmod>
+    <lastmod>2026-11-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -447,6 +447,12 @@
   <url>
     <loc>https://daututaichinh.pro/market/thao-kip-no-tam-ly-thi-truong-chung-khoan-02-11-2026.html</loc>
     <lastmod>2026-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://daututaichinh.pro/blog/3-nghich-ly-nguoc-doi-phia-sau-nhip-dieu-chinh-chung-khoan-quy-3-2026.html</loc>
+    <lastmod>2026-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
