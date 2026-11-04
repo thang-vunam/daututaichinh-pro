@@ -5063,7 +5063,7 @@ Bạn có thể viết:
 
 
 
-                const words = [`cổ phiếu ${ticker}`, `mã ${ticker}`, ticker];
+                const words = [`(${ticker})`, `cổ phiếu ${ticker}`, `mã ${ticker}`, ticker];
 
 
 
@@ -5108,6 +5108,14 @@ Bạn có thể viết:
 
 
             }
+
+
+
+            // Strip redundant outer parentheses around ticker badges e.g. ( [📈 BID] )
+
+
+
+            modifiedHtml = modifiedHtml.replace(/\(\s*(<a\s+[^>]*class=["']ticker-badge["'][^>]*>[\s\S]*?<\/a>)\s*\)/gi, '$1');
 
 
 
