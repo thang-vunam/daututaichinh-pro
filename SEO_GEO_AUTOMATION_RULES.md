@@ -110,6 +110,17 @@ Mọi bài viết sinh ra (từ AI Dashboard hoặc n8n) **BẮT BUỘC** tích 
   - BẮT BUỘC cung cấp tên công ty và mã chứng khoán niêm yết (Ví dụ: *Build-A-Bear Workshop* – mã niêm yết NYSE: `BBW`; *Apple* – NASDAQ: `AAPL`; *FPT* – HOSE: `FPT`...).
   - Giúp bài viết đạt chuẩn EEAT (Experience, Expertise, Authoritativeness, Trustworthiness) cao nhất theo tiêu chuẩn đánh giá của Google và các mô hình tìm kiếm thông minh (GEO).
 
+### 2.12. Quy Chuẩn Nút Điều Hướng Data Hub
+- **Tên hiển thị:** BẮT BUỘC chỉ để **"Data Hub"** (loại bỏ hậu tố "VN30" để ngắn gọn, tinh tế và sẵn sàng cho việc mở rộng dữ liệu ngoài rổ VN30).
+- **Mã HTML chuẩn:**
+  ```html
+  <a href="/co-phieu/" style="color:#fbbf24; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:4px 10px; font-weight:600; text-decoration:none; transition:all 0.2s;"><i class="fa-solid fa-chart-line"></i> Data Hub</a>
+  ```
+
+### 2.13. Quy Chuẩn Metadata Đầu Bài Viết (Clean Meta Bar)
+- **Thông tin giữ lại:** Chỉ hiển thị 2 trường cốt lõi là **📅 Đăng ngày: DD/MM/YYYY** và **📁 Chuyên mục: Thị trường / Bài viết**.
+- **Loại bỏ vĩnh viễn:** KHÔNG hiển thị mục tác giả mặc định `👤 Ban Phân tích daututaichinh.pro` để thanh thông tin thoáng đãng, tập trung trực tiếp vào nội dung.
+
 ## 3. Trạng Thái Hệ Thống Tự Động Hóa (Đã kích hoạt trên Live Production)
 - **AI Dashboard (`AI-Dashboard.html`):** Đã tích hợp quy trình 5 bước tự động, bộ lọc `formatSentenceCase()`, FAQ Studio tương tác AI và chuẩn hóa khoảng cách/blockquote trắng.
 - **n8n Automation (`n8n.kotaduck.cc` - ID: `I1s1oP386rgDTF0F`):** Gemini Prompt, HTML Packager và Schema Engine đã được đồng bộ 100% tự động sinh FAQ theo nội dung bài viết, chuẩn hóa Sentence Case và định dạng giao diện đồng bộ.
