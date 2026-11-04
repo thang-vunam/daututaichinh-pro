@@ -10499,7 +10499,24 @@ main {
             const iframe = document.getElementById('preview-iframe');
             let html = document.getElementById('review-html').value;
             if(iframe && html) {
-                // Đảm bảo style.css luôn hiển thị trọn vẹn ngay cả khi chạy Dashboard từ file:///
+                // 1. Tự động chuyển toàn bộ link nội bộ (dạng /market/, /blog/...) thành URL đầy đủ https://daututaichinh.pro/...
+                // Kèm target="_blank" để khi user click kiểm tra trong Preview, link sẽ mở ngay tab mới trên trang web thật (tránh hoàn toàn file:///C:/)
+                html = html.replace(/<a\s+([^>]*?)href=(["'])(\/[^"']*)\2([^>]*?)>/gi, (match, before, quote, path, after) => {
+                    let attrs = `${before} href="https://daututaichinh.pro${path}" ${after}`.trim();
+                    if (!attrs.includes('target=')) attrs += ' target="_blank"';
+                    if (!attrs.includes('rel=')) attrs += ' rel="noopener"';
+                    return `<a ${attrs}>`;
+                });
+
+                // 2. Đảm bảo các link ngoài cũng có target="_blank"
+                html = html.replace(/<a\s+([^>]*?)href=(["'])(https?:\/\/[^"']*)\2([^>]*?)>/gi, (match, before, quote, url, after) => {
+                    let attrs = `${before} href="${url}" ${after}`.trim();
+                    if (!attrs.includes('target=')) attrs += ' target="_blank"';
+                    if (!attrs.includes('rel=')) attrs += ' rel="noopener"';
+                    return `<a ${attrs}>`;
+                });
+
+                // 3. Đảm bảo style.css luôn hiển thị trọn vẹn ngay cả khi chạy Dashboard từ file:///
                 if (typeof MASTER_PREVIEW_CSS !== 'undefined' && MASTER_PREVIEW_CSS) {
                     if (!html.includes('id="inlined-preview-css"')) {
                         html = html.replace('</head>', '  <style id="inlined-preview-css">\n' + MASTER_PREVIEW_CSS + '\n  </style>\n</head>');
