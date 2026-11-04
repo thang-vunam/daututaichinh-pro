@@ -2687,11 +2687,11 @@ Bạn có thể viết:
 
 
 
-                            <button type="button" class="btn" onclick="generateAutoFaqInEditor()" style="font-size: 0.8rem; padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #93c5fd; justify-content: center;">
+                            <button type="button" class="btn" onclick="openFaqStudioModal()" style="font-size: 0.8rem; padding: 6px 12px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #93c5fd; justify-content: center;">
 
 
 
-                                <i class="fa-solid fa-circle-question"></i> Tạo 3 câu hỏi FAQ Rich Snippet
+                                <i class="fa-solid fa-circle-question"></i> FAQ Studio (Biên tập & Tạo bằng AI)
 
 
 
@@ -5996,6 +5996,7 @@ NHIỆM VỤ BIÊN TẬP VÀ KIẾN TRÚC NỘI DUNG:
    - ĐỒNG BỘ SỐ LƯỢNG: Tự động kiểm tra và đếm chính xác số lượng điểm bất ngờ / luận điểm thực tế trong thân bài. Nếu tác giả viết nhầm "5 Sự Thật" trong tiêu đề nhưng thân bài thực tế chỉ có 4 điểm (hoặc số khác), BẮT BUỘC ĐỒNG BỘ TIÊU ĐỀ VÀ PHẦN 2 THEO ĐÚNG SỐ LƯỢNG THỰC TẾ (ví dụ: tự động sửa thành "4 Sự Thật Ngược Đời Phía Sau Nhịp Điều Chỉnh"). Tuyệt đối không để số lượng tiêu đề lệch với nội dung thực tế.
 
    - Tối ưu Tiêu đề chuẩn RankMath SEO, hấp dẫn nhưng giữ trọn văn phong tác giả.
+   - NGUYÊN TẮC BẮT BUỘC VỀ TIÊU ĐỀ: DÙNG SENTENCE CASE (chỉ viết hoa chữ cái đầu tiên, chữ cái sau dấu hai chấm : hoặc hỏi ?, và các danh từ riêng/mã chứng khoán viết tắt như VN-Index, SSI, FPT, Việt Nam...). TUYỆT ĐỐI KHÔNG VIẾT HOA TỪNG TỪ (Title Case kiểu tiếng Anh).
 
 
 
@@ -10732,7 +10733,7 @@ Trả về 1 chuỗi JSON duy nhất:
 
 
 
-{"title":"Chứa từ khóa chính. BẮT BUỘC 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. BẮT BUỘC 120-150 ký tự","htmlContent":"Nội dung HTML hoàn chỉnh gồm đoạn mở đầu <p>, tiếp theo là các phần <h2>, <h3>, <p>, <ul>, <li>, bảng <table> nếu có so sánh số liệu. CHÈN 1-2 Outbound link. (CHÚ Ý: LƯU Ý TỐI QUAN TRỌNG: Mọi dấu ngoặc kép bên trong HTML hoặc Blockquote phải được thay bằng dấu nháy đơn (\') hoặc escape (\\\") để KHÔNG LÀM VỠ định dạng JSON)","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa mang tính biểu trưng hoặc trừu tượng (ví dụ: finance abstract background, business workspace laptop, bull market statue, gold and money... KHÔNG tìm ảnh biểu đồ cận cảnh có chữ ngoại quốc hay ngày tháng cũ)","tags":["Chứng khoán","Cổ phiếu"],"hashtags":["#chungkhoan","#dautu"]}
+{"title":"Chứa từ khóa chính. BẮT BUỘC dùng Sentence Case tiếng Việt (chỉ viết hoa chữ đầu câu và mã CK/tên riêng), 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. BẮT BUỘC 120-150 ký tự","htmlContent":"Nội dung HTML hoàn chỉnh gồm đoạn mở đầu <p>, tiếp theo là các phần <h2>, <h3>, <p>, <ul>, <li>, bảng <table> nếu có so sánh số liệu. CHÈN 1-2 Outbound link. (CHÚ Ý: LƯU Ý TỐI QUAN TRỌNG: Mọi dấu ngoặc kép bên trong HTML hoặc Blockquote phải được thay bằng dấu nháy đơn (\') hoặc escape (\\\") để KHÔNG LÀM VỠ định dạng JSON)","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa mang tính biểu trưng hoặc trừu tượng (ví dụ: finance abstract background, business workspace laptop, bull market statue, gold and money... KHÔNG tìm ảnh biểu đồ cận cảnh có chữ ngoại quốc hay ngày tháng cũ)","tags":["Chứng khoán","Cổ phiếu"],"hashtags":["#chungkhoan","#dautu"]}
 
 
 
@@ -11076,7 +11077,47 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
 
 
 
-                async function publishToGithub() {
+                
+        // ==========================================
+        // QUY CHUẨN SENTENCE CASE TIÊU ĐỀ (SEO & GEO)
+        // ==========================================
+        const SENTENCE_CASE_KEEP_PHRASES = [
+            "VN-Index", "VN30", "HNX", "UPCoM", "HOSE", "HSX", "KRX", "FTSE", "MSCI",
+            "SSI", "VND", "VIX", "HCM", "SHS", "MBS", "TCBS", "VPS", "FPT", "MWG",
+            "HPG", "VHM", "VIC", "VRE", "VCB", "BID", "CTG", "MBB", "TCB", "VPB",
+            "ACB", "STB", "HDB", "TPB", "MSB", "SSB", "LPB", "EIB", "OIC", "VIB",
+            "PNJ", "MSN", "VNM", "SAB", "GAS", "PLX", "POW", "BSR", "PVD", "PVS",
+            "DGC", "DCM", "DPM", "GVR", "KBC", "KDH", "NLG", "VGC", "VJC", "HVN",
+            "GMD", "REE", "BVH", "BCM", "CTR", "FRT", "DGW", "HAX",
+            "P/E", "P/B", "ROE", "ROA", "EPS", "BVPS", "EBITDA", "EBIT", "CAGR",
+            "NAV", "WACC", "DCF", "D/E", "NPL", "CASA", "NIM", "CIR", "CAR",
+            "FED", "SBV", "UBCKNN", "SSC", "VSD", "IMF", "WB", "WTO", "GDP", "CPI",
+            "FDI", "FII", "ETF", "M&A", "IPO", "CEO", "CFO", "AI", "ESG",
+            "Việt Nam", "Mỹ", "Trung Quốc", "Nhật Bản", "Hàn Quốc", "Châu Âu", "Đức", "Anh", "Pháp", "Nga", "Indonesia",
+            "Hà Nội", "TP.HCM", "Hồ Chí Minh", "Đà Nẵng", "Hải Phòng", "Bình Dương", "Đồng Nai",
+            "Quý I", "Quý II", "Quý III", "Quý IV", "Q1", "Q2", "Q3", "Q4",
+            "III", "II", "IV", "VIII", "VII", "VI", "IX", "X"
+        ];
+
+        function formatSentenceCase(title) {
+            if (!title || typeof title !== 'string') return '';
+            let clean = title.trim();
+            if (!clean) return '';
+
+            let lower = clean.toLowerCase();
+            let result = lower.charAt(0).toUpperCase() + lower.slice(1);
+            result = result.replace(/([:?!.]\s+)([a-zà-ỹ])/g, (m, p1, p2) => p1 + p2.toUpperCase());
+
+            const sorted = [...SENTENCE_CASE_KEEP_PHRASES].sort((a,b) => b.length - a.length);
+            for (const phrase of sorted) {
+                const escaped = phrase.replace(/[.*+?^${}()|[\]\/\\]/g, '\\$&');
+                const regex = new RegExp(`(?<=[^a-zà-ỹ0-9]|^)${escaped}(?=[^a-zà-ỹ0-9]|$)`, 'gi');
+                result = result.replace(regex, phrase);
+            }
+            return result;
+        }
+
+        async function publishToGithub() {
             const btn = document.getElementById('btn-publish');
             const token = getItemSafe('github_token');
             const owner = getItemSafe('github_owner') || 'thang-vunam';
@@ -11086,7 +11127,9 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
             const slug = document.getElementById('review-slug').value.trim();
             let content = document.getElementById('review-html').value;
             const category = document.getElementById('input-category').value;
-            const title = document.getElementById('review-title').value.trim();
+            let title = document.getElementById('review-title').value.trim();
+            title = formatSentenceCase(title);
+            document.getElementById('review-title').value = title;
             const desc = document.getElementById('review-desc').value.trim();
             
             if(!slug || !content) return alert("Thiếu slug hoặc nội dung bài viết!");
@@ -12384,6 +12427,56 @@ ${emptyMsg}
 
 
 
+
+
+    <!-- MODAL FAQ STUDIO (BIÊN TẬP & TẠO CÂU HỎI AI) -->
+    <div id="faq-studio-modal" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 99999; overflow-y: auto; padding: 24px;">
+        <div style="max-width: 840px; margin: 30px auto; background: #0f172a; border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 16px; padding: 26px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); color: #f8fafc;">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(148,163,184,0.15); padding-bottom: 14px; margin-bottom: 20px;">
+                <div>
+                    <h3 style="margin: 0; color: #f8fafc; font-size: 1.25rem; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-circle-question" style="color: #60a5fa;"></i> FAQ Studio — Quản lý & Tạo câu hỏi bằng AI
+                    </h3>
+                    <p style="margin: 5px 0 0; color: #94a3b8; font-size: 0.85rem;">
+                        Đọc trước, biên tập hoặc yêu cầu AI trả lời tự động cho từng câu hỏi sát thực tế bài viết (chuẩn Google FAQPage Schema).
+                    </p>
+                </div>
+                <button type="button" onclick="closeFaqStudioModal()" style="background: none; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; padding: 4px 8px;">&times;</button>
+            </div>
+
+            <!-- Action Toolbar -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button type="button" class="btn" onclick="generateAiFaqs()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; font-size: 0.85rem; padding: 8px 16px; border: none; cursor: pointer; font-weight: 600;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI Sinh Lại 3 Câu Hỏi Sát Bài Viết
+                </button>
+                <button type="button" class="btn" onclick="addNewFaqItem()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #e2e8f0; font-size: 0.85rem; padding: 8px 16px; cursor: pointer;">
+                    <i class="fa-solid fa-plus"></i> Thêm câu hỏi thủ công
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="faq-studio-loading" style="display: none; padding: 25px; text-align: center; color: #93c5fd; background: rgba(59, 130, 246, 0.08); border-radius: 12px; margin-bottom: 20px; border: 1px dashed rgba(59, 130, 246, 0.3);">
+                <div class="loader" style="margin: 0 auto 10px;"></div>
+                <span id="faq-loading-text">Gemini đang đọc toàn bộ bài viết và phân tích các câu hỏi thiết thực nhất...</span>
+            </div>
+
+            <!-- FAQ Cards List Container -->
+            <div id="faq-items-container" style="max-height: 60vh; overflow-y: auto; padding-right: 6px;">
+                <!-- Dynamically rendered -->
+            </div>
+
+            <!-- Footer Action Buttons -->
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(148,163,184,0.15);">
+                <button type="button" class="btn" onclick="closeFaqStudioModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; cursor: pointer; padding: 9px 18px;">
+                    Hủy bỏ
+                </button>
+                <button type="button" class="btn btn-primary" onclick="applyFaqToEditor()" style="background: #10b981; color: white; border: none; font-weight: 700; padding: 9px 24px; cursor: pointer;">
+                    <i class="fa-solid fa-check"></i> Áp dụng FAQ vào bài viết
+                </button>
+            </div>
+        </div>
+    </div>
 
 </body>
 
@@ -16439,124 +16532,258 @@ ${subCardsHtml}
 
 
 
+        // ==========================================
+        // FAQ STUDIO — BIÊN TẬP & TẠO CÂU HỎI BẰNG AI
+        // ==========================================
+        let currentFaqList = [];
+
         function generateAutoFaqInEditor() {
+            openFaqStudioModal();
+        }
+
+        function openFaqStudioModal() {
+            const htmlTextarea = document.getElementById('review-html');
+            const fullHtml = htmlTextarea ? htmlTextarea.value : '';
+            if (!fullHtml.trim()) {
+                alert('Vui lòng tạo hoặc dán nội dung bài viết trước khi mở FAQ Studio!');
+                return;
+            }
+
+            // Trích xuất các câu hỏi hiện có nếu bài viết đã có FAQ
+            currentFaqList = parseFaqsFromHtml(fullHtml);
+            document.getElementById('faq-studio-modal').style.display = 'block';
+
+            if (currentFaqList.length > 0) {
+                renderFaqStudioItems();
+            } else {
+                generateAiFaqs();
+            }
+        }
+
+        function closeFaqStudioModal() {
+            document.getElementById('faq-studio-modal').style.display = 'none';
+        }
+
+        function parseFaqsFromHtml(html) {
+            let list = [];
+            const regex = /<div class="faq-question"[^>]*>([\s\S]*?)<\/div>\s*<div class="faq-answer"[^>]*>([\s\S]*?)<\/div>/gi;
+            let m;
+            while ((m = regex.exec(html)) !== null) {
+                let q = m[1].replace(/<i[^>]*>.*?<\/i>/gi, '').replace(/<[^>]+>/g, '').trim();
+                q = q.replace(/^\d+[\.\)]\s*/, '');
+                let a = m[2].replace(/<[^>]+>/g, '').trim();
+                if (q && a) {
+                    list.push({ question: q, answer: a });
+                }
+            }
+            return list;
+        }
+
+        function renderFaqStudioItems() {
+            const container = document.getElementById('faq-items-container');
+            if (!container) return;
+            if (currentFaqList.length === 0) {
+                container.innerHTML = `
+                  <div style="text-align: center; padding: 25px; color: #94a3b8; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
+                    <i class="fa-solid fa-circle-info" style="font-size: 1.5rem; color: #60a5fa; margin-bottom: 8px;"></i>
+                    <p style="margin: 0;">Chưa có câu hỏi FAQ nào. Hãy bấm <strong>[AI Sinh Lại 3 Câu Hỏi Sát Bài Viết]</strong> hoặc <strong>[Thêm câu hỏi thủ công]</strong> bên trên.</p>
+                  </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            currentFaqList.forEach((item, idx) => {
+                html += `
+                  <div class="faq-studio-card" style="background: #131d33; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                      <span style="font-weight: 700; color: #fbbf24; font-size: 0.9rem;">
+                        <i class="fa-solid fa-circle-question" style="color: #60a5fa;"></i> Câu hỏi #${idx + 1}
+                      </span>
+                      <div style="display: flex; gap: 8px;">
+                        <button type="button" onclick="regenerateAnswerForFaq(${idx})" class="btn" style="font-size: 0.78rem; padding: 4px 10px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); color: #93c5fd; cursor: pointer;">
+                          <i class="fa-solid fa-robot"></i> 🔄 AI trả lời cho câu này
+                        </button>
+                        <button type="button" onclick="removeFaqItem(${idx})" class="btn" style="font-size: 0.78rem; padding: 4px 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; cursor: pointer;">
+                          <i class="fa-solid fa-trash"></i> Xóa
+                        </button>
+                      </div>
+                    </div>
+                    <input type="text" id="faq-q-${idx}" oninput="updateFaqData(${idx})" value="${escapeFaqAttr(item.question)}" placeholder="Nhập câu hỏi bạn muốn hỏi..." style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #f8fafc; font-weight: 600; margin-bottom: 10px; font-size: 0.92rem;" />
+                    <label style="display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px;">Câu trả lời chi tiết:</label>
+                    <textarea id="faq-a-${idx}" oninput="updateFaqData(${idx})" rows="3" placeholder="Nhập câu trả lời hoặc bấm nút [🔄 AI trả lời cho câu này] ở trên..." style="width: 100%; box-sizing: border-box; padding: 10px 14px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #cbd5e1; font-size: 0.9rem; line-height: 1.6;">${escapeFaqText(item.answer)}</textarea>
+                  </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function updateFaqData(idx) {
+            const qEl = document.getElementById(`faq-q-${idx}`);
+            const aEl = document.getElementById(`faq-a-${idx}`);
+            if (qEl && aEl && currentFaqList[idx]) {
+                currentFaqList[idx].question = qEl.value;
+                currentFaqList[idx].answer = aEl.value;
+            }
+        }
+
+        function addNewFaqItem() {
+            currentFaqList.push({ question: '', answer: '' });
+            renderFaqStudioItems();
+            const newIdx = currentFaqList.length - 1;
+            const el = document.getElementById(`faq-q-${newIdx}`);
+            if (el) el.focus();
+        }
+
+        function removeFaqItem(idx) {
+            currentFaqList.splice(idx, 1);
+            renderFaqStudioItems();
+        }
+
+        async function generateAiFaqs() {
+            const key = getItemSafe('gemini_key');
+            if (!key) {
+                alert('Vui lòng cấu hình Gemini API Key trong phần Cài đặt trước!');
+                return;
+            }
+            const title = document.getElementById('review-title')?.value || document.getElementById('input-topic')?.value || '';
+            const htmlTextarea = document.getElementById('review-html');
+            const rawHtml = htmlTextarea ? htmlTextarea.value : '';
+            const cleanText = rawHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 4000);
+
+            const loadingEl = document.getElementById('faq-studio-loading');
+            const loadingText = document.getElementById('faq-loading-text');
+            if (loadingEl) {
+                loadingEl.style.display = 'block';
+                if (loadingText) loadingText.innerText = 'Gemini đang phân tích nội dung bài viết và thiết kế 3 câu hỏi thực tế...';
+            }
+
+            const prompt = `Bạn là Chuyên gia Tài chính & Biên tập viên Content SEO cấp cao. Dưới đây là nội dung bài viết:
+TIÊU ĐỀ: "${title}"
+NỘI DUNG BÀI VIẾT:
+"${cleanText}"
+
+NHIỆM VỤ:
+Tạo ĐÚNG 3 CÂU HỎI VÀ CÂU TRẢ LỜI THƯỜNG GẶP (FAQ) chất lượng cao nhất, chuẩn SEO FAQPage Schema.
+YÊU CẦU BẮT BUỘC:
+1. Câu hỏi PHẢI bám sát trực tiếp vào các điểm mấu chốt, số liệu, nghịch lý hoặc sự kiện thực tế trong bài viết (TUYỆT ĐỐI KHÔNG dùng câu hỏi chung chung vô thưởng vô phạt).
+2. Câu trả lời súc tích, sắc bén, khách quan, giàu thông tin thực tế từ bài (từ 2 đến 3 câu).
+3. Trả về ĐÚNG định dạng JSON array sau, không kèm bất kỳ giải thích nào:
+[
+  {"question": "Câu hỏi cụ thể 1?", "answer": "Câu trả lời cụ thể 1..."},
+  {"question": "Câu hỏi cụ thể 2?", "answer": "Câu trả lời cụ thể 2..."},
+  {"question": "Câu hỏi cụ thể 3?", "answer": "Câu trả lời cụ thể 3..."}
+]`;
+
+            try {
+                const res = await callGemini(key, prompt, null, 60000);
+                let cleaned = res.replace(/```json/g, '').replace(/```/g, '').trim();
+                const match = cleaned.match(/\[[\s\S]*\]/);
+                if (match) cleaned = match[0];
+                const parsed = JSON.parse(cleaned);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    currentFaqList = parsed;
+                    renderFaqStudioItems();
+                } else {
+                    alert('Không thể phân tích dữ liệu FAQ từ AI. Vui lòng thử lại!');
+                }
+            } catch (err) {
+                alert('Lỗi gọi AI sinh FAQ: ' + (err.message || err));
+            } finally {
+                if (loadingEl) loadingEl.style.display = 'none';
+            }
+        }
+
+        async function regenerateAnswerForFaq(idx) {
+            updateFaqData(idx);
+            const item = currentFaqList[idx];
+            if (!item || !item.question.trim()) {
+                alert('Vui lòng nhập câu hỏi trước khi bấm nhờ AI trả lời!');
+                return;
+            }
+            const key = getItemSafe('gemini_key');
+            if (!key) {
+                alert('Vui lòng cấu hình Gemini API Key trước!');
+                return;
+            }
+            const title = document.getElementById('review-title')?.value || '';
+            const htmlTextarea = document.getElementById('review-html');
+            const rawHtml = htmlTextarea ? htmlTextarea.value : '';
+            const cleanText = rawHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 4000);
+
+            const aEl = document.getElementById(`faq-a-${idx}`);
+            if (aEl) aEl.value = '🤖 Gemini đang soạn câu trả lời chuyên sâu...';
+
+            const prompt = `Bạn là Chuyên gia Tài chính. Dựa vào nội dung bài viết sau:
+TIÊU ĐỀ: "${title}"
+NỘI DUNG:
+"${cleanText}"
+
+CÂU HỎI CỦA ĐỘC GIẢ: "${item.question}"
+
+Hãy trả lời câu hỏi trên một cách súc tích, chuyên sâu, khách quan và trực diện nhất (từ 2 đến 3 câu). TUYỆT ĐỐI không chào hỏi, không thêm lời dẫn, chỉ trả về nội dung câu trả lời.`;
+
+            try {
+                const res = await callGemini(key, prompt, null, 45000);
+                const cleanAns = res.replace(/```[a-z]*\n?/g, '').trim();
+                currentFaqList[idx].answer = cleanAns;
+                if (aEl) aEl.value = cleanAns;
+            } catch (err) {
+                alert('Lỗi sinh câu trả lời: ' + (err.message || err));
+                if (aEl) aEl.value = item.answer || '';
+            }
+        }
+
+        function applyFaqToEditor() {
+            currentFaqList.forEach((_, idx) => updateFaqData(idx));
+            const validFaqs = currentFaqList.filter(f => f.question && f.question.trim() && f.answer && f.answer.trim());
+            if (validFaqs.length === 0) {
+                alert('Cần ít nhất 1 câu hỏi và câu trả lời hợp lệ để chèn vào bài viết!');
+                return;
+            }
+
+            let itemsHtml = validFaqs.map((f, i) => `
+  <div class="faq-item${i === 0 ? ' active' : ''}" style="background:#131d33; border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; overflow:hidden;">
+    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+      <span>${i + 1}. ${escapeFaqText(f.question)}</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+    <div class="faq-answer" style="padding:0 20px 16px; color:#94a3b8; font-size:0.95rem; line-height:1.7;">
+      ${escapeFaqText(f.answer)}
+    </div>
+  </div>`).join('');
+
+            const faqBlock = `<!-- FAQ Accordion chuẩn gSEO & Schema FAQPage -->\n<div class="faq-wrap" id="faq" style="margin: 40px 0;">\n  <h2 style="color: #cbd5e1; font-size: 1.45rem; margin-bottom: 20px;">\n    <i class="fa-solid fa-circle-question" style="color: #60a5fa;"></i> Câu hỏi thường gặp (FAQ)\n  </h2>${itemsHtml}\n</div>\n`;
 
             const htmlTextarea = document.getElementById('review-html');
+            let fullHtml = htmlTextarea.value;
 
-            let fullHtml = htmlTextarea ? htmlTextarea.value : '';
-
-            if (!fullHtml) {
-
-                alert('Vui lòng tạo hoặc duyệt bài viết trước khi chèn FAQ!');
-
-                return;
-
-            }
-
-            if (fullHtml.includes('class="faq-wrap"') || fullHtml.includes('id="faq"')) {
-
-                alert('Bài viết đã có khối FAQ!');
-
-                return;
-
-            }
-
-
-
-            const faqBlock = `\n\n<!-- FAQ Accordion chuẩn gSEO & Schema FAQPage -->
-
-<div class="faq-wrap" id="faq" style="margin: 40px 0;">
-
-  <h2 style="color: #cbd5e1; font-size: 1.45rem; margin-bottom: 20px;">
-
-    <i class="fa-solid fa-circle-question" style="color: #60a5fa;"></i> Câu hỏi thường gặp (FAQ)
-
-  </h2>
-
-  <div class="faq-item active" style="background:#131d33; border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; overflow:hidden;">
-
-    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-
-      <span>1. Trọng tâm chiến lược và thông điệp cốt lõi của bài viết là gì?</span>
-
-      <i class="fa-solid fa-chevron-down"></i>
-
-    </div>
-
-    <div class="faq-answer" style="padding:0 20px 16px; color:#94a3b8; font-size:0.95rem; line-height:1.7;">
-
-      Bài viết tập trung phân tích xu hướng định lượng, cung cấp các kịch bản hành động cụ thể và định giá các cơ hội đầu tư an toàn cho giai đoạn hiện tại.
-
-    </div>
-
-  </div>
-
-  <div class="faq-item" style="background:#131d33; border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; overflow:hidden;">
-
-    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-
-      <span>2. Làm thế nào để tra cứu thêm định giá chuyên sâu của các cổ phiếu liên quan?</span>
-
-      <i class="fa-solid fa-chevron-down"></i>
-
-    </div>
-
-    <div class="faq-answer" style="padding:0 20px 16px; color:#94a3b8; font-size:0.95rem; line-height:1.7; display:none;">
-
-      Bạn có thể truy cập trực tiếp cổng Data Hub VN30 tại daututaichinh.pro/co-phieu/ để theo dõi bảng chỉ số P/E, P/B, EPS và biên an toàn được cập nhật liên tục.
-
-    </div>
-
-  </div>
-
-  <div class="faq-item" style="background:#131d33; border:1px solid rgba(255,255,255,0.08); border-radius:10px; margin-bottom:12px; overflow:hidden;">
-
-    <div class="faq-question" onclick="this.parentElement.classList.toggle('active')" style="padding:16px 20px; font-weight:700; color:#f8fafc; cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-
-      <span>3. Nhà đầu tư nên phân bổ tỷ trọng và quản trị rủi ro Margin như thế nào trong giai đoạn này?</span>
-
-      <i class="fa-solid fa-chevron-down"></i>
-
-    </div>
-
-    <div class="faq-answer" style="padding:0 20px 16px; color:#94a3b8; font-size:0.95rem; line-height:1.7; display:none;">
-
-      Nên duy trì tỷ trọng cổ phiếu ở mức an toàn từ 30% đến 50% tổng tài sản, tuyệt đối không sử dụng đòn bẩy Margin khi thanh khoản thị trường co hẹp và kiên nhẫn chờ các tín hiệu dòng tiền xác nhận.
-
-    </div>
-
-  </div>
-
-</div>\n`;
-
-
-
-            if (fullHtml.includes('</article>')) {
-
+            const faqWrapRegex = /<!-- FAQ Accordion chuẩn gSEO & Schema FAQPage -->[\s\S]*?<\/div>\s*<\/div>\s*<\/div>|<div class="faq-wrap"[\s\S]*?<\/div>\s*(?=<section|<div class="author-bio|<\/article|<\/body|$)/i;
+            if (faqWrapRegex.test(fullHtml)) {
+                fullHtml = fullHtml.replace(faqWrapRegex, faqBlock);
+            } else if (fullHtml.includes('</article>')) {
                 fullHtml = fullHtml.replace('</article>', faqBlock + '\n</article>');
-
             } else if (fullHtml.includes('<!-- Author Bio -->')) {
-
                 fullHtml = fullHtml.replace('<!-- Author Bio -->', faqBlock + '\n<!-- Author Bio -->');
-
             } else if (fullHtml.includes('</body>')) {
-
                 fullHtml = fullHtml.replace('</body>', faqBlock + '\n</body>');
-
             } else {
-
-                fullHtml += faqBlock;
-
+                fullHtml += '\n\n' + faqBlock;
             }
-
-
 
             htmlTextarea.value = fullHtml;
+            if (typeof refreshPreview === 'function') refreshPreview();
+            closeFaqStudioModal();
+            alert('✅ Đã cập nhật thành công ' + validFaqs.length + ' câu hỏi FAQ vào bài viết!');
+        }
 
-            refreshPreview();
-
-            alert('✅ Đã chèn thành công 3 câu hỏi FAQ Accordion vào cuối bài viết!');
-
+        function escapeFaqAttr(str) {
+            if (!str) return '';
+            return str.replace(/"/g, '&quot;');
+        }
+        function escapeFaqText(str) {
+            if (!str) return '';
+            return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
 
@@ -20118,7 +20345,8 @@ body { background: #0b1120; color: #cbd5e1; font-family: 'Inter', system-ui, san
 
 
 
-.faq-item.active .faq-answer { display: block; }
+.faq-item.active .faq-answer { display: block !important; }
+.faq-item.active .fa-chevron-down { transform: rotate(180deg); transition: transform 0.2s ease; }
 
 
 
