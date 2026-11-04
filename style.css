@@ -387,7 +387,7 @@ main {
 
 /* Đoạn văn */
 .blog-article p {
-  margin: 0 0 22px;
+  margin: 0 0 15px;
   color: #e6ecf3;
 }
 
@@ -401,16 +401,23 @@ main {
 
 /* Tiêu đề các mục lớn (1,2,3,4…) */
 .blog-article h2 {
-  font-size: 26px;
-  margin: 48px 0 18px;
+  font-size: 24px;
+  margin: 30px 0 12px;
   color: #ffffff;
+  line-height: 1.35;
+}
+
+.blog-article h2 + h3,
+.article-main h2 + h3 {
+  margin-top: 8px !important;
 }
 
 /* Tiêu đề mục nhỏ (nếu có) */
 .blog-article h3 {
-  font-size: 21px;
-  margin: 36px 0 14px;
+  font-size: 19px;
+  margin: 22px 0 10px;
   color: #ffffff;
+  line-height: 1.35;
 }
 
 /* Chữ nhấn mạnh */
@@ -1808,4 +1815,28 @@ main {
   .price-change {
     font-size: 0.78rem !important;
   }
+}
+
+/* Blockquote tinh gọn thanh lịch - Thanh màu trắng theo yêu cầu */
+blockquote.article-quote,
+.blog-article blockquote,
+article blockquote,
+blockquote {
+  border-left: 3px solid #ffffff !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 0 8px 8px 0 !important;
+  padding: 12px 18px !important;
+  margin: 18px 0 !important;
+  font-style: italic !important;
+  color: #e2e8f0 !important;
+  line-height: 1.7 !important;
+}
+
+blockquote.article-quote p,
+.blog-article blockquote p,
+article blockquote p,
+blockquote p {
+  margin: 0 !important;
+  color: #e2e8f0 !important;
+  font-size: 0.98rem !important;
 }
