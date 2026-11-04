@@ -88,6 +88,28 @@ Mọi bài viết sinh ra (từ AI Dashboard hoặc n8n) **BẮT BUỘC** tích 
 
 ---
 
+### 2.10. Quy Chuẩn Liên Kết Nội Bộ & Bộ Lọc Phòng Vệ Chống 404 (Internal Linking & Anti-Hallucination)
+- **Nguyên nhân cốt lõi của lỗi 404:** LLM (Gemini) khi viết bài thường có xu hướng "tự bịa" ra các đường link bài viết không tồn tại (như `/market/bao-cao-thi-truong-quy-4-2026` hay `/blog/chien-luoc-dau-tu-gia-tri-trong-thi-truong-bien-dong`), dẫn độc giả đến trang lỗi `404 NOT_FOUND`.
+- **Nguyên tắc Whitelist nghiêm ngặt từ Prompt:**
+  - AI chỉ được phép trỏ liên kết nội bộ về 3 Trang Hub chính thức:
+    + `<a href="/market/">nhận định thị trường</a>`
+    + `<a href="/blog/">kiến thức đầu tư chuyên sâu</a>`
+    + `<a href="/download/">tài liệu đầu tư tài chính miễn phí</a>`
+    + Hoặc các trang tra cứu định giá VN30: `<a href="/co-phieu/{ticker}.html">cổ phiếu {TICKER}</a>` (với {ticker} thuộc 31 mã VN30 được hỗ trợ).
+  - TUYỆT ĐỐI KHÔNG tự tạo ra slug bài viết chưa có thật.
+- **Hệ thống phòng vệ 2 lớp (Defense in Depth) trong `node_packager.js`:**
+  - Hàm `sanitizeInternalLinks(html)` chủ động quét toàn bộ thẻ `<a>` trước khi xuất bản.
+  - Mọi đường dẫn nội bộ dạng `/market/...`, `/blog/...` hoặc `/download/...` không nằm trong danh sách trắng sẽ được **tự động hạ cấp an toàn về trang Hub cha** (`/market/`, `/blog/`, `/download/`).
+  - Triệt tiêu 100% rủi ro phát sinh link chết (404), bảo vệ chỉ số SEO Authority và trải nghiệm người dùng tuyệt đối.
+
+### 2.11. Quy Chuẩn Định Danh Chủ Thể Cụ Thể (Explicit Financial Entity Naming)
+- **Vấn đề cần khắc phục:** Tránh lối viết tài chính mơ hồ, bóng gió kiểu "một huyền thoại năm 2008", "một công ty bán gấu bông" mà không nêu danh tính cụ thể, làm giảm tính xác thực, uy tín báo chí và khả năng kiểm chứng của độc giả.
+- **Quy tắc bắt buộc:**
+  - BẮT BUỘC gọi ĐÍCH DANH tên nhân vật / nhà đầu tư (Ví dụ: *Michael Burry*, *Warren Buffett*, *Howard Marks*...).
+  - BẮT BUỘC nêu rõ tên tổ chức / quỹ đầu tư liên quan (Ví dụ: *Scion Asset Management*, *Berkshire Hathaway*...).
+  - BẮT BUỘC cung cấp tên công ty và mã chứng khoán niêm yết (Ví dụ: *Build-A-Bear Workshop* – mã niêm yết NYSE: `BBW`; *Apple* – NASDAQ: `AAPL`; *FPT* – HOSE: `FPT`...).
+  - Giúp bài viết đạt chuẩn EEAT (Experience, Expertise, Authoritativeness, Trustworthiness) cao nhất theo tiêu chuẩn đánh giá của Google và các mô hình tìm kiếm thông minh (GEO).
+
 ## 3. Trạng Thái Hệ Thống Tự Động Hóa (Đã kích hoạt trên Live Production)
 - **AI Dashboard (`AI-Dashboard.html`):** Đã tích hợp quy trình 5 bước tự động, bộ lọc `formatSentenceCase()`, FAQ Studio tương tác AI và chuẩn hóa khoảng cách/blockquote trắng.
 - **n8n Automation (`n8n.kotaduck.cc` - ID: `I1s1oP386rgDTF0F`):** Gemini Prompt, HTML Packager và Schema Engine đã được đồng bộ 100% tự động sinh FAQ theo nội dung bài viết, chuẩn hóa Sentence Case và định dạng giao diện đồng bộ.
