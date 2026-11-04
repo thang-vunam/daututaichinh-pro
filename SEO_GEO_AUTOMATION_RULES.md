@@ -56,6 +56,15 @@ Mọi bài viết sinh ra (từ AI Dashboard hoặc n8n) **BẮT BUỘC** tích 
 - **Dữ liệu tĩnh (Static HTML):**
   - Mọi bảng biểu số liệu phải dùng thẻ `<table>` hoặc `<div>` tĩnh có sẵn trong mã HTML. Tuyệt đối không dùng AJAX/JavaScript để load số liệu, giúp AI Crawlers quét là thấy ngay.
 
+### 2.6. Quy Chuẩn Viết Hoa Tiêu Đề Bài Viết (Headline Casing - NGUYÊN TẮC BẮT BUỘC)
+- **BẮT BUỘC áp dụng dạng Sentence Case** cho toàn bộ tiêu đề bài viết (`title`, `<h1>`, `og:title`, `schema headline`, danh mục bài viết và trang chủ):
+  - **Chỉ viết hoa:** Ký tự đầu tiên của tiêu đề, ký tự sau dấu hai chấm (`: `), dấu hỏi (`? `), dấu chấm than (`! `), và danh từ riêng/mã chứng khoán (`VN-Index`, `SSI`, `FPT`, `Việt Nam`, `Mỹ`...).
+  - **TUYỆT ĐỐI CẤM:** Viết hoa chữ cái đầu của từng từ (*Title Case* - ví dụ: ❌ *Tháo Kíp Nổ Tâm Lý Thị Trường...*). Phải viết chuẩn Sentence Case: ✅ *Tháo kíp nổ tâm lý thị trường chứng khoán tuần 02/11–06/11/2026: 4 sự thật ngược đời phía sau nhịp điều chỉnh*.
+- **Lý do kỹ thuật & SEO:**
+  1. *SERP Pixel Limit:* Ký tự in hoa chiếm nhiều pixel bề ngang hơn chữ thường 30% - 50%, dễ bị Google cắt cụt `...` trên trang kết quả tìm kiếm.
+  2. *CTR & Tâm lý độc giả:* Tiếng Việt dùng Sentence Case tạo cảm giác tự nhiên, tin cậy, chuẩn báo chí tài chính chuyên nghiệp; Title Case gây cảm giác spam, giật cục và giảm tỷ lệ nhấp chuột.
+  3. *Tránh Google Title Rewrite:* Tránh việc thuật toán Google tự động viết lại tiêu đề khác ý đồ tác giả do viết hoa bất thường.
+
 ---
 
 ## 3. Trạng Thái Hệ Thống Tự Động Hóa (Đã kích hoạt trên Live Production)
