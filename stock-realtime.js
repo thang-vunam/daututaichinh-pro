@@ -309,7 +309,41 @@
   // =========================================================================
   // SCENARIO B: INDIVIDUAL STOCK PAGE (/co-phieu/{ticker}.html)
   // =========================================================================
+  function ensureDetailTickStyles() {
+    if (document.getElementById('dttc-detail-tick-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'dttc-detail-tick-styles';
+    style.textContent = `
+      @keyframes dttcTickGreen {
+        0% { background: rgba(52, 211, 153, 0.45); color: #34d399; }
+        100% { background: transparent; }
+      }
+      @keyframes dttcTickRed {
+        0% { background: rgba(239, 68, 68, 0.45); color: #ef4444; }
+        100% { background: transparent; }
+      }
+      @keyframes dttcTickNeutral {
+        0% { background: rgba(250, 204, 21, 0.35); }
+        100% { background: transparent; }
+      }
+      .tick-flash-green {
+        animation: dttcTickGreen 0.9s ease-out;
+        border-radius: 4px;
+      }
+      .tick-flash-red {
+        animation: dttcTickRed 0.9s ease-out;
+        border-radius: 4px;
+      }
+      .tick-flash-neutral {
+        animation: dttcTickNeutral 0.9s ease-out;
+        border-radius: 4px;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   async function initStockDetailPage() {
+    ensureDetailTickStyles();
     const tickerEl = document.querySelector('.ticker-code');
     const priceEl = document.getElementById('current-market-price');
     if (!tickerEl || !priceEl) return;
@@ -378,47 +412,192 @@
     const diff = stockData.diff !== undefined ? stockData.diff : (price - ref);
     const pct = stockData.changePct !== undefined ? stockData.changePct : 0;
     const session = getMarketSessionInfo();
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
 
-    // Update Market Price Display
+    // 1. Update Market Price Display with Visual Flash Highlight
     const priceEl = document.getElementById('current-market-price');
     if (priceEl) {
+      const prevPriceStr = priceEl.getAttribute('data-prev-price');
+      const prevPrice = prevPriceStr ? parseFloat(prevPriceStr) : null;
+      priceEl.setAttribute('data-prev-price', String(price));
       priceEl.innerHTML = `${formatVND(price)} <span style="font-size:1.1rem; font-weight:500; color:#94a3b8;">VNĐ</span>`;
-    }
 
-    // Update Global CURRENT_PRICE for Mini Calculator
-    if (typeof window !== 'undefined') {
-      window.CURRENT_PRICE = price;
-      if (typeof window.calculateValuation === 'function') {
-        window.calculateValuation();
+      // Trigger smooth flash tick animation
+      priceEl.classList.remove('tick-flash-green', 'tick-flash-red', 'tick-flash-neutral');
+      void priceEl.offsetWidth; // Force CSS reflow
+      if (prevPrice !== null && price > prevPrice) {
+        priceEl.classList.add('tick-flash-green');
+      } else if (prevPrice !== null && price < prevPrice) {
+        priceEl.classList.add('tick-flash-red');
+      } else {
+        priceEl.classList.add('tick-flash-neutral');
       }
     }
 
-    // Update Price Change & Session Badge
+    // 2. Update Live Session Badge & Real-time Clock (HH:MM:SS)
     const badgeEl = document.querySelector('.price-change');
     if (badgeEl) {
       const sign = diff > 0 ? '+' : '';
       const color = diff > 0 ? '#34d399' : (diff < 0 ? '#ef4444' : '#fbbf24');
       const refText = `<span style="color:${color}; font-weight:700;">${sign}${formatVND(diff)} đ (${sign}${pct}%)</span> &bull; <span style="color:#94a3b8;">Tham chiếu: ${formatVND(ref)} đ</span>`;
 
-      badgeEl.innerHTML = `<div style="color:${session.color}; font-weight:600; font-size:0.85rem; line-height:1.35;">${session.label}</div>` +
-        `<div style="font-size:0.85rem; line-height:1.35; margin-top:2px;">${refText}</div>`;
+      let sessionHeader = '';
+      if (session.isLive) {
+        sessionHeader = `<div style="display:inline-flex; align-items:center; gap:6px; font-size:0.8rem; font-weight:600; color:#34d399; margin-bottom:4px;">` +
+          `<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#34d399; box-shadow:0 0 8px #34d399; animation:pulse 1.5s infinite;"></span>` +
+          `<span>Trực tiếp HOSE</span> &bull; <span style="color:#94a3b8; font-family:'JetBrains Mono',monospace;">Cập nhật: ${timeStr}</span>` +
+        `</div>`;
+      } else {
+        sessionHeader = `<div style="display:inline-flex; align-items:center; gap:6px; font-size:0.8rem; font-weight:600; color:#fbbf24; margin-bottom:4px;">` +
+          `<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#fbbf24;"></span>` +
+          `<span>${session.label}</span> &bull; <span style="color:#94a3b8; font-family:'JetBrains Mono',monospace;">Cập nhật: ${timeStr}</span>` +
+        `</div>`;
+      }
+
+      badgeEl.innerHTML = `${sessionHeader}<div style="font-size:0.85rem; line-height:1.35;">${refText}</div>`;
     }
 
-    // Update P/E Valuation Pill
-    let eps = stockData.eps;
-    if (!eps) {
-      // Try to read EPS from DOM or baseline
-      const epsDom = document.querySelector('.kpi-card:has(.kpi-label:contains("EPS")) .kpi-val') ||
-                     Array.from(document.querySelectorAll('.kpi-label')).find(el => el.innerText.includes('EPS'))?.parentNode?.querySelector('.kpi-val');
-      if (epsDom) {
-        eps = parseFloat(epsDom.innerText.replace(/[^0-9.-]/g, ''));
+    // 3. Dynamic Override & Synchronization for Mini Calculator
+    if (typeof window !== 'undefined') {
+      window.CURRENT_PRICE = price;
+
+      if (!window._valuationEnginePatched) {
+        window._valuationEnginePatched = true;
+        const origCalc = window.calculateValuation;
+        window.calculateValuation = function() {
+          if (typeof origCalc === 'function') origCalc();
+          const activePrice = window.CURRENT_PRICE;
+          const targetPriceEl = document.getElementById('target-price');
+          const upsideBadge = document.getElementById('upside-badge');
+          if (activePrice > 0 && targetPriceEl && upsideBadge) {
+            const target = parseFloat(targetPriceEl.innerText.replace(/[^0-9]/g, ''));
+            if (target > 0) {
+              const upside = ((target - activePrice) / activePrice) * 100;
+              if (upside >= 0) {
+                upsideBadge.className = 'calc-upside-badge upside-positive';
+                upsideBadge.innerHTML = '▲ Tiềm năng tăng giá: +' + upside.toFixed(1) + '%';
+              } else {
+                upsideBadge.className = 'calc-upside-badge upside-negative';
+                upsideBadge.innerHTML = '▼ Thấp hơn thị giá: ' + upside.toFixed(1) + '% (Cần chiết khấu thêm)';
+              }
+            }
+          }
+        };
+      }
+
+      if (typeof window.calculateValuation === 'function') {
+        window.calculateValuation();
       }
     }
+
+    // 4. Synchronize Matrix Table (Bảng Lịch sử & Chỉ số định giá trọng yếu) & KPI Cards
+    let eps = stockData.eps;
+    let bvps = 0;
+
+    // Read EPS and BVPS from matrix table if not provided
+    const matrixTable = document.querySelector('.matrix-table');
+    if (matrixTable) {
+      const rows = matrixTable.querySelectorAll('tbody tr');
+      rows.forEach(r => {
+        const text = r.innerText;
+        if (text.includes('EPS')) {
+          const numEl = r.querySelector('.num');
+          if (numEl && !eps) {
+            eps = parseFloat(numEl.innerText.replace(/[^0-9.-]/g, ''));
+          }
+        } else if (text.includes('BVPS') || text.includes('sổ sách')) {
+          const numEl = r.querySelector('.num');
+          if (numEl) {
+            bvps = parseFloat(numEl.innerText.replace(/[^0-9.-]/g, ''));
+          }
+        }
+      });
+    }
+
+    // Fallback: Read EPS from DOM KPI
+    if (!eps) {
+      const kpiLabels = document.querySelectorAll('.kpi-label');
+      kpiLabels.forEach(lbl => {
+        if (lbl.innerText.includes('EPS')) {
+          const valEl = lbl.parentNode.querySelector('.kpi-val');
+          if (valEl) eps = parseFloat(valEl.innerText.replace(/[^0-9.-]/g, ''));
+        }
+      });
+    }
+
+    // Recalculate Live P/E
     if (eps && eps > 0) {
       const livePe = (price / eps).toFixed(2);
+
+      // Update Matrix Table P/E Row
+      if (matrixTable) {
+        const peRow = Array.from(matrixTable.querySelectorAll('tbody tr')).find(r => r.innerText.includes('P/E'));
+        if (peRow) {
+          const peCell = peRow.querySelector('.num');
+          if (peCell) peCell.innerHTML = `<span style="color:#fbbf24; font-weight:700;">${livePe}x</span>`;
+        }
+      }
+
+      // Update KPI Card P/E
+      const kpiPeCard = Array.from(document.querySelectorAll('.kpi-card')).find(c => c.innerText.includes('P/E'));
+      if (kpiPeCard) {
+        const valEl = kpiPeCard.querySelector('.kpi-val');
+        if (valEl) valEl.innerHTML = `<span style="color:#fbbf24;">${livePe}x</span>`;
+      }
+
+      // Update Valuation Status Pill
       const pill = document.querySelector('.valuation-status-pill');
       if (pill) {
-        pill.innerText = `Vùng định giá: Rất rẻ (P/E ${livePe}x)`;
+        const peNum = parseFloat(livePe);
+        const evalText = peNum < 10 ? 'Rất rẻ' : (peNum < 15 ? 'Hợp lý' : 'Đắt');
+        pill.innerText = `Vùng định giá: ${evalText} (P/E ${livePe}x)`;
+      }
+    }
+
+    // Recalculate Live P/B
+    if (bvps && bvps > 0) {
+      const livePb = (price / bvps).toFixed(2);
+
+      // Update Matrix Table P/B Row
+      if (matrixTable) {
+        const pbRow = Array.from(matrixTable.querySelectorAll('tbody tr')).find(r => r.innerText.includes('P/B'));
+        if (pbRow) {
+          const pbCell = pbRow.querySelector('.num');
+          if (pbCell) pbCell.innerHTML = `<span style="color:#a78bfa; font-weight:700;">${livePb}x</span>`;
+        }
+      }
+
+      // Update KPI Card P/B
+      const kpiPbCard = Array.from(document.querySelectorAll('.kpi-card')).find(c => c.innerText.includes('P/B'));
+      if (kpiPbCard) {
+        const valEl = kpiPbCard.querySelector('.kpi-val');
+        if (valEl) valEl.innerHTML = `<span style="color:#a78bfa;">${livePb}x</span>`;
+      }
+    }
+
+    // Recalculate Live Market Cap (Vốn hóa thị trường)
+    if (matrixTable) {
+      const capRow = Array.from(matrixTable.querySelectorAll('tbody tr')).find(r => r.innerText.includes('Vốn hóa'));
+      if (capRow) {
+        const capCell = capRow.querySelector('.num');
+        if (capCell) {
+          // Initialize baseline attributes once
+          if (!capCell.getAttribute('data-base-price')) {
+            const currentCapText = capCell.innerText.replace(/[^0-9.]/g, '');
+            const baseCap = parseFloat(currentCapText);
+            if (baseCap > 0) {
+              capCell.setAttribute('data-base-cap', String(baseCap));
+              capCell.setAttribute('data-base-price', String(price));
+            }
+          }
+          const baseCap = parseFloat(capCell.getAttribute('data-base-cap') || 0);
+          const basePrice = parseFloat(capCell.getAttribute('data-base-price') || 0);
+          if (baseCap > 0 && basePrice > 0) {
+            const liveCap = (baseCap * (price / basePrice)).toLocaleString('vi-VN', { maximumFractionDigits: 2 });
+            capCell.innerHTML = `<span style="color:#facc15; font-weight:700;">${liveCap} tỷ</span>`;
+          }
+        }
       }
     }
   }
