@@ -172,9 +172,9 @@
     }
     .hub-table thead th {
       position: sticky;
-      top: 105px; /* Sticks right below top-bar + ticker */
+      top: 70px; /* Sticks right below top-bar (70px) */
       background: #141e34;
-      z-index: 50;
+      z-index: 40;
       text-align: left;
       padding: 14px;
       color: #94a3b8;
@@ -225,13 +225,12 @@
     @media (max-width: 991px) {
       .stocks-table-card {
         overflow-x: auto;
-        overflow-y: visible;
-        max-height: none;
         -webkit-overflow-scrolling: touch;
       }
       .hub-table thead th {
         position: sticky;
-        top: 0;
+        top: 70px;
+        z-index: 30;
       }
       /* Freeze first column (Mã CP) on mobile & tablets */
       .hub-table th:first-child,
@@ -384,14 +383,15 @@
     </div>
 
     <div class="filter-pills">
-      <button class="filter-pill active" onclick="filterSector('all', this)">Tất cả (30)</button>
-      <button class="filter-pill" onclick="filterSector('Ngân hàng', this)">Ngân hàng (13)</button>
-      <button class="filter-pill" onclick="filterSector('Tiêu dùng & Bán lẻ', this)">Tiêu dùng & Bán lẻ (6)</button>
-      <button class="filter-pill" onclick="filterSector('Bất động sản', this)">Bất động sản (4)</button>
-      <button class="filter-pill" onclick="filterSector('Sản xuất & Công nghiệp', this)">Sản xuất & Thép (2)</button>
-      <button class="filter-pill" onclick="filterSector('Dầu khí & Năng lượng', this)">Dầu khí & Năng lượng (2)</button>
-      <button class="filter-pill" onclick="filterSector('Công nghệ', this)">Công nghệ (1)</button>
-      <button class="filter-pill" onclick="filterSector('Dịch vụ Tài chính', this)">Chứng khoán (1)</button>
+      <button class="filter-pill active" onclick="filterCategory('all', this)">Tất cả (30)</button>
+      <button class="filter-pill" onclick="filterCategory('ngan-hang', this)">Ngân hàng (13)</button>
+      <button class="filter-pill" onclick="filterCategory('tieu-dung', this)">Tiêu dùng & Bán lẻ (6)</button>
+      <button class="filter-pill" onclick="filterCategory('bat-dong-san', this)">Bất động sản (4)</button>
+      <button class="filter-pill" onclick="filterCategory('san-xuat', this)">Sản xuất & Thép (2)</button>
+      <button class="filter-pill" onclick="filterCategory('nang-luong', this)">Dầu khí & Năng lượng (2)</button>
+      <button class="filter-pill" onclick="filterCategory('cong-nghe', this)">Công nghệ (1)</button>
+      <button class="filter-pill" onclick="filterCategory('chung-khoan', this)">Chứng khoán (1)</button>
+      <button class="filter-pill" onclick="filterCategory('hang-khong', this)">Hàng không (1)</button>
     </div>
   </div>
 
@@ -412,7 +412,7 @@
         </tr>
       </thead>
       <tbody id="stocks-body">
-        <tr data-ticker="ACB" data-name="ngân hàng thương mại cổ phần á châu" data-sector="Ngân hàng" data-href="/co-phieu/acb.html">
+        <tr data-ticker="ACB" data-name="ngân hàng thương mại cổ phần á châu" data-sector="Ngân hàng" data-href="/co-phieu/acb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/acb.html" class="ticker-link">ACB</a>
           </td>
@@ -426,7 +426,7 @@
             <a href="/co-phieu/acb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="BID" data-name="ngân hàng thương mại cổ phần đầu tư và phát triển việt nam" data-sector="Ngân hàng" data-href="/co-phieu/bid.html">
+        <tr data-ticker="BID" data-name="ngân hàng thương mại cổ phần đầu tư và phát triển việt nam" data-sector="Ngân hàng" data-href="/co-phieu/bid.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/bid.html" class="ticker-link">BID</a>
           </td>
@@ -440,7 +440,7 @@
             <a href="/co-phieu/bid.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="BSR" data-name="công ty cổ phần – tổng công ty lọc hóa dầu việt nam" data-sector="Dầu khí & Lọc hóa dầu" data-href="/co-phieu/bsr.html">
+        <tr data-ticker="BSR" data-name="công ty cổ phần – tổng công ty lọc hóa dầu việt nam" data-sector="Dầu khí & Lọc hóa dầu" data-href="/co-phieu/bsr.html" data-category="nang-luong">
           <td>
             <a href="/co-phieu/bsr.html" class="ticker-link">BSR</a>
           </td>
@@ -454,7 +454,7 @@
             <a href="/co-phieu/bsr.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="CTG" data-name="ngân hàng thương mại cổ phần công thương việt nam" data-sector="Ngân hàng" data-href="/co-phieu/ctg.html">
+        <tr data-ticker="CTG" data-name="ngân hàng thương mại cổ phần công thương việt nam" data-sector="Ngân hàng" data-href="/co-phieu/ctg.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/ctg.html" class="ticker-link">CTG</a>
           </td>
@@ -468,7 +468,7 @@
             <a href="/co-phieu/ctg.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="FPT" data-name="công ty cổ phần fpt" data-sector="Công nghệ thông tin & Viễn thông" data-href="/co-phieu/fpt.html">
+        <tr data-ticker="FPT" data-name="công ty cổ phần fpt" data-sector="Công nghệ thông tin & Viễn thông" data-href="/co-phieu/fpt.html" data-category="cong-nghe">
           <td>
             <a href="/co-phieu/fpt.html" class="ticker-link">FPT</a>
           </td>
@@ -482,7 +482,7 @@
             <a href="/co-phieu/fpt.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="GAS" data-name="tổng công ty khí việt nam - công ty cổ phần" data-sector="Dầu khí & Năng lượng" data-href="/co-phieu/gas.html">
+        <tr data-ticker="GAS" data-name="tổng công ty khí việt nam - công ty cổ phần" data-sector="Dầu khí & Năng lượng" data-href="/co-phieu/gas.html" data-category="nang-luong">
           <td>
             <a href="/co-phieu/gas.html" class="ticker-link">GAS</a>
           </td>
@@ -496,7 +496,7 @@
             <a href="/co-phieu/gas.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="GVR" data-name="tập đoàn công nghiệp cao su việt nam - công ty cổ phần" data-sector="Cao su & Khu công nghiệp" data-href="/co-phieu/gvr.html">
+        <tr data-ticker="GVR" data-name="tập đoàn công nghiệp cao su việt nam - công ty cổ phần" data-sector="Cao su & Khu công nghiệp" data-href="/co-phieu/gvr.html" data-category="san-xuat">
           <td>
             <a href="/co-phieu/gvr.html" class="ticker-link">GVR</a>
           </td>
@@ -510,7 +510,7 @@
             <a href="/co-phieu/gvr.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="HDB" data-name="ngân hàng thương mại cổ phần phát triển thành phố hồ chí minh" data-sector="Ngân hàng" data-href="/co-phieu/hdb.html">
+        <tr data-ticker="HDB" data-name="ngân hàng thương mại cổ phần phát triển thành phố hồ chí minh" data-sector="Ngân hàng" data-href="/co-phieu/hdb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/hdb.html" class="ticker-link">HDB</a>
           </td>
@@ -524,7 +524,7 @@
             <a href="/co-phieu/hdb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="HPG" data-name="công ty cổ phần tập đoàn hòa phát" data-sector="Sản xuất Thép & Công nghiệp nặng" data-href="/co-phieu/hpg.html">
+        <tr data-ticker="HPG" data-name="công ty cổ phần tập đoàn hòa phát" data-sector="Sản xuất Thép & Công nghiệp nặng" data-href="/co-phieu/hpg.html" data-category="san-xuat">
           <td>
             <a href="/co-phieu/hpg.html" class="ticker-link">HPG</a>
           </td>
@@ -538,7 +538,7 @@
             <a href="/co-phieu/hpg.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="LPB" data-name="ngân hàng thương mại cổ phần lộc phát việt nam" data-sector="Ngân hàng" data-href="/co-phieu/lpb.html">
+        <tr data-ticker="LPB" data-name="ngân hàng thương mại cổ phần lộc phát việt nam" data-sector="Ngân hàng" data-href="/co-phieu/lpb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/lpb.html" class="ticker-link">LPB</a>
           </td>
@@ -552,7 +552,7 @@
             <a href="/co-phieu/lpb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="MBB" data-name="ngân hàng thương mại cổ phần quân đội" data-sector="Ngân hàng" data-href="/co-phieu/mbb.html">
+        <tr data-ticker="MBB" data-name="ngân hàng thương mại cổ phần quân đội" data-sector="Ngân hàng" data-href="/co-phieu/mbb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/mbb.html" class="ticker-link">MBB</a>
           </td>
@@ -566,7 +566,7 @@
             <a href="/co-phieu/mbb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="MCH" data-name="công ty cổ phần hàng tiêu dùng masan" data-sector="Hàng tiêu dùng thực phẩm (Masan Consumer)" data-href="/co-phieu/mch.html">
+        <tr data-ticker="MCH" data-name="công ty cổ phần hàng tiêu dùng masan" data-sector="Hàng tiêu dùng thực phẩm (Masan Consumer)" data-href="/co-phieu/mch.html" data-category="tieu-dung">
           <td>
             <a href="/co-phieu/mch.html" class="ticker-link">MCH</a>
           </td>
@@ -580,7 +580,7 @@
             <a href="/co-phieu/mch.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="MSN" data-name="công ty cổ phần tập đoàn masan" data-sector="Tập đoàn đa ngành & Bán lẻ tiêu dùng" data-href="/co-phieu/msn.html">
+        <tr data-ticker="MSN" data-name="công ty cổ phần tập đoàn masan" data-sector="Tập đoàn đa ngành & Bán lẻ tiêu dùng" data-href="/co-phieu/msn.html" data-category="tieu-dung">
           <td>
             <a href="/co-phieu/msn.html" class="ticker-link">MSN</a>
           </td>
@@ -594,7 +594,7 @@
             <a href="/co-phieu/msn.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="MWG" data-name="công ty cổ phần đầu tư thế giới di động" data-sector="Bán lẻ công nghệ & Bách Hóa Xanh" data-href="/co-phieu/mwg.html">
+        <tr data-ticker="MWG" data-name="công ty cổ phần đầu tư thế giới di động" data-sector="Bán lẻ công nghệ & Bách Hóa Xanh" data-href="/co-phieu/mwg.html" data-category="tieu-dung">
           <td>
             <a href="/co-phieu/mwg.html" class="ticker-link">MWG</a>
           </td>
@@ -608,7 +608,7 @@
             <a href="/co-phieu/mwg.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="SAB" data-name="tổng công ty cổ phần bia – rượu – nước giải khát sài gòn" data-sector="Thực phẩm & Đồ uống (Bia Sài Gòn)" data-href="/co-phieu/sab.html">
+        <tr data-ticker="SAB" data-name="tổng công ty cổ phần bia – rượu – nước giải khát sài gòn" data-sector="Thực phẩm & Đồ uống (Bia Sài Gòn)" data-href="/co-phieu/sab.html" data-category="tieu-dung">
           <td>
             <a href="/co-phieu/sab.html" class="ticker-link">SAB</a>
           </td>
@@ -622,7 +622,7 @@
             <a href="/co-phieu/sab.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="SHB" data-name="ngân hàng thương mại cổ phần sài gòn – hà nội" data-sector="Ngân hàng" data-href="/co-phieu/shb.html">
+        <tr data-ticker="SHB" data-name="ngân hàng thương mại cổ phần sài gòn – hà nội" data-sector="Ngân hàng" data-href="/co-phieu/shb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/shb.html" class="ticker-link">SHB</a>
           </td>
@@ -636,7 +636,7 @@
             <a href="/co-phieu/shb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="SSB" data-name="ngân hàng thương mại cổ phần đông nam á" data-sector="Ngân hàng" data-href="/co-phieu/ssb.html">
+        <tr data-ticker="SSB" data-name="ngân hàng thương mại cổ phần đông nam á" data-sector="Ngân hàng" data-href="/co-phieu/ssb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/ssb.html" class="ticker-link">SSB</a>
           </td>
@@ -650,7 +650,7 @@
             <a href="/co-phieu/ssb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="SSI" data-name="công ty cổ phần chứng khoán ssi" data-sector="Dịch vụ Tài chính - Chứng khoán" data-href="/co-phieu/ssi.html">
+        <tr data-ticker="SSI" data-name="công ty cổ phần chứng khoán ssi" data-sector="Dịch vụ Tài chính - Chứng khoán" data-href="/co-phieu/ssi.html" data-category="chung-khoan">
           <td>
             <a href="/co-phieu/ssi.html" class="ticker-link">SSI</a>
           </td>
@@ -664,7 +664,7 @@
             <a href="/co-phieu/ssi.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="STB" data-name="ngân hàng thương mại cổ phần sài gòn tài lộc" data-sector="Ngân hàng" data-href="/co-phieu/stb.html">
+        <tr data-ticker="STB" data-name="ngân hàng thương mại cổ phần sài gòn tài lộc" data-sector="Ngân hàng" data-href="/co-phieu/stb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/stb.html" class="ticker-link">STB</a>
           </td>
@@ -678,7 +678,7 @@
             <a href="/co-phieu/stb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="TCB" data-name="ngân hàng thương mại cổ phần kỹ thương việt nam" data-sector="Ngân hàng" data-href="/co-phieu/tcb.html">
+        <tr data-ticker="TCB" data-name="ngân hàng thương mại cổ phần kỹ thương việt nam" data-sector="Ngân hàng" data-href="/co-phieu/tcb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/tcb.html" class="ticker-link">TCB</a>
           </td>
@@ -692,7 +692,7 @@
             <a href="/co-phieu/tcb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="TCX" data-name="công ty cổ phần chứng khoán kỹ thương" data-sector="Bán lẻ & Thương mại" data-href="/co-phieu/tcx.html">
+        <tr data-ticker="TCX" data-name="công ty cổ phần chứng khoán kỹ thương" data-sector="Bán lẻ & Thương mại" data-href="/co-phieu/tcx.html" data-category="tieu-dung">
           <td>
             <a href="/co-phieu/tcx.html" class="ticker-link">TCX</a>
           </td>
@@ -706,7 +706,7 @@
             <a href="/co-phieu/tcx.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="VCB" data-name="ngân hàng thương mại cổ phần ngoại thương việt nam" data-sector="Ngân hàng" data-href="/co-phieu/vcb.html">
+        <tr data-ticker="VCB" data-name="ngân hàng thương mại cổ phần ngoại thương việt nam" data-sector="Ngân hàng" data-href="/co-phieu/vcb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/vcb.html" class="ticker-link">VCB</a>
           </td>
@@ -720,7 +720,7 @@
             <a href="/co-phieu/vcb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="VHM" data-name="công ty cổ phần vinhomes" data-sector="Bất động sản dân cư (Vinhomes)" data-href="/co-phieu/vhm.html">
+        <tr data-ticker="VHM" data-name="công ty cổ phần vinhomes" data-sector="Bất động sản dân cư (Vinhomes)" data-href="/co-phieu/vhm.html" data-category="bat-dong-san">
           <td>
             <a href="/co-phieu/vhm.html" class="ticker-link">VHM</a>
           </td>
@@ -734,7 +734,7 @@
             <a href="/co-phieu/vhm.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="VIB" data-name="ngân hàng thương mại cổ phần quốc tế việt nam" data-sector="Ngân hàng" data-href="/co-phieu/vib.html">
+        <tr data-ticker="VIB" data-name="ngân hàng thương mại cổ phần quốc tế việt nam" data-sector="Ngân hàng" data-href="/co-phieu/vib.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/vib.html" class="ticker-link">VIB</a>
           </td>
@@ -748,7 +748,7 @@
             <a href="/co-phieu/vib.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="VIC" data-name="tập đoàn vingroup - công ty cổ phần" data-sector="Tập đoàn đa ngành & Bất động sản (Vingroup)" data-href="/co-phieu/vic.html">
+        <tr data-ticker="VIC" data-name="tập đoàn vingroup - công ty cổ phần" data-sector="Tập đoàn đa ngành & Bất động sản (Vingroup)" data-href="/co-phieu/vic.html" data-category="bat-dong-san">
           <td>
             <a href="/co-phieu/vic.html" class="ticker-link">VIC</a>
           </td>
@@ -762,7 +762,7 @@
             <a href="/co-phieu/vic.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="VJC" data-name="công ty cổ phần hàng không vietjet" data-sector="Hàng không (Vietjet Air)" data-href="/co-phieu/vjc.html">
+        <tr data-ticker="VJC" data-name="công ty cổ phần hàng không vietjet" data-sector="Hàng không (Vietjet Air)" data-href="/co-phieu/vjc.html" data-category="hang-khong">
           <td>
             <a href="/co-phieu/vjc.html" class="ticker-link">VJC</a>
           </td>
@@ -776,7 +776,7 @@
             <a href="/co-phieu/vjc.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="VNM" data-name="công ty cổ phần sữa việt nam" data-sector="Sữa & Thực phẩm dinh dưỡng (Vinamilk)" data-href="/co-phieu/vnm.html">
+        <tr data-ticker="VNM" data-name="công ty cổ phần sữa việt nam" data-sector="Sữa & Thực phẩm dinh dưỡng (Vinamilk)" data-href="/co-phieu/vnm.html" data-category="tieu-dung">
           <td>
             <a href="/co-phieu/vnm.html" class="ticker-link">VNM</a>
           </td>
@@ -790,7 +790,7 @@
             <a href="/co-phieu/vnm.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="VPB" data-name="ngân hàng thương mại cổ phần việt nam thịnh vượng" data-sector="Ngân hàng" data-href="/co-phieu/vpb.html">
+        <tr data-ticker="VPB" data-name="ngân hàng thương mại cổ phần việt nam thịnh vượng" data-sector="Ngân hàng" data-href="/co-phieu/vpb.html" data-category="ngan-hang">
           <td>
             <a href="/co-phieu/vpb.html" class="ticker-link">VPB</a>
           </td>
@@ -804,7 +804,7 @@
             <a href="/co-phieu/vpb.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="VPL" data-name="công ty cổ phần vinpearl" data-sector="Năng lượng & Bất động sản" data-href="/co-phieu/vpl.html">
+        <tr data-ticker="VPL" data-name="công ty cổ phần vinpearl" data-sector="Năng lượng & Bất động sản" data-href="/co-phieu/vpl.html" data-category="bat-dong-san">
           <td>
             <a href="/co-phieu/vpl.html" class="ticker-link">VPL</a>
           </td>
@@ -818,7 +818,7 @@
             <a href="/co-phieu/vpl.html" class="action-btn">Định giá &rarr;</a>
           </td>
         </tr>
-        <tr data-ticker="VRE" data-name="công ty cổ phần vincom retail" data-sector="Bất động sản bán lẻ & TTTM (Vincom Retail)" data-href="/co-phieu/vre.html">
+        <tr data-ticker="VRE" data-name="công ty cổ phần vincom retail" data-sector="Bất động sản bán lẻ & TTTM (Vincom Retail)" data-href="/co-phieu/vre.html" data-category="bat-dong-san">
           <td>
             <a href="/co-phieu/vre.html" class="ticker-link">VRE</a>
           </td>
@@ -847,13 +847,27 @@
 </footer>
 
 <script>
-  let activeSector = 'all';
+  let activeCategory = 'all';
+
+  function filterCategory(cat, el) {
+    activeCategory = cat;
+    document.querySelectorAll('.filter-pills .filter-pill').forEach(btn => btn.classList.remove('active'));
+    if (el) el.classList.add('active');
+    applyFilters();
+  }
 
   function filterSector(sec, el) {
-    activeSector = sec;
-    document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
-    el.classList.add('active');
-    applyFilters();
+    const map = {
+      'all': 'all',
+      'Ngân hàng': 'ngan-hang',
+      'Tiêu dùng & Bán lẻ': 'tieu-dung',
+      'Bất động sản': 'bat-dong-san',
+      'Sản xuất & Công nghiệp': 'san-xuat',
+      'Dầu khí & Năng lượng': 'nang-luong',
+      'Công nghệ': 'cong-nghe',
+      'Dịch vụ Tài chính': 'chung-khoan'
+    };
+    filterCategory(map[sec] || sec, el);
   }
 
   function applyFilters() {
@@ -863,12 +877,13 @@
     rows.forEach(row => {
       const ticker = (row.getAttribute('data-ticker') || '').toLowerCase();
       const name = (row.getAttribute('data-name') || '').toLowerCase();
-      const sector = row.getAttribute('data-sector') || '';
+      const category = row.getAttribute('data-category') || '';
+      const sector = (row.getAttribute('data-sector') || '').toLowerCase();
 
-      const matchQuery = !query || ticker.includes(query) || name.includes(query);
-      const matchSector = activeSector === 'all' || sector === activeSector;
+      const matchQuery = !query || ticker.includes(query) || name.includes(query) || sector.includes(query);
+      const matchCategory = activeCategory === 'all' || category === activeCategory;
 
-      if (matchQuery && matchSector) {
+      if (matchQuery && matchCategory) {
         row.style.display = '';
       } else {
         row.style.display = 'none';
@@ -899,67 +914,5 @@
 
   <script src="/stock-realtime.js"></script>
 
-  <!-- FLOATING SYNCED TABLE HEADER ON SCROLL -->
-  <div id="floating-hub-header" style="position:fixed; left:16px; right:16px; z-index:85; display:none; overflow:hidden; background:#141e34; border:1px solid rgba(255,255,255,0.12); border-bottom:2px solid rgba(245,158,11,0.5); border-radius:12px 12px 0 0; box-shadow:0 8px 20px rgba(0,0,0,0.5);">
-    <table class="hub-table" id="floating-table-clone" style="margin-bottom:0; width:100%;">
-      <thead>
-        <tr>
-          <th>Mã CP</th>
-          <th>Ngành Nghề</th>
-          <th>Thị Giá (VNĐ)</th>
-          <th>P/E</th>
-          <th>P/B</th>
-          <th>EPS (VNĐ)</th>
-          <th>Vốn Hóa</th>
-          <th>Hành Động</th>
-        </tr>
-      </thead>
-    </table>
-  </div>
-  <script>
-    (function() {
-      const origTable = document.getElementById('stocks-table');
-      const card = document.querySelector('.stocks-table-card');
-      const floatWrap = document.getElementById('floating-hub-header');
-      const floatTable = document.getElementById('floating-table-clone');
-      if (!origTable || !card || !floatWrap || !floatTable) return;
-
-      function syncFloatingHeader() {
-        const topBar = document.querySelector('.top-bar');
-        const topBarH = topBar ? topBar.offsetHeight : 105;
-        floatWrap.style.top = topBarH + 'px';
-        
-        const cardRect = card.getBoundingClientRect();
-        const origRect = origTable.getBoundingClientRect();
-        
-        const origThead = origTable.querySelector('thead');
-        const origTheadRect = origThead.getBoundingClientRect();
-        // Show floating header seamlessly when original thead reaches or goes under topBar
-        if (origTheadRect.top <= topBarH && origRect.bottom >= topBarH + 90) {
-          floatWrap.style.display = 'block';
-          floatTable.style.width = origTable.offsetWidth + 'px';
-          
-          const origThs = origTable.querySelectorAll('thead th');
-          const cloneThs = floatTable.querySelectorAll('thead th');
-          origThs.forEach((th, i) => {
-            if (cloneThs[i]) {
-              cloneThs[i].style.width = th.offsetWidth + 'px';
-              cloneThs[i].style.minWidth = th.offsetWidth + 'px';
-            }
-          });
-          floatWrap.scrollLeft = card.scrollLeft;
-        } else {
-          floatWrap.style.display = 'none';
-        }
-      }
-
-      window.addEventListener('scroll', syncFloatingHeader, { passive: true });
-      window.addEventListener('resize', syncFloatingHeader, { passive: true });
-      card.addEventListener('scroll', function() {
-        floatWrap.scrollLeft = card.scrollLeft;
-      }, { passive: true });
-    })();
-  </script>
-
-</body>
+  </body>
 </html>
