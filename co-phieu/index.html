@@ -311,6 +311,32 @@
       background: #fbbf24;
       color: #0f172a;
     }
+  
+    /* Mobile-only Floating Table Header on scroll */
+    @media (min-width: 992px) {
+      #mobile-floating-header {
+        display: none !important;
+      }
+    }
+    @media (max-width: 991px) {
+      #mobile-floating-header {
+        position: fixed;
+        z-index: 85;
+        display: none;
+        overflow-x: hidden;
+        background: #141e34;
+        border-bottom: 2px solid rgba(245, 158, 11, 0.5);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+      }
+      #mobile-floating-header th:first-child {
+        position: sticky;
+        left: 0;
+        background: #141e34;
+        z-index: 95;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.4);
+      }
+    }
+
   </style>
 </head>
 <body data-lead-popup>
@@ -393,6 +419,25 @@
       <button class="filter-pill" onclick="filterCategory('chung-khoan', this)">Chứng khoán (1)</button>
       <button class="filter-pill" onclick="filterCategory('hang-khong', this)">Hàng không (1)</button>
     </div>
+  </div>
+
+  
+  <!-- MOBILE FLOATING SYNCED TABLE HEADER ON SCROLL -->
+  <div id="mobile-floating-header">
+    <table class="hub-table" id="mobile-floating-table" style="margin-bottom:0; width:100%; border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th>Mã CP</th>
+          <th>Ngành Nghề</th>
+          <th>Thị Giá (VNĐ)</th>
+          <th>P/E</th>
+          <th>P/B</th>
+          <th>EPS (VNĐ)</th>
+          <th>Vốn Hóa</th>
+          <th>Hành Động</th>
+        </tr>
+      </thead>
+    </table>
   </div>
 
   <!-- STOCKS TABLE -->
@@ -914,5 +959,74 @@
 
   <script src="/stock-realtime.js"></script>
 
-  </body>
+  
+  <!-- SYNC MOBILE FLOATING HEADER ON SCROLL & SWIPE -->
+  <script>
+    (function() {
+      const origTable = document.getElementById('stocks-table');
+      const card = document.querySelector('.stocks-table-card');
+      const floatWrap = document.getElementById('mobile-floating-header');
+      const floatTable = document.getElementById('mobile-floating-table');
+      if (!origTable || !card || !floatWrap || !floatTable) return;
+
+      function syncMobileHeader() {
+        if (window.innerWidth >= 992) {
+          floatWrap.style.display = 'none';
+          return;
+        }
+
+        const topBar = document.querySelector('.top-bar');
+        const tickerWrap = document.getElementById('ticker-wrap');
+        let topBarH = 105;
+        if (topBar) {
+          const tbRect = topBar.getBoundingClientRect();
+          topBarH = Math.max(tbRect.bottom, 70);
+        }
+        if (tickerWrap) {
+          const twRect = tickerWrap.getBoundingClientRect();
+          topBarH = Math.max(topBarH, twRect.bottom);
+        }
+
+        const cardRect = card.getBoundingClientRect();
+        const origThead = origTable.querySelector('thead');
+        if (!origThead) return;
+        const theadRect = origThead.getBoundingClientRect();
+        const tableRect = origTable.getBoundingClientRect();
+
+        if (theadRect.top <= topBarH && tableRect.bottom >= topBarH + 80) {
+          floatWrap.style.display = 'block';
+          floatWrap.style.top = topBarH + 'px';
+          floatWrap.style.left = cardRect.left + 'px';
+          floatWrap.style.width = cardRect.width + 'px';
+
+          floatTable.style.width = origTable.offsetWidth + 'px';
+
+          const origThs = origThead.querySelectorAll('th');
+          const cloneThs = floatTable.querySelectorAll('thead th');
+          origThs.forEach((th, i) => {
+            if (cloneThs[i]) {
+              const w = th.getBoundingClientRect().width;
+              cloneThs[i].style.width = w + 'px';
+              cloneThs[i].style.minWidth = w + 'px';
+              cloneThs[i].style.maxWidth = w + 'px';
+            }
+          });
+
+          floatWrap.scrollLeft = card.scrollLeft;
+        } else {
+          floatWrap.style.display = 'none';
+        }
+      }
+
+      window.addEventListener('scroll', syncMobileHeader, { passive: true });
+      window.addEventListener('resize', syncMobileHeader, { passive: true });
+      card.addEventListener('scroll', function() {
+        if (floatWrap.style.display !== 'none') {
+          floatWrap.scrollLeft = card.scrollLeft;
+        }
+      }, { passive: true });
+    })();
+  </script>
+
+</body>
 </html>
