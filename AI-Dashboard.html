@@ -5998,6 +5998,7 @@ NHIỆM VỤ BIÊN TẬP VÀ KIẾN TRÚC NỘI DUNG CHUYÊN NGHIỆP:
 2. QUY TẮC VÀNG VỀ MÀU SẮC (GIỮ NỘI DUNG SẠCH SẼ, THANH LỊCH):
    - MÀU SẮC CHỈ DÙNG TRONG INFOGRAPHIC, METRIC CARDS VÀ BẢNG DỮ LIỆU: Màu thị trường (Xanh lá #10b981 mua ròng/tăng, Đỏ #ef4444 bán ròng/giảm, Vàng #fbbf24 tham chiếu, Xanh dương #38bdf8 thanh khoản) CHỈ ĐƯỢC XUẤT HIỆN TRONG KHỐI INFOGRAPHIC VÀ BẢNG.
    - THÂN BÀI VÀ CÁC GẠCH ĐẦU DÒNG: TUYỆT ĐỐI KHÔNG BÔI MÀU XANH/ĐỎ VÀO CÂU CHỮ HOẶC CON SỐ! Toàn bộ con số biến động hoặc khối lượng chỉ dùng in đậm bình thường <strong>+28.75 điểm</strong>, <strong>-87.3 tỷ đồng</strong>, KHÔNG bọc thẻ span style="color:..." làm rối mắt độc giả!
+   - QUY TẮC DANH SÁCH (CHỐNG TRÙNG LẶP DẤU CHẤM): Tuyệt đối KHÔNG gõ lặp dấu dạng "- •" hay "* •" hay "• •". Mỗi gạch đầu dòng chỉ dùng đúng một ký tự duy nhất đầu dòng (* hoặc •).
 
 3. BẮT BUỘC TRỰC QUAN HÓA BẰNG KHỐI INFOGRAPHIC HTML THUẦN (CHO CHUYÊN MỤC THỊ TRƯỜNG):
    Nếu bài viết có số liệu Khối ngoại mua/bán ròng và các nhóm cổ phiếu nổi bật, BẮT BUỘC CHÈN KHỐI INFOGRAPHIC HOÀN CHỈNH NGAY SAU PHẦN MỞ ĐẦU HOẶC ĐẦU PHẦN 2 THEO ĐÚNG CẤU TRÚC SAU:
@@ -6264,6 +6265,11 @@ ${contentForBody.substring(0, 35000)}`;
                 });
 
                 htmlBody = injectSmartTickers(htmlBody);
+
+                // Loại bỏ triệt để hiện tượng trùng 2 dấu chấm bullet (• •) trong danh sách
+                htmlBody = htmlBody.replace(/<li([^>]*)>\s*([-*•+]\s*)+/gi, '<li$1>');
+                htmlBody = htmlBody.replace(/(<span[^>]*>•<\/span>)\s*[-*•+]\s*/gi, '$1 ');
+                htmlBody = htmlBody.replace(/<p([^>]*)>\s*•\s*•\s*/gi, '<p$1>• ');
 
 
 
@@ -7220,42 +7226,15 @@ ${contentForBody.substring(0, 35000)}`;
 
 
 
-                if (/^[-*•+]\s+/.test(line)) {
-
-
-
+                if (/^[-*•+]\s*/.test(line)) {
                     let listItems = [];
-
-
-
-                    while (i < lines.length && /^[-*•+]\s+/.test(lines[i].trim())) {
-
-
-
-                        let itemText = lines[i].trim().replace(/^[-*•+]\s*/, '');
-
-
-
+                    while (i < lines.length && /^[-*•+]\s*/.test(lines[i].trim())) {
+                        let itemText = lines[i].trim().replace(/^([-*•+]\s*)+/g, '');
                         itemText = itemText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-
-
-
                         itemText = itemText.replace(/(^|[^\*])\*([^\*]+?)\*([^\*]|$)/g, '$1<em>$2</em>$3');
-
-
-
                         itemText = itemText.replace(/(\d+)\\\./g, '$1.');
-
-
-
                         listItems.push(`  <p style="margin: 10px 0; padding-left: 22px; position: relative; line-height: 1.7; color: #cbd5e1;"><span style="position: absolute; left: 0; color: #cbd5e1; font-weight: 400;">•</span>${itemText}</p>`);
-
-
-
                         i++;
-
-
-
                     }
 
 
@@ -10646,6 +10625,7 @@ TIÊU CHUẨN 3 TRỤ CỘT BẮT BUỘC (SEO - gSEO - pSEO):
 • BỘ INFOGRAPHIC HTML/CSS THUẦN (Nhúng trực tiếp vào htmlContent):
   - Khối Infographic thanh cán cân hoặc thẻ điểm nhấn có class "infographic-block" (ví dụ thanh đo mua/bán ròng class "flow-meter-bar", thẻ điểm nhấn class "surprise-cards-grid", ma trận 2 kịch bản class "scenario-grid").
 • NGUYÊN TẮC VÀNG VỀ MÀU SẮC THÂN BÀI: Màu sắc thị trường (Xanh #10b981 / Đỏ #ef4444 / Vàng #fbbf24) CHỈ DÙNG TRONG INFOGRAPHIC VÀ BẢNG SỐ LIỆU. Thân bài văn xuôi và gạch đầu dòng: giữ màu chữ tự nhiên, số liệu chỉ dùng <strong>...</strong> in đậm, TUYỆT ĐỐI KHÔNG bôi màu xanh đỏ vào câu chữ để tránh rối mắt độc giả!
+• QUY TẮC DANH SÁCH (CHỐNG TRÙNG LẶP DẤU CHẤM): Trong thẻ <ul><li>, tuyệt đối KHÔNG gõ lặp dấu chấm bên trong nội dung thẻ (ví dụ KHÔNG viết <li>• Cổ phiếu...</li> hay <li>- Cổ phiếu...</li>, chỉ viết <li>Cổ phiếu...</li> vì thẻ li đã có sẵn dấu chấm bullet hiển thị). Mỗi gạch đầu dòng chỉ có đúng một dấu chấm.
 
 4. LIÊN KẾT NỘI BỘ (INTERNAL DUAL-LINKING):
 • Chèn 1-2 liên kết nội bộ tự nhiên trỏ về /market/ hoặc /co-phieu/ hoặc bài viết liên quan.
@@ -18966,6 +18946,9 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
             processedBody = injectSmartTickers(processedBody);
+            processedBody = processedBody.replace(/<li([^>]*)>\s*([-*•+]\s*)+/gi, '<li$1>');
+            processedBody = processedBody.replace(/(<span[^>]*>•<\/span>)\s*[-*•+]\s*/gi, '$1 ');
+            processedBody = processedBody.replace(/<p([^>]*)>\s*•\s*•\s*/gi, '<p$1>• ');
 
 
 
