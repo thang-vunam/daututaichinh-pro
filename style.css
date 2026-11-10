@@ -1840,3 +1840,40 @@ blockquote p {
   color: #e2e8f0 !important;
   font-size: 0.98rem !important;
 }
+
+/* Smart Ticker Mention Badges: VN30 / Data Hub Link Indicator */
+.ticker-badge, .ticker-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-decoration: underline dotted #38bdf8 !important;
+  text-underline-offset: 4px !important;
+  text-decoration-thickness: 1.5px !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 2px !important;
+  font-size: 0.95em !important;
+  vertical-align: baseline !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+}
+.ticker-badge:hover, .ticker-link:hover {
+  color: #38bdf8 !important;
+  text-decoration: underline solid #38bdf8 !important;
+  text-underline-offset: 4px !important;
+  background: rgba(56, 189, 248, 0.08) !important;
+  border-radius: 4px !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.ticker-badge i, .ticker-link i {
+  display: inline-block !important;
+  font-size: 0.78em !important;
+  color: #38bdf8 !important;
+  transition: color 0.2s ease !important;
+}
+.ticker-badge:hover i, .ticker-link:hover i {
+  color: #ffffff !important;
+}
