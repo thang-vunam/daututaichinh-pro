@@ -10640,7 +10640,9 @@ TIÊU CHUẨN 3 TRỤ CỘT BẮT BUỘC (SEO - gSEO - pSEO):
 • Trích dẫn nguồn dữ liệu uy tín: BẮT BUỘC chèn 1 liên kết ngoài trích dẫn nguồn HOSE (https://www.hsx.vn), HNX (https://www.hnx.vn), UBCKNN (https://ssc.gov.vn) hoặc SBV (https://sbv.gov.vn).
 
 3. pSEO (PROGRAMMATIC SEO & VISUAL DATA):
-• Smart Ticker Badges: Mọi mã cổ phiếu xuất hiện trong bài BẮT BUỘC bọc dạng: <a href="/co-phieu/{mã viết thường}.html" class="ticker-badge"><i class="fa-solid fa-chart-line"></i> {MÃ VIẾT HOA}</a>
+• Smart Ticker Badges (QUY TẮC BẢO VỆ LIÊN KẾT - CHỐNG LỖI 404):
+  - CHỈ ĐƯỢC GẮN LINK CHO 30 MÃ VN30 & TOP DATA HUB CÓ TRANG RIÊNG: ACB, BID, BSR, CTG, FPT, GAS, GVR, HDB, HPG, LPB, MBB, MCH, MSN, MWG, SAB, SHB, SSB, SSI, STB, TCB, TCX, VCB, VHM, VIB, VIC, VJC, VNM, VPB, VPL, VRE. Khi xuất hiện 30 mã này, bọc dạng: <a href="/co-phieu/{mã viết thường}.html" class="ticker-badge" title="Định giá & Dữ liệu {MÃ}"><i class="fa-solid fa-chart-line"></i> {MÃ VIẾT HOA}</a>
+  - TUYỆT ĐỐI KHÔNG GẮN LINK (KHÔNG DÙNG THẺ <a>) CHO BẤT KỲ MÃ NÀO NGOÀI DANH SÁCH 30 MÃ TRÊN (ví dụ: POW, NVL, DXG, KDH, DGC, DIG, PDR, NTL, HVN, DCM, MSB... KHÔNG CÓ TRANG RIÊNG -> NẾU GẮN LINK SẼ GÂY LỖI 404). Các mã ngoài danh sách chỉ in đậm thông thường: <strong>{MÃ}</strong>.
 • BỘ INFOGRAPHIC HTML/CSS THUẦN (Nhúng trực tiếp vào htmlContent):
   - Khối Infographic thanh cán cân hoặc thẻ điểm nhấn có class "infographic-block" (ví dụ thanh đo mua/bán ròng class "flow-meter-bar", thẻ điểm nhấn class "surprise-cards-grid", ma trận 2 kịch bản class "scenario-grid").
 • NGUYÊN TẮC VÀNG VỀ MÀU SẮC THÂN BÀI: Màu sắc thị trường (Xanh #10b981 / Đỏ #ef4444 / Vàng #fbbf24) CHỈ DÙNG TRONG INFOGRAPHIC VÀ BẢNG SỐ LIỆU. Thân bài văn xuôi và gạch đầu dòng: giữ màu chữ tự nhiên, số liệu chỉ dùng <strong>...</strong> in đậm, TUYỆT ĐỐI KHÔNG bôi màu xanh đỏ vào câu chữ để tránh rối mắt độc giả!
@@ -18695,93 +18697,49 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
         function injectSmartTickers(html) {
-
-
-
             if (!html) return '';
 
-
-
-            const tickers = [
-                'ACB', 'BID', 'BSR', 'CTG', 'CTD', 'DAH', 'DBC', 'DCM', 'DGC', 'DIG', 
-                'DXG', 'FPT', 'GAS', 'GVR', 'HDB', 'HDC', 'HDG', 'HHP', 'HPG', 'HSL', 
-                'HVN', 'KBC', 'KDH', 'KOS', 'LPB', 'MBB', 'MCH', 'MSB', 'MSN', 'MWG', 
-                'NTL', 'NVL', 'OGC', 'PDR', 'PLX', 'PNJ', 'POW', 'PVD', 'PVS', 'SAB', 
-                'SHB', 'SSB', 'SSI', 'STB', 'TCB', 'TCH', 'VCB', 'VHM', 'VIB', 'VIC', 
-                'VIX', 'VJC', 'VNM', 'VND', 'VPB', 'VRE'
+            // Danh sách duy nhất 30 mã cổ phiếu có trang dữ liệu riêng /co-phieu/
+            const validDataHubTickers = [
+                'ACB', 'BID', 'BSR', 'CTG', 'FPT', 'GAS', 'GVR', 'HDB', 'HPG', 'LPB',
+                'MBB', 'MCH', 'MSN', 'MWG', 'SAB', 'SHB', 'SSB', 'SSI', 'STB', 'TCB',
+                'TCX', 'VCB', 'VHM', 'VIB', 'VIC', 'VJC', 'VNM', 'VPB', 'VPL', 'VRE'
             ];
+            const validSet = new Set(validDataHubTickers);
 
+            // BƯỚC 1: Dọn dẹp triệt để mọi link /co-phieu/{mã}.html KHÔNG thuộc 30 mã VN30 (chống lỗi 404 tuyệt đối)
+            // Nếu phát hiện thẻ <a> trỏ tới POW, NVL, DXG, KDH, DIG, PDR... -> tháo bỏ thẻ <a> và icon, chỉ giữ lại in đậm <strong>MÃ</strong>
+            html = html.replace(/<a\s+[^>]*href=["']\/co-phieu\/([a-zA-Z0-9_-]+)\.html["'][^>]*>([\s\S]*?)<\/a>/gi, (match, slug, inner) => {
+                const upperTicker = slug.toUpperCase();
+                if (!validSet.has(upperTicker)) {
+                    const cleanText = inner.replace(/<i\s+[^>]*>[\s\S]*?<\/i>/gi, '').trim();
+                    return `<strong>${cleanText || upperTicker}</strong>`;
+                }
+                return `<a href="/co-phieu/${upperTicker.toLowerCase()}.html" class="ticker-badge" title="Định giá & Dữ liệu ${upperTicker}"><i class="fa-solid fa-chart-line"></i> ${upperTicker}</a>`;
+            });
 
-
+            // BƯỚC 2: Tự động gắn Smart Ticker Badge cho các mã VN30 hợp lệ trong các đoạn <p> và <li>
             return html.replace(/<(p|li)([^>]*)>([\s\S]*?)<\/\1>/gi, (pMatch, pTag, pAttrs, pInner) => {
-
-
-
                 let modifiedInner = pInner;
 
-
-
-                tickers.forEach(tk => {
-
-
-
-                    // Tự động nâng cấp các link cũ thành huy hiệu vàng có icon
-
-
-
-                    const plainLinkRegex = new RegExp(`<a\\s+href=["']/co-phieu/${tk.toLowerCase()}\\.html["'][^>]*>(${tk})<\\/a>`, 'gi');
-
-
-
-                    modifiedInner = modifiedInner.replace(plainLinkRegex, `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge"><i class="fa-solid fa-chart-line"></i> ${tk}</a>`);
-
-
-
-
-
-
+                validDataHubTickers.forEach(tk => {
+                    // Chuẩn hóa nếu đã có link thô dạng /co-phieu/vcb.html
+                    const plainLinkRegex = new RegExp(`<a\\s+href=["']/co-phieu/${tk.toLowerCase()}\\.html["'][^>]*>([\\s\\S]*?)<\\/a>`, 'gi');
+                    modifiedInner = modifiedInner.replace(plainLinkRegex, `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge" title="Định giá & Dữ liệu ${tk}"><i class="fa-solid fa-chart-line"></i> ${tk}</a>`);
 
                     if (!modifiedInner.includes(`/co-phieu/${tk.toLowerCase()}.html`)) {
-
-
-
                         const tkRegex = new RegExp(`(?<!<[^>]*)(cổ phiếu\\s+|mã\\s+)?\\b(${tk})\\b(?![^<]*>)(?![^<]*<\\/a>)`, 'i');
-
-
-
                         if (tkRegex.test(modifiedInner)) {
-
-
-
-                            const badgeHtml = `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge"><i class="fa-solid fa-chart-line"></i> ${tk}</a>`;
-
-
-
+                            const badgeHtml = `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge" title="Định giá & Dữ liệu ${tk}"><i class="fa-solid fa-chart-line"></i> ${tk}</a>`;
                             modifiedInner = modifiedInner.replace(tkRegex, (m, prefix, ticker) => {
-
-
-
                                 return (prefix || '') + badgeHtml;
-
-
-
                             });
-
-
-
                         }
-
-
-
                     }
-
-
-
                 });
 
-
-
-                return `<${pTag}${pAttrs}>${modifiedInner}<\/${pTag}>`;
+                return `<${pTag}${pAttrs}>${modifiedInner}</${pTag}>`;
+            });
 
 
 
@@ -19943,37 +19901,41 @@ body { background: #0b1120; color: #cbd5e1; font-family: 'Inter', system-ui, san
 
 
 
-/* Ticker Badges: Chữ Trắng Bold + Icon đồ thị nhỏ tinh tế, không khung viền thô, click mở Data Hub */
+/* Ticker Badges: Chữ Trắng Bold + Icon đồ thị Cyan + Gạch chân nét đứt Cyan báo hiệu click Data Hub */
 .ticker-badge, .ticker-link {
   display: inline-flex !important;
   align-items: center !important;
   gap: 4px !important;
   color: #ffffff !important;
   font-weight: 700 !important;
-  text-decoration: none !important;
+  text-decoration: underline dotted #38bdf8 !important;
+  text-underline-offset: 4px !important;
+  text-decoration-thickness: 1.5px !important;
   background: transparent !important;
   border: none !important;
   padding: 0 2px !important;
   font-size: 0.95em !important;
   vertical-align: baseline !important;
   white-space: nowrap !important;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease !important;
 }
 .ticker-badge:hover, .ticker-link:hover {
   color: #38bdf8 !important;
-  text-decoration: underline !important;
-  background: transparent !important;
+  text-decoration: underline solid #38bdf8 !important;
+  text-underline-offset: 4px !important;
+  background: rgba(56, 189, 248, 0.08) !important;
+  border-radius: 4px !important;
   transform: none !important;
   box-shadow: none !important;
 }
 .ticker-badge i, .ticker-link i {
   display: inline-block !important;
   font-size: 0.78em !important;
-  color: #94a3b8 !important;
-  transition: color 0.2s ease;
+  color: #38bdf8 !important;
+  transition: color 0.2s ease !important;
 }
 .ticker-badge:hover i, .ticker-link:hover i {
-  color: #38bdf8 !important;
+  color: #ffffff !important;
 }
 
 /* Các class màu sắc chuẩn thị trường chứng khoán */
