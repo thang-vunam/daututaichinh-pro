@@ -5731,7 +5731,7 @@ Bạn có thể viết:
 
 
 
-            const key = getItemSafe('gemini_key');
+            const key = getItemSafe('gemini_key') || (document.getElementById('cfg-gemini') ? document.getElementById('cfg-gemini').value.trim() : '');
 
 
 
@@ -5751,9 +5751,9 @@ Bạn có thể viết:
 
 
 
-            // Nếu chưa cấu hình Key, hệ thống sẽ tự động dùng bộ công cụ định dạng & tối ưu chuẩn SEO cục bộ
-            if(!key) {
-                console.warn('Chưa cấu hình Gemini API Key -> Chạy chế độ Tự động chuẩn hóa SEO Cục bộ');
+            if (!key) {
+                alert("⚠️ Chưa có Gemini API Key! Vui lòng mở phần Cấu Hình (biểu tượng bánh răng) để nhập và bấm Lưu Cấu Hình.");
+                return;
             }
 
 
@@ -5989,75 +5989,96 @@ Dưới đây là một bài viết do tác giả cung cấp${keyword ? ' với 
 
 
 
-NHIỆM VỤ BIÊN TẬP VÀ KIẾN TRÚC NỘI DUNG:
+NHIỆM VỤ BIÊN TẬP VÀ KIẾN TRÚC NỘI DUNG CHUYÊN NGHIỆP:
 
-1. ĐỒNG BỘ SỐ LƯỢNG THỰC TẾ (Fact-Checking Count & Accuracy):
+1. ĐỒNG BỘ TIÊU ĐỀ & METADATA CHUẨN SENTENCE CASE:
+   - DÙNG SENTENCE CASE (chỉ viết hoa chữ cái đầu tiên, chữ cái sau dấu hai chấm : và các danh từ riêng/mã chứng khoán viết tắt như VN-Index, SSI, FPT, Việt Nam...). TUYỆT ĐỐI KHÔNG VIẾT HOA TỪNG TỪ.
+   - Meta Description chuẩn 130-155 ký tự, tóm tắt sắc bén, chứa từ khóa chính và số liệu trọng tâm.
 
-   - ĐỒNG BỘ SỐ LƯỢNG: Tự động kiểm tra và đếm chính xác số lượng điểm bất ngờ / luận điểm thực tế trong thân bài. Nếu tác giả viết nhầm "5 Sự Thật" trong tiêu đề nhưng thân bài thực tế chỉ có 4 điểm (hoặc số khác), BẮT BUỘC ĐỒNG BỘ TIÊU ĐỀ VÀ PHẦN 2 THEO ĐÚNG SỐ LƯỢNG THỰC TẾ (ví dụ: tự động sửa thành "4 Sự Thật Ngược Đời Phía Sau Nhịp Điều Chỉnh"). Tuyệt đối không để số lượng tiêu đề lệch với nội dung thực tế.
+2. QUY TẮC VÀNG VỀ MÀU SẮC (GIỮ NỘI DUNG SẠCH SẼ, THANH LỊCH):
+   - MÀU SẮC CHỈ DÙNG TRONG INFOGRAPHIC, METRIC CARDS VÀ BẢNG DỮ LIỆU: Màu thị trường (Xanh lá #10b981 mua ròng/tăng, Đỏ #ef4444 bán ròng/giảm, Vàng #fbbf24 tham chiếu, Xanh dương #38bdf8 thanh khoản) CHỈ ĐƯỢC XUẤT HIỆN TRONG KHỐI INFOGRAPHIC VÀ BẢNG.
+   - THÂN BÀI VÀ CÁC GẠCH ĐẦU DÒNG: TUYỆT ĐỐI KHÔNG BÔI MÀU XANH/ĐỎ VÀO CÂU CHỮ HOẶC CON SỐ! Toàn bộ con số biến động hoặc khối lượng chỉ dùng in đậm bình thường <strong>+28.75 điểm</strong>, <strong>-87.3 tỷ đồng</strong>, KHÔNG bọc thẻ span style="color:..." làm rối mắt độc giả!
 
-   - Tối ưu Tiêu đề chuẩn RankMath SEO, hấp dẫn nhưng giữ trọn văn phong tác giả.
-   - NGUYÊN TẮC BẮT BUỘC VỀ TIÊU ĐỀ: DÙNG SENTENCE CASE (chỉ viết hoa chữ cái đầu tiên, chữ cái sau dấu hai chấm : hoặc hỏi ?, và các danh từ riêng/mã chứng khoán viết tắt như VN-Index, SSI, FPT, Việt Nam...). TUYỆT ĐỐI KHÔNG VIẾT HOA TỪNG TỪ (Title Case kiểu tiếng Anh).
+3. BẮT BUỘC TRỰC QUAN HÓA BẰNG KHỐI INFOGRAPHIC HTML THUẦN (CHO CHUYÊN MỤC THỊ TRƯỜNG):
+   Nếu bài viết có số liệu Khối ngoại mua/bán ròng và các nhóm cổ phiếu nổi bật, BẮT BUỘC CHÈN KHỐI INFOGRAPHIC HOÀN CHỈNH NGAY SAU PHẦN MỞ ĐẦU HOẶC ĐẦU PHẦN 2 THEO ĐÚNG CẤU TRÚC SAU:
+   
+   <div class="infographic-block">
+     <div class="infographic-title">
+       <div class="infographic-title-text"><i class="fa-solid fa-scale-balanced" style="color: #38bdf8;"></i> Cán cân Mua - Bán ròng Khối ngoại</div>
+       <span class="infographic-tag">[MUA RÒNG +XXX TỶ ĐỒNG hoặc BÁN RÒNG -YYY TỶ ĐỒNG]</span>
+     </div>
+     <div class="flow-meter-wrap">
+       <div class="flow-meter-labels" style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 6px;">
+         <span style="color: #10b981; font-weight: 700;">↓ Tổng Mua gom: [MUA] Tỷ ([BUY_PCT]%)</span>
+         <span style="color: #ef4444; font-weight: 700;">Tổng Xả bán: [SELL] Tỷ ([SELL_PCT]%) ↑</span>
+       </div>
+       <div class="flow-meter-bar">
+         <div class="flow-buy" style="width: [BUY_PCT]%;">Mua gom ([BUY_PCT]%)</div>
+         <div class="flow-sell" style="width: [SELL_PCT]%;">Xả bán ([SELL_PCT]%)</div>
+       </div>
+     </div>
+     <div class="flow-details-grid">
+       <div class="flow-col">
+         <div class="flow-col-title" style="color: #10b981;"><i class="fa-solid fa-circle-plus"></i> Top Khối ngoại Mua ròng</div>
+         <!-- Danh sách mã mua ròng -->
+       </div>
+       <div class="flow-col">
+         <div class="flow-col-title" style="color: #ef4444;"><i class="fa-solid fa-circle-minus"></i> Top Khối ngoại Xả ròng</div>
+         <!-- Danh sách mã xả ròng -->
+       </div>
+     </div>
+   </div>
 
+   VÀ BỘ 4 THẺ ĐIỂM NHẤN (SURPRISE CARDS):
+   <div class="surprise-cards-grid">
+     <div class="surprise-card card-bull">
+       <div class="sc-head"><span class="sc-num">ĐIỂM 1 • TÍM TRẦN</span><span class="sc-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">+6.87% CE</span></div>
+       <div class="sc-title">[Tóm tắt điểm 1]</div>
+       <p class="sc-desc">[Mô tả 1 câu]</p>
+     </div>
+     <div class="surprise-card card-bull">
+       <div class="sc-head"><span class="sc-num">ĐIỂM 2 • KHỐI NGOẠI</span><span class="sc-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">+486.1 tỷ</span></div>
+       <div class="sc-title">[Tóm tắt điểm 2]</div>
+       <p class="sc-desc">[Mô tả 1 câu]</p>
+     </div>
+     <div class="surprise-card card-bear">
+       <div class="sc-head"><span class="sc-num">ĐIỂM 3 • ÁP LỰC TRỤ</span><span class="sc-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">-87.3 tỷ</span></div>
+       <div class="sc-title">[Tóm tắt điểm 3]</div>
+       <p class="sc-desc">[Mô tả 1 câu]</p>
+     </div>
+     <div class="surprise-card card-gold">
+       <div class="sc-head"><span class="sc-num">ĐIỂM 4 • THANH KHOẢN</span><span class="sc-badge" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24;">825.0 TỶ</span></div>
+       <div class="sc-title">[Tóm tắt điểm 4]</div>
+       <p class="sc-desc">[Mô tả 1 câu]</p>
+     </div>
+   </div>
 
+4. CẤU TRÚC 3 TRỤ CỘT BÀI BÁO (3 PILLARS H2):
+   - ## 1. Bối cảnh phiên bùng nổ: Dòng tiền lớn trở lại và xung lực vượt cản
+   - ## 2. Phân tích điểm nhấn dòng tiền: Khối ngoại gom ròng và các nhóm ngành nổi bật
+   - ## 3. Kịch bản thị trường & Khuyến nghị quản trị danh mục phiên kế tiếp (Kèm Ma trận 2 Kịch bản: <div class="scenario-grid"><div class="scenario-box scenario-base">...</div><div class="scenario-box scenario-cautious">...</div></div>)
 
-2. TÁI CẤU TRÚC PHÂN CẤP CHUYÊN NGHIỆP (Heading Hierarchy & Markdown Formatting):
-
-   - THẺ H2 (##): Chỉ dành cho các PHẦN CHÍNH (Pillars) để hiển thị trên Mục lục (TOC), đánh số thứ tự tuần tự từ 1 đến N (ví dụ: ## 1. Lời Mở Đầu:..., ## 2. [Số] Sự Thật Ngược Đời Phía Sau Nhịp Điều Chỉnh, ## 3. Chiến Lược Giao Dịch & Quản Trị Rủi Ro..., ## 4. Kết Luận & Lời Kêu Gọi Hành Động).
-
-     LƯU Ý: Phần "Kết Luận" PHẢI LÀ MỤC CUỐI CÙNG (ví dụ Mục 4 hoặc 5), TUYỆT ĐỐI KHÔNG để nhảy thành mục 7 hay 8!
-
-   - THẺ H3 (###): Dành cho các luận điểm/tiểu mục con nằm trong H2 (ví dụ: "### Điểm Bất Ngờ 1:...", "### Điểm Bất Ngờ 2:...", "### Hai Kịch Bản Thị Trường...", "### Nguyên Tắc Quản Trị Rủi Ro...", "### Nhóm Ngành Ưu Tiên Giải Ngân..."). TUYỆT ĐỐI KHÔNG đánh số H2 cho các Điểm Bất Ngờ này.
-
-   - DANH SÁCH CON (Sub-lists): Dưới mỗi H2/H3, các ý liệt kê chi tiết BẮT BUỘC dùng dấu gạch đầu dòng Markdown "- " hoặc chữ cái "a)", "b)". TUYỆT ĐỐI KHÔNG dùng số "1.", "2.", "3." cho danh sách con để tránh trùng lặp số với đề mục H2.
-
-   - TRÍCH DẪN (>): Thẻ blockquote chỉ dùng cho 1-2 câu châm ngôn/nhận định đắt giá, TUYỆT ĐỐI KHÔNG bọc tiêu đề H2/H3.
-
-   - BẢNG BIỂU: Đảm bảo bảng dữ liệu được định dạng chuẩn Markdown (| Cột 1 | Cột 2 |).
-
-
-
-BẮT BUỘC TRẢ VỀ THEO ĐÚNG 2 KHỐI SAU (KHÔNG THÊM BẤT KỲ VĂN BẢN NÀO NGOÀI 2 KHỐI):
-
-
+BẮT BUỘC TRẢ VỀ THEO ĐÚNG 2 KHỐI SAU:
 
 <<<SEO_JSON>>>
-
 {
-
-  "title": "${(detectedTitle || 'Tiêu đề chuẩn SEO, đồng bộ số liệu').replace(/"/g, '\\"')}",
-
+  "title": "Tiêu đề hấp dẫn chuẩn Sentence Case báo chí (chỉ viết hoa chữ đầu, tên riêng và mã CK)",
   "slug": "url-slug-khong-dau-ngan-gon",
-
-  "metaDescription": "Mô tả SEO tóm tắt nội dung bài viết, độ dài 120-155 ký tự",
-
-  "imagePrompt": "10 English keywords for abstract professional finance cover image on Unsplash (e.g. stock market growth chart, modern trading office, financial district skyline, bull statue... NO text or foreign tickers)",
-
-  "tags": ["tag1", "tag2", "tag3"],
-
-  "hashtags": ["#tag1", "#tag2"],
-
+  "metaDescription": "Mô tả SEO tóm tắt nội dung bài viết đúng 130-155 ký tự chứa từ khóa chính",
+  "imagePrompt": "10 English keywords for specific contextual cover image on Unsplash (NO text, NO generic bitcoin chart)",
+  "tags": ["Chứng khoán", "Đầu tư tài chính", "Thị trường"],
+  "hashtags": ["#chungkhoan", "#dautu"],
   "keyMetrics": [
-
-    {"label": "Chỉ số 1 (ví dụ P/E hoặc VN-Index)", "val": "Giá trị (ví dụ 10.3x hoặc 1.741đ)"},
-
-    {"label": "Chỉ số 2 (ví dụ LNST hoặc Khối ngoại)", "val": "Giá trị (ví dụ +45.4% hoặc 120.000 tỷ)"},
-
-    {"label": "Chỉ số 3 (ví dụ Vùng mua hoặc Hỗ trợ)", "val": "Giá trị (ví dụ 1.720 - 1.740)"},
-
-    {"label": "Chỉ số 4 (ví dụ Kịch bản hoặc Biên an toàn)", "val": "Giá trị (ví dụ Xác suất 60% hoặc 18%)"}
-
+    {"label": "Chỉ số VN-Index", "val": "Giá trị (ví dụ 1.743,07 đ)"},
+    {"label": "Khối Ngoại Giao Dịch", "val": "Giá trị (ví dụ +486,1 tỷ)"},
+    {"label": "Thanh Khoản HOSE", "val": "Giá trị (ví dụ 661,5 tr CP)"},
+    {"label": "Chỉ số VN30", "val": "Giá trị (ví dụ 1.860,93 đ)"}
   ]
-
 }
-
 <<<END_SEO_JSON>>>
 
-
-
 <<<STRUCTURED_BODY>>>
-
-[Toàn bộ nội dung bài viết của tác giả đã được biên tập và tái cấu trúc hoàn chỉnh bằng Markdown chuẩn: H2 cho các phần lớn tuần tự 1..N, H3 cho các điểm bất ngờ/tiểu mục, bullet - cho danh sách con, bảng biểu |..|, trích dẫn >]
-
+[Toàn bộ bài viết hoàn chỉnh gồm đoạn mở đầu <p>, khối <div class="infographic-block">, các phần ## 1.., ## 2.., ## 3.., khối <div class="surprise-cards-grid">, ma trận <div class="scenario-grid">... TUYỆT ĐỐI KHÔNG bôi màu xanh đỏ vào câu chữ trong bài viết!]
 <<<END_STRUCTURED_BODY>>>
 
 
@@ -6111,7 +6132,11 @@ ${contentForBody.substring(0, 35000)}`;
 
                     if (detectedTitle && seo && !seo.title) seo.title = detectedTitle;
                     } catch(aiErr) {
-                        console.warn("AI Busy / Error -> Using smart local extraction:", aiErr);
+                        console.error("AI Error:", aiErr);
+                        alert(`❌ Lỗi gọi Gemini AI: ${aiErr.message || aiErr}\n\nVui lòng kiểm tra lại Quota API hoặc kết nối mạng!`);
+                        btn.innerHTML = '<span><i class="fa-solid fa-magnifying-glass-chart"></i> AI Tối ưu SEO & Chuẩn bị đăng</span>';
+                        btn.disabled = false;
+                        return;
                     }
                 }
 
@@ -6193,29 +6218,24 @@ ${contentForBody.substring(0, 35000)}`;
 
 
                 // Tự động sử dụng nội dung đã được Kiến Trúc Sư AI tái cấu trúc chuẩn mực
-
-
-
                 const bodySource = (structuredBodyFromAi && structuredBodyFromAi.length > 100) ? structuredBodyFromAi : ((seo && seo.structuredMarkdown && seo.structuredMarkdown.length > 100) ? seo.structuredMarkdown : contentForBody);
-
                 
-
-                // Cập nhật lại khung Editor với nội dung đã được Kiến Trúc Sư AI biên tập hoàn mỹ
-
                 if (structuredBodyFromAi && structuredBodyFromAi.length > 100) {
-
                     const editorEl = document.getElementById('manual-content');
-
                     if (editorEl) editorEl.value = structuredBodyFromAi;
-
                 }
-
-
 
                 const finalTitle = (seo.title || detectedTitle || keyword || 'Nhận định & Phân tích thị trường').replace(/<[^>]+>/g, '').trim();
                 seo.title = finalTitle;
 
-                let htmlBody = formatRawTextToHtml(bodySource, finalTitle);
+                // Nếu nội dung trả về từ AI đã chứa sẵn các thẻ HTML (H2, div, p, table), giữ nguyên vẹn không chạy qua bộ cắt regex thô
+                let htmlBody = '';
+                const isAlreadyRichHtml = (/<h[23]>/i.test(bodySource) || /<div\s+class=["']infographic/i.test(bodySource)) && (/<p>/i.test(bodySource) || /<div/i.test(bodySource));
+                if (isAlreadyRichHtml) {
+                    htmlBody = bodySource;
+                } else {
+                    htmlBody = formatRawTextToHtml(bodySource, finalTitle);
+                }
                 htmlBody = ensureSemanticHeadings(htmlBody);
 
 
@@ -6235,6 +6255,13 @@ ${contentForBody.substring(0, 35000)}`;
                 htmlBody = applySmartLinking(htmlBody, category, finalTitle || keyword);
 
 
+
+                
+                // Loại bỏ triệt để các thẻ bôi màu xanh đỏ vào câu chữ trong đoạn văn xuôi và danh sách gạch đầu dòng
+                htmlBody = htmlBody.replace(/<(p|li)([^>]*)>([\s\S]*?)<\/\1>/gi, (match, tag, attrs, inner) => {
+                    let cleanInner = inner.replace(/<span\s+style=["']color:\s*#[0-9a-fA-F]+;?["']>([\s\S]*?)<\/span>/gi, '$1');
+                    return `<${tag}${attrs}>${cleanInner}</${tag}>`;
+                });
 
                 htmlBody = injectSmartTickers(htmlBody);
 
@@ -6896,11 +6923,10 @@ ${contentForBody.substring(0, 35000)}`;
 
 
 
-                // 1. Dò tìm Bảng Markdown chuẩn (chứa '|')
-
-
-
-                if (line.includes('|') && line.split('|').filter(c => c.trim()).length >= 2 && !line.startsWith('*') && !line.startsWith('-')) {
+                // 1. Dò tìm Bảng Markdown chuẩn: Phải có ít nhất 2 cột, KHÔNG bắt đầu bằng bullet (•, -, *, +) và dòng kế tiếp phải là đường kẻ phân cách bảng (|---|)
+                const isBullet = /^[\s]*([•\-*+]|\d+[\.\)])/.test(line);
+                const hasNextSeparator = (i + 1 < lines.length) && /^[\s]*\|?[\s]*:?-+:?[\s]*\|[\s]*:?-+:?/.test(lines[i + 1]);
+                if (line.includes('|') && line.split('|').filter(c => c.trim()).length >= 2 && !isBullet && hasNextSeparator) {
 
 
 
@@ -7355,13 +7381,19 @@ ${contentForBody.substring(0, 35000)}`;
             if (/^##\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^##\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
             if (/^#\s+/.test(trimmed)) return { tag: 'h2', text: trimmed.replace(/^#\s+/, '').replace(/(\d+)\\\./g, '$1.').trim() };
 
-            // SMART HEURISTIC: Đề mục lớn bắt đầu bằng số (1. Lời mở đầu, 6. Chiến lược, 7. Kết luận, v.v.)
-            if (/^\d+[\.\)]\s+(lời mở đầu|kết luận|tổng kết|chiến lược|khuyến nghị|bối cảnh|phần|chương)/i.test(trimmed)) {
-                return { tag: 'h2', text: trimmed.replace(/(\d+)\\\./g, '$1.').replace(/^\d+[\.\)]\s*/, '').trim() };
+            // SMART HEURISTIC: Đề mục lớn bắt đầu bằng số (1. Tổng quan, 2. Diễn biến, 3. Nhận định, 4. Chiến lược, v.v.)
+            // Nhận diện mọi dòng bắt đầu bằng số 1., 2., 3. nếu là tiêu đề mục (có dấu : ở cuối HOẶC độ dài ngắn < 90 ký tự và không có dấu chấm câu ở giữa)
+            if (/^\d+[\.\)]\s+[A-ZÀ-Ỹ0-9]/.test(trimmed)) {
+                const afterNum = trimmed.replace(/^\d+[\.\)]\s+/, '').trim();
+                // Điều kiện là tiêu đề: kết thúc bằng ':' HOẶC ngắn < 90 ký tự và không có nhiều câu
+                if (trimmed.endsWith(':') || (afterNum.length >= 4 && afterNum.length < 90 && !/\.\s+[A-ZÀ-Ỹ]/.test(afterNum))) {
+                    let cleanH2 = trimmed.replace(/(\d+)\\./g, '$1.').replace(/:\s*$/, '').trim();
+                    return { tag: 'h2', text: cleanH2 };
+                }
             }
 
-            // Nếu dòng chỉ là số thứ tự 1., 2., 3. KHÔNG CÓ DẤU # ở đầu -> LIST ITEM
-            if (/^\d+[\.\)]\s+/.test(trimmed) || /^[a-z][\.\)]\s+/i.test(trimmed)) {
+            // Nếu dòng chỉ là số thứ tự 1., 2., 3. thông thường kèm nội dung ngắn không phải đề mục -> LIST ITEM
+            if (/^[a-z][\.\)]\s+/i.test(trimmed)) {
                 return null;
             }
 
@@ -7536,33 +7568,11 @@ ${contentForBody.substring(0, 35000)}`;
 
 
         function getEffectiveGeminiModel() {
-
-
-
-            const saved = getItemSafe('gemini_model') || 'auto';
-
-
-
-            // Chế độ Auto hoặc các model đã cũ -> dùng gemini-3.1-flash-lite (Free tier ổn định nhất)
-
-
-
-            if (saved === 'auto' || saved === 'gemini-2.5-flash' || saved.includes('2.0') || saved.includes('3.5') || saved === 'gemini-3-pro-preview') {
-
-
-
-                return 'gemini-3.1-flash-lite';
-
-
-
+            const saved = getItemSafe('gemini_model') || 'gemini-flash-latest';
+            if (!saved || saved === 'auto' || saved.includes('3.1-flash-lite') || saved.includes('3-flash')) {
+                return 'gemini-flash-latest';
             }
-
-
-
             return saved;
-
-
-
         }
 
 
@@ -8323,6 +8333,14 @@ ${contentForBody.substring(0, 35000)}`;
 
 
 
+                // Tự động lưu cấu hình hợp lệ vào Storage ngay khi Test thành công
+                setItemSafe('gemini_key', apiKey.trim());
+                const selModel = document.getElementById('cfg-model');
+                if (selModel && selModel.value) {
+                    setItemSafe('gemini_model', selModel.value);
+                }
+                updateConnectionStatus();
+
                 resultEl.innerHTML = `✅ API Key hợp lệ!<br>🚀 <strong>Model được chọn sử dụng:</strong> <span style="color:#fef08a">${effective}</span><br><br><strong>Models khả dụng (${generateModels.length}):</strong><br>` + 
 
 
@@ -8423,7 +8441,7 @@ ${contentForBody.substring(0, 35000)}`;
 
 
 
-            const key = getItemSafe('gemini_key');
+            const key = getItemSafe('gemini_key') || (document.getElementById('cfg-gemini') ? document.getElementById('cfg-gemini').value.trim() : '');
 
 
 
@@ -10560,7 +10578,7 @@ main {
 
 
 
-            const key = getItemSafe('gemini_key');
+            const key = getItemSafe('gemini_key') || (document.getElementById('cfg-gemini') ? document.getElementById('cfg-gemini').value.trim() : '');
 
 
 
@@ -10600,182 +10618,55 @@ main {
 
 
 
-            const systemPrompt = `Hôm nay là ngày ${today}, năm ${currentYear}. Bạn là Chuyên gia tạo nội dung SEO chuẩn RankMath mảng Tài chính Chứng khoán. KHÔNG BAO GIỜ dùng 2024 hay 2025. 
-
-
+            const systemPrompt = `Hôm nay là ngày ${today}, năm ${currentYear}. Bạn là Chuyên Gia Sáng Tạo Nội Dung & Kiến Trúc Sư SEO Tài Chính Chứng Khoán Cấp Cao chuẩn RankMath & gSEO (Google AI Overviews).
+KHÔNG BAO GIỜ dùng 2024 hay 2025. 
 
 CHỦ ĐỀ BÀI VIẾT: "${idea}"
 
-
-
-
-
-
-
-QUY TẮC SỐ LIỆU REAL-TIME (QUAN TRỌNG NHẤT):
-
-
-
-• BẮT BUỘC sử dụng kết quả Google Search để lấy SỐ LIỆU THỊ TRƯỜNG MỚI NHẤT (VN-Index, giá cổ phiếu, lãi suất, tỷ giá, giá vàng, giá dầu...) tính đến NGÀY HÔM NAY ${today}.
-
-
-
-• TUYỆT ĐỐI KHÔNG bịa số liệu từ trí nhớ cũ. Nếu không tìm được dữ liệu mới nhất, hãy ghi rõ "tại thời điểm viết bài" thay vì đưa ra con số sai.
-
-
-
-• Mọi con số, chỉ số, % tăng trưởng PHẢI phản ánh đúng thực tế hiện tại ${currentYear}, KHÔNG ĐƯỢC dùng dữ liệu cũ.
-
-
-
-
-
-
-
-NHIỆM VỤ SEO BẮT BUỘC (Hybrid):
-
-
-
-1. TỪ KHÓA CHÍNH (Focus Keyword): "${topic}".
-
-
-
-2. BẮT BUỘC chèn TỪ KHÓA CHÍNH một cách cực kỳ tự nhiên vào đầu của Tiêu đề (Title) và Mô tả (Meta Description).
-
-
-
-3. Trong đoạn mở bài (Sapo), phải lặp lại Từ khóa chính 1 lần. ${lsiPrompt}
-
-
-
-4. CẤU TRÚC BÀI VIẾT CHUẨN SEO BẮT BUỘC (ĐỂ SINH MỤC LỤC TỰ ĐỘNG):
-
-
-
-• Bài viết BẮT BUỘC phải có tối thiểu 3 đến 5 phần nội dung chính, mỗi phần PHẢI bọc trong thẻ <h2> (ví dụ: <h2>1. Bối cảnh thị trường...</h2>, <h2>2. Phân tích chi tiết và số liệu...</h2>, <h2>3. Định giá và Triển vọng...</h2>, <h2>4. Khuyến nghị và Chiến lược...</h2>).
-
-
-
-• Trong các phần có thể dùng thêm thẻ <h3> cho mục con (ví dụ: <h3>1.1 Áp lực từ khối ngoại</h3>).
-
-
-
-• TUYỆT ĐỐI KHÔNG dùng <p><strong>1. Tiêu đề</strong></p> hoặc markdown ## thay cho thẻ <h2>/<h3>.
-
-
-
-5. Tuyệt đối giữ văn phong sắc sảo, tự nhiên, không nhồi nhét từ khóa (keyword stuffing).
-
-
-
-6. ĐỊNH DẠNG BÁO CHÍ (Tùy chọn): Nếu bài viết có trích dẫn lời phát biểu của chuyên gia, tổ chức uy tín, BẮT BUỘC dùng thẻ <blockquote> để bọc câu nói đó lại nhằm tăng độ uy tín. KHÔNG bịa ra trích dẫn giả mạo nếu ngữ cảnh không có thật.
-
-
-
-7. QUY TẮC LIÊN KẾT THÔNG MINH (BẮT BUỘC - SEO & GEO DUAL-LINKING):
-
-
-
-   A. LIÊN KẾT NỘI BỘ (INTERNAL LINKS - 1 ĐẾN 2 LINK TỰ NHIÊN):
-
-
-
-      • Tầng 1 (Cùng chủ đề): Nếu bài viết có điểm chạm chủ đề, hãy gắn link tự nhiên tới bài liên quan có thật, ví dụ:
-
-
-
-        - Thị trường & Vĩ mô: <a href="/market/vn-index-1850-diem-thi-truong-chung-khoan.html">VN-Index 1.850 điểm</a>, <a href="/blog/msci-ha-xep-hang-indonesia-tac-dong-viet-nam.html">MSCI hạ xếp hạng Indonesia</a>, <a href="/blog/nang-hang-thi-truong-vnindex-giam-diem.html">nghịch lý nâng hạng thị trường</a>.
-
-
-
-        - Cổ phiếu & Doanh nghiệp: <a href="/market/co-phieu-ssi-kich-ban-q1-2026-va-nang-hang-thi-truong.html">cổ phiếu SSI</a>, <a href="/blog/pvs-loi-nhuan-q1-2026-lo-b-dau-on-dinh.html">cổ phiếu PVS Lô B Ô Môn</a>, <a href="/blog/co-phieu-pnj-ke-hoach-lo-ky-luc.html">cổ phiếu PNJ</a>.
-
-
-
-        - Bất động sản: <a href="/blog/bat-dong-san-viet-nam-2026-phuc-hoi-khong-dong-deu-dau-la-co-hoi-vang.html">phục hồi bất động sản 2026</a>.
-
-
-
-      • Tầng 2 (Cầu nối dự phòng an toàn): Nếu bài viết hoàn toàn không liên quan đến bài cũ nào, BẮT BUỘC liên kết mượt mà về một trong các Trang Cột Trụ (Hub Pages):
-
-
-
-        - Trang nhận định: <a href="/market/">nhận định thị trường chứng khoán</a>
-
-
-
-        - Trang kiến thức: <a href="/blog/">kiến thức đầu tư chuyên sâu</a>
-
-
-
-        - Trang tài liệu: <a href="/download/">tài liệu đầu tư tài chính miễn phí</a>
-
-
-
-      • Tầng 3: TUYỆT ĐỐI KHÔNG tự bịa ra đường link hoặc slug không có thật (tránh lỗi 404).
-
-
-
-
-
-
-
-   B. LIÊN KẾT NGOÀI UY TÍN (OUTBOUND LINK - 1 LINK TRÍCH DẪN):
-
-
-
-      • BẮT BUỘC chèn 1 liên kết ngoài trích dẫn nguồn uy tín từ danh sách trắng (kèm target='_blank' rel='noopener'):
-
-
-
-        - Chứng khoán, doanh nghiệp: HOSE (https://www.hsx.vn), HNX (https://www.hnx.vn), UBCKNN (https://ssc.gov.vn)
-
-
-
-        - Lãi suất, tỷ giá, vàng, tiền tệ: Ngân hàng Nhà nước (https://sbv.gov.vn)
-
-
-
-        - Lạm phát, GDP, kinh tế vĩ mô: Tổng cục Thống kê (https://gso.gov.vn)
-
-
-
-        - Kinh tế toàn cầu: World Bank (https://www.worldbank.org), Bloomberg, Reuters.
-
-
-
-      • TUYỆT ĐỐI KHÔNG chèn link ngoài vào các trang rác, trang cờ bạc hay đối thủ bán khóa học lừa đảo.
-
-
-
-
-
-
-
-Trả về 1 chuỗi JSON duy nhất:
-
-
-
-{"title":"Chứa từ khóa chính. BẮT BUỘC dùng Sentence Case tiếng Việt (chỉ viết hoa chữ đầu câu và mã CK/tên riêng), 30-55 ký tự","slug":"url-khong-dau","metaDescription":"Chứa từ khóa chính. BẮT BUỘC 120-150 ký tự","htmlContent":"Nội dung HTML hoàn chỉnh gồm đoạn mở đầu <p>, tiếp theo là các phần <h2>, <h3>, <p>, <ul>, <li>, bảng <table> nếu có so sánh số liệu. CHÈN 1-2 Outbound link. (CHÚ Ý: LƯU Ý TỐI QUAN TRỌNG: Mọi dấu ngoặc kép bên trong HTML hoặc Blockquote phải được thay bằng dấu nháy đơn (\') hoặc escape (\\\") để KHÔNG LÀM VỠ định dạng JSON)","imagePrompt":"10 từ tiếng Anh mô tả ảnh bìa mang tính biểu trưng hoặc trừu tượng (ví dụ: finance abstract background, business workspace laptop, bull market statue, gold and money... KHÔNG tìm ảnh biểu đồ cận cảnh có chữ ngoại quốc hay ngày tháng cũ)","tags":["Chứng khoán","Cổ phiếu"],"hashtags":["#chungkhoan","#dautu"]}
-
-
-
-
-
-
-
-KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse error). LƯU Ý LUÔN KIỂM TRA JSON QUOTES. Viết xuất sắc nhất có thể. Khởi chạy với Từ khóa chính: ${topic}`;
-
-
-
-
-
-
+QUY TẮC SỐ LIỆT REAL-TIME (BẮT BUỘC):
+• BẮT BUỘC sử dụng kết quả Google Search để lấy SỐ LIỆU THỊ TRƯỜNG MỚI NHẤT (VN-Index, giá cổ phiếu, lãi suất, tỷ giá, khối ngoại, thanh khoản...) tính đến NGÀY HÔM NAY ${today}.
+• Mọi con số, chỉ số, % tăng trưởng PHẢI phản ánh đúng thực tế hiện tại năm ${currentYear}.
+
+TIÊU CHUẨN 3 TRỤ CỘT BẮT BUỘC (SEO - gSEO - pSEO):
+
+1. SEO TRUYỀN THỐNG (RankMath):
+• Focus Keyword: "${topic}".
+• Tiêu đề (title): Dùng Sentence Case (chỉ viết hoa chữ cái đầu câu và mã CK/danh từ riêng). Chứa Focus Keyword ở đầu câu, độ dài 50-65 ký tự, hấp dẫn.
+• Meta Description: Chứa Focus Keyword, độ dài 130-155 ký tự, tóm tắt trực diện và có CTA.
+• Headings: Tối thiểu 3 đến 5 thẻ <h2> đánh số tuần tự (ví dụ: <h2>1. Bối cảnh thị trường...</h2>, <h2>2. Dòng tiền và nhóm ngành trọng tâm...</h2>, <h2>3. Định giá và Kịch bản hành động...</h2>). Mục con dùng <h3>. Tuyệt đối KHÔNG dùng <p><strong> thay cho <h2>/<h3>.
+
+2. gSEO (GENERATIVE ENGINE OPTIMIZATION - CHO AI OVERVIEWS & PERPLEXITY):
+• keyMetrics: BẮT BUỘC trả về đúng 4 chỉ số định lượng cụ thể (label và val rõ ràng, ví dụ: VN-Index 1.714 đ, Khối ngoại bán ròng -727 tỷ, Thanh khoản 546 tỷ, VN30 1.830 đ).
+• Trích dẫn nguồn dữ liệu uy tín: BẮT BUỘC chèn 1 liên kết ngoài trích dẫn nguồn HOSE (https://www.hsx.vn), HNX (https://www.hnx.vn), UBCKNN (https://ssc.gov.vn) hoặc SBV (https://sbv.gov.vn).
+
+3. pSEO (PROGRAMMATIC SEO & VISUAL DATA):
+• Smart Ticker Badges: Mọi mã cổ phiếu xuất hiện trong bài BẮT BUỘC bọc dạng: <a href="/co-phieu/{mã viết thường}.html" class="ticker-badge"><i class="fa-solid fa-chart-line"></i> {MÃ VIẾT HOA}</a>
+• BỘ INFOGRAPHIC HTML/CSS THUẦN (Nhúng trực tiếp vào htmlContent):
+  - Khối Infographic thanh cán cân hoặc thẻ điểm nhấn có class "infographic-block" (ví dụ thanh đo mua/bán ròng class "flow-meter-bar", thẻ điểm nhấn class "surprise-cards-grid", ma trận 2 kịch bản class "scenario-grid").
+• NGUYÊN TẮC VÀNG VỀ MÀU SẮC THÂN BÀI: Màu sắc thị trường (Xanh #10b981 / Đỏ #ef4444 / Vàng #fbbf24) CHỈ DÙNG TRONG INFOGRAPHIC VÀ BẢNG SỐ LIỆU. Thân bài văn xuôi và gạch đầu dòng: giữ màu chữ tự nhiên, số liệu chỉ dùng <strong>...</strong> in đậm, TUYỆT ĐỐI KHÔNG bôi màu xanh đỏ vào câu chữ để tránh rối mắt độc giả!
+
+4. LIÊN KẾT NỘI BỘ (INTERNAL DUAL-LINKING):
+• Chèn 1-2 liên kết nội bộ tự nhiên trỏ về /market/ hoặc /co-phieu/ hoặc bài viết liên quan.
+
+BẮT BUỘC TRẢ VỀ DUY NHẤT 1 CHUỖI JSON HỢP LỆ THEO CẤU TRÚC:
+{
+  "title": "Tiêu đề chuẩn Sentence Case chứa từ khóa chính",
+  "slug": "url-slug-khong-dau-ngan-gon",
+  "metaDescription": "Mô tả SEO 130-155 ký tự chứa từ khóa chính",
+  "keyMetrics": [
+    {"label": "Chỉ số 1 (ví dụ VN-Index)", "val": "1.714 đ"},
+    {"label": "Chỉ số 2 (ví dụ Khối ngoại)", "val": "-727.5 tỷ"},
+    {"label": "Chỉ số 3 (ví dụ Thanh khoản)", "val": "546.2 tỷ"},
+    {"label": "Chỉ số 4 (ví dụ Kịch bản/VN30)", "val": "1.830 đ"}
+  ],
+  "htmlContent": "Toàn bộ bài viết hoàn chỉnh gồm <p> mở đầu, khối infographic <div class=\"infographic-block\">...</div>, các phần <h2>, <h3>, <p>, <ul>, <li>, bảng dữ liệu <div class=\"article-table-wrap\"><table>...</table></div>, ma trận kịch bản, trích dẫn nguồn... (LƯU Ý: Escape toàn bộ dấu ngoặc kép trong HTML thành \\\" để không làm vỡ JSON)",
+  "imagePrompt": "10 English keywords for specific contextual cover photo matching the exact sector of this article on Unsplash (NO text, NO bitcoin chart)",
+  "tags": ["Từ khóa 1", "Từ khóa 2"],
+  "hashtags": ["#Tag1", "#Tag2"]
+}
+Viết xuất sắc nhất có thể. Khởi chạy với Từ khóa chính: ${topic}`;
 
             try {
-
-
-
                 const responseText = await callGeminiWithSearch(key, systemPrompt);
 
 
@@ -10865,53 +10756,18 @@ KHÔNG dùng ký tự xuống dòng chìm trong chuỗi JSON gây lủng (parse 
 
 
                 currentArticleData = {
-
-
-
                     title: data.title,
-
-
-
                     metaDescription: data.metaDescription,
-
-
-
                     category: category,
-
-
-
                     htmlContent: data.htmlContent,
-
-
-
                     imagePrompt: data.imagePrompt,
-
-
-
                     imageUrl: '',
-
-
-
                     authorName: '',
-
-
-
                     authorLink: '',
-
-
-
                     tags: data.tags,
-
-
-
                     hashtags: data.hashtags,
-
-
-
+                    kpis: data.keyMetrics || [],
                     dateString: null
-
-
-
                 };
 
 
@@ -13422,133 +13278,88 @@ ${subCardsHtml}
 
 
         async function recallArticle() {
-
-
-
             const token = getItemSafe('github_token');
-
-
-
             const owner = getItemSafe('github_owner') || 'thang-vunam';
-
-
-
             const repo = 'daututaichinh-pro';
-
-
-
             if(!token) return alert('Vui lòng cấu hình GitHub Token!');
 
-
-
-
-
-
-
             const slug = document.getElementById('review-slug').value;
-
-
-
             const category = document.getElementById('input-category').value;
-
-
-
             if(!slug) return alert('Không có slug bài viết để thu hồi!');
 
-
-
-
-
-
-
             const path = `${category}/${slug}.html`;
-
-
-
-            if(!confirm(`⚠️ Bạn có chắc muốn THU HỒI bài viết?\n\n📄 File: ${path}\n\nHành động này sẽ:\n• Xóa file bài viết khỏi GitHub\n• Gỡ bài khỏi trang chủ`)) return;
-
-
-
-
-
-
+            if(!confirm(`⚠️ Bạn có chắc muốn THU HỒI bài viết?\n\n📄 File: ${path}\n\nHành động này sẽ:\n• Xóa file bài viết khỏi GitHub\n• Xóa khỏi danh mục /${category}/\n• Cập nhật lại Trang chủ & Sitemap`)) return;
 
             const btn = document.getElementById('btn-recall');
-
-
-
             btn.innerHTML = '<div class="loader"></div> Đang thu hồi...';
-
-
-
             btn.disabled = true;
 
-
-
-
-
-
-
             try {
-
-
-
-                // BƯỚC 1: Xóa file bài viết
-
-
-
+                // BƯỚC 1: Xóa file bài viết khỏi GitHub
                 await deleteFileFromGithub(owner, repo, path, `Thu hồi: Xóa bài ${slug}`, token);
 
+                // BƯỚC 2: Cập nhật _catalog.json của chuyên mục
+                btn.innerHTML = '<div class="loader"></div> Đang gỡ khỏi danh mục...';
+                let updatedCatalog = [];
+                try {
+                    const catRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${category}/_catalog.json`, {
+                        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                    });
+                    if (catRes.ok) {
+                        const catData = await catRes.json();
+                        const rawCat = JSON.parse(decodeURIComponent(escape(atob(catData.content.replace(/\n/g, '')))));
+                        updatedCatalog = rawCat.filter(a => a.slug !== slug);
+                        const b64Cat = btoa(unescape(encodeURIComponent(JSON.stringify(updatedCatalog, null, 2))));
+                        await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${category}/_catalog.json`, {
+                            method: 'PUT',
+                            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ message: `Auto: Thu hồi bài "${slug}" khỏi catalog`, content: b64Cat, sha: catData.sha })
+                        });
 
+                        // BƯỚC 3: Tạo lại file danh mục chuyên mục (category/index.html)
+                        await generateListingFromCatalog(owner, repo, token, category, updatedCatalog);
+                    }
+                } catch(catErr) {
+                    console.warn("Lỗi cập nhật catalog khi thu hồi:", catErr);
+                }
 
-                
+                // BƯỚC 4: Đồng bộ lại Trang chủ (Hero card & Sub cards)
+                btn.innerHTML = '<div class="loader"></div> Đang cập nhật Trang chủ...';
+                try {
+                    await updateHomepage(owner, repo, token);
+                } catch(hpErr) {
+                    console.warn("Lỗi cập nhật trang chủ khi thu hồi:", hpErr);
+                }
 
+                // BƯỚC 5: Xóa slug khỏi sitemap.xml
+                try {
+                    const smRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/sitemap.xml`, {
+                        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                    });
+                    if (smRes.ok) {
+                        const smData = await smRes.json();
+                        let smContent = decodeURIComponent(escape(atob(smData.content.replace(/\n/g, ''))));
+                        if (smContent.includes(slug)) {
+                            smContent = smContent.replace(new RegExp(`\\s*<url>\\s*<loc>[^<]*${slug}[^<]*<\\/loc>[\\s\\S]*?<\\/url>`, 'g'), '');
+                            const b64Sm = btoa(unescape(encodeURIComponent(smContent)));
+                            await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/sitemap.xml`, {
+                                method: 'PUT',
+                                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ message: `Auto: Gỡ "${slug}" khỏi sitemap`, content: b64Sm, sha: smData.sha })
+                            });
+                        }
+                    }
+                } catch(smErr) {
+                    console.warn("Lỗi sitemap khi thu hồi:", smErr);
+                }
 
-
-                // BƯỚC 2: Gỡ bài khỏi trang chủ
-
-
-
-                btn.innerHTML = '<div class="loader"></div> Đang cập nhật trang chủ...';
-
-
-
-                await removeFromHomepage(owner, repo, token, slug);
-
-
-
-                
-
-
-
-                alert('✅ Thu hồi thành công!\n• File bài viết đã bị xóa\n• Trang chủ đã được cập nhật');
-
-
-
+                alert('✅ Thu hồi trọn vẹn thành công!\n• File bài viết đã xóa\n• Danh sách /' + category + '/ đã cập nhật\n• Trang chủ & Sitemap đã đồng bộ');
             } catch(e) {
-
-
-
                 alert('Lỗi thu hồi: ' + e.message);
-
-
-
             } finally {
-
-
-
                 btn.innerHTML = '<i class="fa-solid fa-rotate-left"></i> Thu hồi bài đăng';
-
-
-
                 btn.disabled = false;
-
-
-
             }
-
-
-
         }
 
 
@@ -15178,41 +14989,11 @@ ${subCardsHtml}
 
 
         const FALLBACK_MODELS = [
-
-
-
-            'gemini-3.1-flash-lite',
-
-
-
-            'gemini-flash-lite-latest',
-
-
-
             'gemini-flash-latest',
-
-
-
-            'gemini-3-flash-preview',
-
-
-
-            'gemini-3.1-flash-lite-preview',
-
-
-
+            'gemini-2.5-flash',
+            'gemini-flash-lite-latest',
             'gemini-2.5-flash-lite',
-
-
-
-            'gemini-3.1-pro-preview',
-
-
-
             'gemini-pro-latest'
-
-
-
         ];
 
 
@@ -16664,7 +16445,7 @@ ${subCardsHtml}
         }
 
         async function generateAiFaqs() {
-            const key = getItemSafe('gemini_key');
+            const key = getItemSafe('gemini_key') || (document.getElementById('cfg-gemini') ? document.getElementById('cfg-gemini').value.trim() : '');
             if (!key) {
                 alert('Vui lòng cấu hình Gemini API Key trong phần Cài đặt trước!');
                 return;
@@ -16724,7 +16505,7 @@ YÊU CẦU BẮT BUỘC:
                 alert('Vui lòng nhập câu hỏi trước khi bấm nhờ AI trả lời!');
                 return;
             }
-            const key = getItemSafe('gemini_key');
+            const key = getItemSafe('gemini_key') || (document.getElementById('cfg-gemini') ? document.getElementById('cfg-gemini').value.trim() : '');
             if (!key) {
                 alert('Vui lòng cấu hình Gemini API Key trước!');
                 return;
@@ -16815,7 +16596,7 @@ Hãy trả lời câu hỏi trên một cách súc tích, chuyên sâu, khách q
 
 
 
-            const key = getItemSafe('gemini_key');
+            const key = getItemSafe('gemini_key') || (document.getElementById('cfg-gemini') ? document.getElementById('cfg-gemini').value.trim() : '');
 
 
 
@@ -18139,7 +17920,7 @@ Hãy trả lời câu hỏi trên một cách súc tích, chuyên sâu, khách q
 
 
 
-            const key = getItemSafe('gemini_key');
+            const key = getItemSafe('gemini_key') || (document.getElementById('cfg-gemini') ? document.getElementById('cfg-gemini').value.trim() : '');
 
 
 
@@ -18922,25 +18703,12 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
             const tickers = [
-
-
-
-                'ACB', 'BID', 'BSR', 'CTG', 'FPT', 'GAS', 'GVR', 'HDB', 'HPG', 
-
-
-
-                'LPB', 'MBB', 'MCH', 'MSN', 'MWG', 'PLX', 'PNJ', 'POW', 'PVS', 
-
-
-
-                'SAB', 'SHB', 'SSB', 'SSI', 'STB', 'TCB', 'VCB', 'VHM', 'VIB', 
-
-
-
-                'VIC', 'VJC', 'VNM', 'VPB', 'VRE'
-
-
-
+                'ACB', 'BID', 'BSR', 'CTG', 'CTD', 'DAH', 'DBC', 'DCM', 'DGC', 'DIG', 
+                'DXG', 'FPT', 'GAS', 'GVR', 'HDB', 'HDC', 'HDG', 'HHP', 'HPG', 'HSL', 
+                'HVN', 'KBC', 'KDH', 'KOS', 'LPB', 'MBB', 'MCH', 'MSB', 'MSN', 'MWG', 
+                'NTL', 'NVL', 'OGC', 'PDR', 'PLX', 'PNJ', 'POW', 'PVD', 'PVS', 'SAB', 
+                'SHB', 'SSB', 'SSI', 'STB', 'TCB', 'TCH', 'VCB', 'VHM', 'VIB', 'VIC', 
+                'VIX', 'VJC', 'VNM', 'VND', 'VPB', 'VRE'
             ];
 
 
@@ -18965,7 +18733,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-                    modifiedInner = modifiedInner.replace(plainLinkRegex, `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge" style="display:inline-flex; align-items:center; gap:5px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); padding:2px 8px; border-radius:6px; font-weight:700; color:#fbbf24; text-decoration:none; font-size:0.9em; vertical-align:middle; transition:all 0.2s;"><i class="fa-solid fa-chart-line"></i> ${tk}</a>`);
+                    modifiedInner = modifiedInner.replace(plainLinkRegex, `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge"><i class="fa-solid fa-chart-line"></i> ${tk}</a>`);
 
 
 
@@ -18985,7 +18753,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-                            const badgeHtml = `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge" style="display:inline-flex; align-items:center; gap:5px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); padding:2px 8px; border-radius:6px; font-weight:700; color:#fbbf24; text-decoration:none; font-size:0.9em; vertical-align:middle; transition:all 0.2s;"><i class="fa-solid fa-chart-line"><\/i> ${tk}<\/a>`;
+                            const badgeHtml = `<a href="/co-phieu/${tk.toLowerCase()}.html" class="ticker-badge"><i class="fa-solid fa-chart-line"></i> ${tk}</a>`;
 
 
 
@@ -19510,55 +19278,46 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-                // Tự động quét các con số nổi bật trong bài viết (VN-Index, P/E, LNST, Khối ngoại, Biên an toàn...)
-
-
-
+                // Tự động quét các con số nổi bật trong bài viết linh hoạt không bị giới hạn khoảng cách
+                const vniMatch = processedBody.match(/VN-Index[^0-9]{1,40}([12][,.]?\d{3}[,.]?\d*)/i);
+                const vn30Match = processedBody.match(/VN30(?:-Index)?[^0-9]{1,40}([12][,.]?\d{3}[,.]?\d*)/i);
+                const knMatch = processedBody.match(/(?:bán ròng|mua ròng|khối ngoại)[^0-9\+\-]{1,60}([+-]?\d+[,.]?\d*\s*tỷ)/i);
+                const tkMatch = processedBody.match(/(?:thanh khoản|khối lượng giao dịch|khớp lệnh)[^0-9]{1,60}(\d+[,.]?\d*\s*(?:triệu|tỷ|đơn vị|CP)?)/i);
                 const peMatch = processedBody.match(/P\/E[^0-9]{1,20}(\d+[,.]\d+(\s*–\s*\d+[,.]\d+)?\s*(?:lần|x)?)/i);
                 const pbMatch = processedBody.match(/P\/B[^0-9]{1,20}(\d+[,.]\d+(\s*–\s*\d+[,.]\d+)?\s*(?:lần|x)?)/i);
-                const vniMatch = processedBody.match(/VN-Index[^0-9]{1,20}([12][,.]?\d{3}[,.]?\d*)/i);
-                const lnstMatch = processedBody.match(/LNST[^0-9]{1,20}([+-]?\d+[,.]?\d*\s*%(?:\s*YoY)?)/i);
-                const knMatch = processedBody.match(/khối ngoại[^0-9]{1,30}(\d+[,.]?\d*\s*tỷ)/i);
-                const creditMatch = processedBody.match(/tín dụng[^0-9]{1,30}(\d+[,.]?\d*\s*%)/i);
 
                 if (vniMatch) kpiList.push({ label: 'Chỉ Số VN-Index', val: vniMatch[1] + ' đ' });
-                if (creditMatch) kpiList.push({ label: 'Tăng Trưởng Tín Dụng', val: creditMatch[1] });
-                if (pbMatch) kpiList.push({ label: 'P/B Ngành', val: pbMatch[1] });
-                if (peMatch) kpiList.push({ label: 'P/E Định Giá', val: peMatch[1] });
-                if (lnstMatch) kpiList.push({ label: 'Tăng Trưởng LNST', val: lnstMatch[1] });
                 if (knMatch) kpiList.push({ label: 'Khối Ngoại Giao Dịch', val: knMatch[1] });
-
-                // TUYỆT ĐỐI KHÔNG BỊA RA 4 THẺ CHUNG CHUNG NẾU BÀI KHÔNG CÓ SỐ LIỆU ĐỊNH LƯỢNG
-                if (kpiList.length < 2) {
-                    kpiList = []; // Ẩn hoàn toàn metric grid nếu không có số liệu thực tế
-                }
-
-
-
+                if (tkMatch) kpiList.push({ label: 'Thanh Khoản Thị Trường', val: tkMatch[1] });
+                if (vn30Match) kpiList.push({ label: 'Chỉ Số VN30', val: vn30Match[1] + ' đ' });
+                if (kpiList.length < 2 && peMatch) kpiList.push({ label: 'P/E Định Giá', val: peMatch[1] });
+                if (kpiList.length < 2 && pbMatch) kpiList.push({ label: 'P/B Ngành', val: pbMatch[1] });
             }
-
-
-
-
-
-
 
             if (kpiList.length >= 2) {
 
 
 
                 const cardsHtml = kpiList.slice(0, 4).map(k => {
+                    let numColor = '#fbbf24'; // Mặc định vàng gold cho chỉ số
+                    let borderColor = 'rgba(245, 158, 11, 0.25)';
+                    const valStr = String(k.val || '');
+                    const labelStr = String(k.label || '').toLowerCase();
 
+                    // Nhận diện màu sắc thị trường chuẩn xác: Đỏ giảm/bán, Xanh tăng/mua, Xanh dương thanh khoản
+                    if (valStr.startsWith('-') || /giảm|bán ròng|tiêu cực/i.test(labelStr) || /-\d+/i.test(valStr)) {
+                        numColor = '#ef4444'; // Đỏ nổi bật cho giảm / bán ròng
+                        borderColor = 'rgba(239, 68, 68, 0.35)';
+                    } else if (valStr.startsWith('+') || /tăng|mua ròng|tích cực|vượt|bứt phá/i.test(labelStr) || /\+\d+/i.test(valStr)) {
+                        numColor = '#10b981'; // Xanh lá cho tăng / mua ròng
+                        borderColor = 'rgba(16, 185, 129, 0.35)';
+                    } else if (/thanh khoản|khớp lệnh|giá trị/i.test(labelStr)) {
+                        numColor = '#38bdf8'; // Xanh dương cho thanh khoản
+                        borderColor = 'rgba(56, 189, 248, 0.35)';
+                    }
 
-
-                    const colStyle = 'color: #fbbf24; font-family: var(--font-mono, monospace);';
-
-
-
-                    return `        <div class="metric-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 12px 14px; text-align: center;">\n          <div class="metric-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">${k.label}</div>\n          <div class="metric-val" style="font-size: 1.15rem; font-weight: 700; ${colStyle} margin-top: 4px; font-variant-numeric: tabular-nums;">${k.val}</div>\n        </div>`;
-
-
-
+                    const colStyle = `color: ${numColor} !important; font-family: var(--font-mono, monospace);`;
+                    return `        <div class="metric-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid ${borderColor}; border-radius: 8px; padding: 12px 14px; text-align: center;">\n          <div class="metric-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">${k.label}</div>\n          <div class="metric-val" style="font-size: 1.15rem; font-weight: 700; ${colStyle} margin-top: 4px; font-variant-numeric: tabular-nums;">${k.val}</div>\n        </div>`;
                 }).join('\n');
 
 
@@ -19591,7 +19350,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-                keyTakeawaysHtml = `      <!-- Executive Summary / Key Takeaways chuẩn gSEO -->\n      <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(30, 41, 59, 0.7)); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <div class="key-takeaways-title" style="margin: 0; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">Tóm tắt Định lượng & Chiến lược (Key Takeaways)</div>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${summaryMsg}</li>\n        </ul>${metricsGridHtml}\n      </div>\n\n`;
+                keyTakeawaysHtml = `      <!-- Tóm tắt Định lượng & Trọng tâm phiên chuẩn White Bold -->\n      <div class="key-takeaways" style="background: linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.7) 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px; box-shadow: 0 8px 24px rgba(0,0,0,0.35);">\n        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">\n          <span style="font-size: 1.25rem;">⚡</span>\n          <div class="key-takeaways-title" style="margin: 0; color: #ffffff; font-size: 1.15rem; font-weight: 700;">Tóm tắt Định lượng & Trọng tâm phiên</div>\n        </div>\n        <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">\n          <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${summaryMsg}</li>\n        </ul>${metricsGridHtml}\n      </div>\n\n`;
 
 
 
@@ -19617,12 +19376,11 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
                                 let h2Counter = 1;
 
-                const tocItems = headingsList.map(h => {
-
+                // QUY TẮC CHUẨN: Mục lục CHỈ hiển thị các trụ cột chính H2 (1, 2, 3), loại bỏ toàn bộ H3 để tránh rối mắt độc giả
+                const h2Headings = headingsList.filter(h => h.tag === 'h2');
+                const tocItems = (h2Headings.length >= 2 ? h2Headings : headingsList).map(h => {
                     const cls = h.tag === 'h2' ? 'toc-h2' : 'toc-h3';
-
                     return `        <li class="${cls}"><a href="#${h.id}">${h.text}</a></li>`;
-
                 }).join('\n');
 
 
@@ -20185,11 +19943,281 @@ body { background: #0b1120; color: #cbd5e1; font-family: 'Inter', system-ui, san
 
 
 
-.ticker-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); padding: 2px 8px; border-radius: 6px; font-weight: 700; color: #fbbf24; text-decoration: none; font-size: 0.9em; vertical-align: middle; transition: all 0.2s; }
+/* Ticker Badges: Chữ Trắng Bold + Icon đồ thị nhỏ tinh tế, không khung viền thô, click mở Data Hub */
+.ticker-badge, .ticker-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 2px !important;
+  font-size: 0.95em !important;
+  vertical-align: baseline !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease;
+}
+.ticker-badge:hover, .ticker-link:hover {
+  color: #38bdf8 !important;
+  text-decoration: underline !important;
+  background: transparent !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.ticker-badge i, .ticker-link i {
+  display: inline-block !important;
+  font-size: 0.78em !important;
+  color: #94a3b8 !important;
+  transition: color 0.2s ease;
+}
+.ticker-badge:hover i, .ticker-link:hover i {
+  color: #38bdf8 !important;
+}
 
+/* Các class màu sắc chuẩn thị trường chứng khoán */
+.stock-up { color: #10b981 !important; font-weight: 600; }
+.stock-down { color: #ef4444 !important; font-weight: 600; }
+.stock-ref { color: #fbbf24 !important; font-weight: 600; }
+.stock-ceil { color: #a855f7 !important; font-weight: 600; }
 
+/* ==========================================================================
+   BỘ INFOGRAPHIC HTML/CSS THUẦN (100% RESPONSIVE CHO DESKTOP & MOBILE)
+   ========================================================================== */
+.infographic-block {
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.6) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 22px 0 26px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.infographic-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.infographic-title-text {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.infographic-tag {
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  font-weight: 700;
+}
+.flow-meter-wrap { margin-top: 10px; }
+.flow-meter-bar {
+  display: flex;
+  height: 24px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #1e293b;
+  margin: 10px 0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+}
+.flow-buy {
+  background: linear-gradient(90deg, #059669, #10b981);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+.flow-sell {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+.flow-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+.flow-col {
+  background: rgba(11, 17, 32, 0.6);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.flow-col-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.flow-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  padding: 5px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+}
+.flow-item:last-child { border-bottom: none; }
+.surprise-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.surprise-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 4px solid #3b82f6;
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all 0.25s ease;
+}
+.surprise-card.card-bull { border-left-color: #10b981; }
+.surprise-card.card-bear { border-left-color: #ef4444; }
+.surprise-card.card-gold { border-left-color: #fbbf24; }
+.sc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.sc-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+.sc-badge {
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+.sc-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.sc-desc {
+  font-size: 0.84rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0;
+}
+.scenario-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.scenario-box {
+  background: rgba(15, 23, 42, 0.85);
+  border-radius: 10px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.scenario-box.scenario-base { border-top: 3px solid #10b981; }
+.scenario-box.scenario-cautious { border-top: 3px solid #fbbf24; }
+.scenario-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.scenario-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+.scenario-prob {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+.prob-high { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+.prob-med { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
 
-.ticker-badge:hover { background: #f59e0b; color: #0f172a; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4); }
+/* Tối ưu Layout & Responsive đặc biệt cho Mobile (<= 768px và <= 991px) */
+.article-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 35px;
+}
+@media (max-width: 991px) {
+
+    .flow-meter-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem !important;
+      gap: 6px;
+    }
+
+  .article-layout-grid {
+    grid-template-columns: 100% !important;
+    gap: 25px;
+  }
+  .article-sidebar {
+    margin-top: 30px;
+  }
+  .flow-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .scenario-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .gseo-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .surprise-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .article-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+@media (max-width: 480px) {
+  .gseo-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .metric-card {
+    padding: 10px 8px !important;
+  }
+  .metric-val {
+    font-size: 1.05rem !important;
+  }
+  .metric-label {
+    font-size: 0.7rem !important;
+  }
+}
 
 
 
