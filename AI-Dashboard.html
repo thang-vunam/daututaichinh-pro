@@ -6271,6 +6271,9 @@ ${contentForBody.substring(0, 35000)}`;
                 htmlBody = htmlBody.replace(/(<span[^>]*>•<\/span>)\s*[-*•+]\s*/gi, '$1 ');
                 htmlBody = htmlBody.replace(/<p([^>]*)>\s*•\s*•\s*/gi, '<p$1>• ');
 
+                // Tự động chuẩn hóa Dark Theme cho các khối Infographic & Kịch bản
+                htmlBody = sanitizeDarkTheme(htmlBody);
+
 
 
                 
@@ -10624,8 +10627,12 @@ TIÊU CHUẨN 3 TRỤ CỘT BẮT BUỘC (SEO - gSEO - pSEO):
   - TUYỆT ĐỐI KHÔNG GẮN LINK (KHÔNG DÙNG THẺ <a>) CHO BẤT KỲ MÃ NÀO NGOÀI DANH SÁCH 30 MÃ TRÊN (ví dụ: POW, NVL, DXG, KDH, DGC, DIG, PDR, NTL, HVN, DCM, MSB... KHÔNG CÓ TRANG RIÊNG -> NẾU GẮN LINK SẼ GÂY LỖI 404). Các mã ngoài danh sách chỉ in đậm thông thường: <strong>{MÃ}</strong>.
 • BỘ INFOGRAPHIC HTML/CSS THUẦN (Nhúng trực tiếp vào htmlContent):
   - Khối Infographic thanh cán cân hoặc thẻ điểm nhấn có class "infographic-block" (ví dụ thanh đo mua/bán ròng class "flow-meter-bar", thẻ điểm nhấn class "surprise-cards-grid", ma trận 2 kịch bản class "scenario-grid").
+  - NGUYÊN TẮC BẢO TOÀN DARK THEME (TUYỆT ĐỐI KHÔNG DÙNG NỀN TRẮNG/SÁNG): Toàn bộ website dùng nền Dark Navy (#0b1120). TUYỆT ĐỐI KHÔNG sinh style inline màu trắng sáng như background: #f8fafc, #ffffff, #ecfdf5, #fffbeb hay color: #1e293b. Thẻ điểm nhấn dùng class "surprise-card card-bull" (hoặc card-bear, card-gold). Ma trận kịch bản dùng class "scenario-box scenario-base" (hoặc scenario-cautious). Bảng biểu dùng class "article-table-wrap" với table, th, td kế thừa dark style.
 • NGUYÊN TẮC VÀNG VỀ MÀU SẮC THÂN BÀI: Màu sắc thị trường (Xanh #10b981 / Đỏ #ef4444 / Vàng #fbbf24) CHỈ DÙNG TRONG INFOGRAPHIC VÀ BẢNG SỐ LIỆU. Thân bài văn xuôi và gạch đầu dòng: giữ màu chữ tự nhiên, số liệu chỉ dùng <strong>...</strong> in đậm, TUYỆT ĐỐI KHÔNG bôi màu xanh đỏ vào câu chữ để tránh rối mắt độc giả!
 • QUY TẮC DANH SÁCH (CHỐNG TRÙNG LẶP DẤU CHẤM): Trong thẻ <ul><li>, tuyệt đối KHÔNG gõ lặp dấu chấm bên trong nội dung thẻ (ví dụ KHÔNG viết <li>• Cổ phiếu...</li> hay <li>- Cổ phiếu...</li>, chỉ viết <li>Cổ phiếu...</li> vì thẻ li đã có sẵn dấu chấm bullet hiển thị). Mỗi gạch đầu dòng chỉ có đúng một dấu chấm.
+• BẮT BUỘC KHỐI FAQ ACCORDION CHUẨN gSEO Ở CUỐI BÀI VIẾT:
+  - Ở cuối bài viết (ngay trước phần kết luận), BẮT BUỘC chèn khối FAQ gồm đúng 3 câu hỏi & trả lời thực chiến chuyên sâu đúng cấu trúc sau:
+    <div class="faq-wrap" id="faq"><h2 style="color: #ffffff; font-size: 1.45rem; margin-bottom: 20px;"><i class="fa-solid fa-circle-question" style="color: #38bdf8;"></i> Câu hỏi thường gặp (FAQ)</h2><div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>1. [Câu hỏi 1]?</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer"><p>[Nội dung trả lời chuyên sâu]</p></div></div><div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>2. [Câu hỏi 2]?</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer"><p>[Nội dung trả lời chuyên sâu]</p></div></div><div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>3. [Câu hỏi 3]?</span><i class="fa-solid fa-chevron-down"></i></div><div class="faq-answer"><p>[Nội dung trả lời chuyên sâu]</p></div></div></div>
 
 4. LIÊN KẾT NỘI BỘ (INTERNAL DUAL-LINKING):
 • Chèn 1-2 liên kết nội bộ tự nhiên trỏ về /market/ hoặc /co-phieu/ hoặc bài viết liên quan.
@@ -10641,7 +10648,7 @@ BẮT BUỘC TRẢ VỀ DUY NHẤT 1 CHUỖI JSON HỢP LỆ THEO CẤU TRÚC:
     {"label": "Chỉ số 3 (ví dụ Thanh khoản)", "val": "546.2 tỷ"},
     {"label": "Chỉ số 4 (ví dụ Kịch bản/VN30)", "val": "1.830 đ"}
   ],
-  "htmlContent": "Toàn bộ bài viết hoàn chỉnh gồm <p> mở đầu, khối infographic <div class=\"infographic-block\">...</div>, các phần <h2>, <h3>, <p>, <ul>, <li>, bảng dữ liệu <div class=\"article-table-wrap\"><table>...</table></div>, ma trận kịch bản, trích dẫn nguồn... (LƯU Ý: Escape toàn bộ dấu ngoặc kép trong HTML thành \\\" để không làm vỡ JSON)",
+  "htmlContent": "Toàn bộ bài viết hoàn chỉnh gồm <p> mở đầu, khối infographic <div class=\"infographic-block\">...</div>, các phần <h2>, <h3>, <p>, <ul>, <li>, bảng dữ liệu <div class=\"article-table-wrap\"><table>...</table></div>, ma trận kịch bản, khối FAQ accordion, trích dẫn nguồn... (LƯU Ý: Escape toàn bộ dấu ngoặc kép trong HTML thành \\\" để không làm vỡ JSON)",
   "imagePrompt": "10 English keywords for specific contextual cover photo matching the exact sector of this article on Unsplash (NO text, NO bitcoin chart)",
   "tags": ["Từ khóa 1", "Từ khóa 2"],
   "hashtags": ["#Tag1", "#Tag2"]
@@ -18674,7 +18681,24 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
         // --- CÁC HÀM BỔ TRỢ SEO & gSEO NÂNG CAO ---
 
-
+        function sanitizeDarkTheme(html) {
+            if (!html) return '';
+            // 1. Chuyển đổi màu nền sáng (#f8fafc, #f1f5f9, #ffffff, #fff) thành Dark Theme sang trọng
+            html = html.replace(/background:\s*(?:#f8fafc|#f1f5f9|#ffffff|#fff)\b/gi, 'background: rgba(15, 23, 42, 0.85)');
+            // 2. Chuyển đổi nền kịch bản sáng (#ecfdf5, #fffbeb, #fef2f2) sang nền tối có sắc thái
+            html = html.replace(/background:\s*#ecfdf5\b/gi, 'background: rgba(16, 185, 129, 0.12)');
+            html = html.replace(/background:\s*#fffbeb\b/gi, 'background: rgba(245, 158, 11, 0.12)');
+            html = html.replace(/background:\s*#fef2f2\b/gi, 'background: rgba(239, 68, 68, 0.12)');
+            // 3. Chuyển đổi màu chữ tối (dành cho nền trắng) sang màu chữ sáng chuẩn Dark Mode
+            html = html.replace(/color:\s*#(?:1e293b|0f172a|334155|64748b)\b/gi, 'color: #cbd5e1');
+            html = html.replace(/color:\s*#065f46\b/gi, 'color: #34d399');
+            html = html.replace(/color:\s*#92400e\b/gi, 'color: #fbbf24');
+            html = html.replace(/color:\s*#991b1b\b/gi, 'color: #f87171');
+            // 4. Chuyển đổi viền xám sáng sang viền mờ Dark Mode
+            html = html.replace(/border(?:-[a-z]+)?:\s*1px\s+solid\s+#(?:e2e8f0|cbd5e1|cbd5e0)\b/gi, 'border: 1px solid rgba(255, 255, 255, 0.08)');
+            html = html.replace(/border-bottom:\s*2px\s+solid\s+#cbd5e1\b/gi, 'border-bottom: 2px solid rgba(255, 255, 255, 0.12)');
+            return html;
+        }
 
         function injectSmartTickers(html) {
             if (!html) return '';
@@ -18949,6 +18973,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
             processedBody = processedBody.replace(/<li([^>]*)>\s*([-*•+]\s*)+/gi, '<li$1>');
             processedBody = processedBody.replace(/(<span[^>]*>•<\/span>)\s*[-*•+]\s*/gi, '$1 ');
             processedBody = processedBody.replace(/<p([^>]*)>\s*•\s*•\s*/gi, '<p$1>• ');
+            processedBody = sanitizeDarkTheme(processedBody);
 
 
 
