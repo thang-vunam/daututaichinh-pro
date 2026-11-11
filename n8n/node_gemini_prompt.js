@@ -114,6 +114,7 @@ TIÊU CHUẨN NỘI DUNG CHUYÊN NGHIỆP:
    - External link: 1 link trích dẫn nguồn uy tín từ danh sách trắng (HOSE: https://www.hsx.vn, SBV: https://sbv.gov.vn, GSO: https://gso.gov.vn).
    - QUY TẮC DARK THEME: Website chạy chuẩn Dark Navy (#0b1120). TUYỆT ĐỐI CẤM sử dụng màu nền sáng/trắng (#ffffff, #f8fafc, #f1f5f9, #ecfdf5, #fffbeb) cho bảng biểu hoặc card. Dùng màu nền tối kính mờ (background: rgba(15, 23, 42, 0.85)), viền mờ (border: 1px solid rgba(255, 255, 255, 0.08)) và chữ sáng (#cbd5e1).
    - QUY TẮC BULLET: TUYỆT ĐỐI KHÔNG gõ dấu chấm '•' bên trong thẻ <li> (viết '<li>Nội dung</li>', cấm viết '<li>• Nội dung</li>') để tránh lỗi 2 dấu chấm '••'.
+   - QUY TẮC ĐỊNH DẠNG ĐOẠN VĂN: Mọi đoạn văn bọc trong thẻ <p>...</p>, tiêu đề bọc trong <h2>, <h3>. TUYỆT ĐỐI KHÔNG xuất ký tự escape '\\n' hay '\\n\\n' bên ngoài thẻ HTML.
 8. QUY CHUẨN ĐỊNH DANH CHỦ THỂ & SỐ LIỆU (CHỐNG MƠ HỒ):
    - BẮT BUỘC gọi ĐÍCH DANH tên nhân vật, quỹ đầu tư, công ty và mã cổ phiếu cụ thể (Ví dụ: Michael Burry, quỹ Scion Asset Management, Build-A-Bear Workshop - mã NYSE: BBW; Warren Buffett, Berkshire Hathaway - BRK...). TUYỆT ĐỐI KHÔNG dùng lối viết ẩn danh mập mờ kiểu 'huyền thoại 2008' hay 'một công ty gấu bông' mà không nêu tên chính xác.
 8. TIÊU CHUẨN ẢNH BÌA:

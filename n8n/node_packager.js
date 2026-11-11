@@ -69,7 +69,16 @@ function parseGeminiOutput(rawText) {
   // 1. Try standard JSON.parse first
   try {
     const p = JSON.parse(clean);
-    if (p && p.htmlContent) return p;
+    if (p && p.htmlContent) {
+      if (typeof p.htmlContent === 'string') {
+        p.htmlContent = p.htmlContent
+          .replace(/\\r/g, '')
+          .replace(/\\n/g, '\n')
+          .replace(/\\t/g, ' ')
+          .replace(/\\"/g, '"');
+      }
+      return p;
+    }
   } catch (e) {}
 
   // 2. Extract htmlContent via precise boundary detection
@@ -255,6 +264,11 @@ if (!imageUrl || imageUrl.startsWith('data:image')) {
 function ensureSemanticHeadings(html) {
   if (!html) return '';
   let res = html;
+
+  // Khử sạch hoàn toàn ký tự escape \n, \r, \t, \" rò rỉ từ JSON của AI
+  res = res.replace(/\\r/g, '').replace(/\\n/g, '\n').replace(/\\t/g, ' ');
+  res = res.replace(/\\"/g, '"').replace(/\\'/g, "'");
+
   // Bỏ qua và xóa sạch dấu phân cách thô '---' hoặc <p>---</p> để không tạo khoảng trắng khổng lồ
   res = res.replace(/<p>\s*---+?\s*<\/p>/gi, '');
   res = res.replace(/(^|[\r\n]+)\s*---+?\s*([\r\n]+|$)/g, '$1$2');
@@ -562,6 +576,12 @@ const dateDisplay = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth
 let rawBody = (normalizerData.mode === 'manual' && normalizerData.formattedHtml)
   ? normalizerData.formattedHtml
   : (articleData.htmlContent || normalizerData.formattedHtml || '<p>Nội dung đang được cập nhật...</p>');
+
+// Lớp phòng vệ 1: Unescape mọi ký tự \n, \r, \t, \" còn sót lại từ JSON encoding
+if (typeof rawBody === 'string') {
+  rawBody = rawBody.replace(/\\r/g, '').replace(/\\n/g, '\n').replace(/\\t/g, ' ').replace(/\\"/g, '"');
+}
+
 let processedBody = ensureSemanticHeadings(rawBody);
 // Clean out any hallucinated 404 links first, then apply smart linking & whitelisted stock badges
 processedBody = sanitizeInternalLinks(processedBody);
@@ -573,6 +593,15 @@ processedBody = sanitizeDarkTheme(processedBody);
 // Khử trùng lặp ký tự bullet
 processedBody = processedBody.replace(/<li>\s*[•\-\*]\s*/gi, '<li>');
 processedBody = processedBody.replace(/([•\-\*]\s*)+([•\-\*]\s*)/g, '• ');
+
+// Lớp phòng vệ 2: Quét sạch triệt để mọi chuỗi \n, \r, \t còn sót trong processedBody
+processedBody = processedBody.replace(/\\r/g, '').replace(/\\n/g, '\n').replace(/\\t/g, ' ');
+
+// Làm sạch metadata
+if (articleData.title) articleData.title = articleData.title.replace(/\\r/g, '').replace(/\\n/g, ' ').replace(/\\"/g, '"');
+if (articleData.metaDescription) articleData.metaDescription = articleData.metaDescription.replace(/\\r/g, '').replace(/\\n/g, ' ').replace(/\\"/g, '"');
+if (articleData.summaryMsg) articleData.summaryMsg = articleData.summaryMsg.replace(/\\r/g, '').replace(/\\n/g, ' ').replace(/\\"/g, '"');
+if (articleData.sapo) articleData.sapo = articleData.sapo.replace(/\\r/g, '').replace(/\\n/g, ' ').replace(/\\"/g, '"');
 
 // TOC
 const headingRegex = /<(h2)([^>]*)>(.*?)<\/h2>/gi;
