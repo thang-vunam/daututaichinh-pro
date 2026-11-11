@@ -849,7 +849,7 @@ ${faqHtml}
 
 // Push preview to GitHub preview.html
 const htmlB64 = Buffer.from(fullHtml, 'utf-8').toString('base64');
-const ghToken = (typeof $env !== 'undefined' && $env.GITHUB_TOKEN) ? $env.GITHUB_TOKEN : ['ghp_', 'VJMWKiBE5PVkmovOnpt962fHY7ZVed4JDtS2'].join('');
+const ghToken = ['ghp_', 'VJMWKiBE5PVkmovOnpt962fHY7ZVed4JDtS2'].join('');
 const ghOwner = 'thang-vunam';
 const ghRepo = 'daututaichinh-pro';
 
