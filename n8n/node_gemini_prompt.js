@@ -26,6 +26,11 @@ Nhiệm vụ của bạn là PHÂN TÍCH nội dung tác giả cung cấp để 
 TIÊU ĐỀ GỐC CỦA TÁC GIẢ: "${(data.userTitle || data.topic || 'Chưa có, hãy tự đặt dựa vào nội dung').replace(/"/g, '\\"')}"
 CHUYÊN MỤC: "${category}" - ${categoryName}
 
+NỘI DUNG TÁC GIẢ TỰ VIẾT (PHÂN TÍCH ĐỂ TRÍCH XUẤT KEY TAKEAWAYS, METADATA & 3 CÂU FAQ):
+"""
+${(data.manualContent || data.formattedHtml || data.topic || '').replace(/"/g, '\\"')}
+"""
+
 TRẢ VỀ ĐÚNG 1 CHUỖI JSON HỢP LỆ DUY NHẤT:
 {
   "title": "BẮT BUỘC dạng Sentence Case (chỉ viết hoa chữ đầu câu và tên riêng/mã CK như VN-Index, MWG; TUYỆT ĐỐI KHÔNG viết hoa từng chữ). Độ dài 35-55 ký tự",
@@ -97,9 +102,20 @@ TIÊU CHUẨN NỘI DUNG CHUYÊN NGHIỆP:
    - Với bài viết THUẦN ĐỊNH TÍNH: Trả về kpiCards: null.
 6. CÂU HỎI THƯỜNG GẶP (faqs):
    - 3 đến 5 câu hỏi và câu trả lời thực tế, đào sâu các thắc mắc lớn nhất của nhà đầu tư xoay quanh chủ đề bài viết.
-7. QUY TẮC LIÊN KẾT THÔNG MINH (SEO & GEO DUAL-LINKING):
-   - Internal links: Trỏ tự nhiên về bài cũ hoặc 3 Hub chính (/market/, /blog/, /download/).
+7. QUY TẮC LIÊN KẾT THÔNG MINH, MÃ CỔ PHIẾU & CHỐNG LỖI 404 (CRITICAL ANTI-HALLUCINATION):
+   - TUYỆT ĐỐI KHÔNG tự bịa ra URL bài viết cụ thể (như /market/ten-bai hay /blog/ten-bai).
+   - Internal links: CHỈ ĐƯỢC PHÉP trỏ về 3 Trang Hub chính:
+     + <a href="/market/">nhận định thị trường</a>
+     + <a href="/blog/">kiến thức đầu tư chuyên sâu</a>
+     + <a href="/download/">tài liệu đầu tư tài chính miễn phí</a>
+   - QUY TẮC MÃ CỔ PHIẾU & AFFORDANCE DATA HUB:
+     + CHỈ GẮN LINK CHO 30 MÃ VN30 & TOP DATA HUB CÓ TRANG RIÊNG: ACB, BID, BSR, CTG, FPT, GAS, GVR, HDB, HPG, LPB, MBB, MCH, MSN, MWG, SAB, SHB, SSB, SSI, STB, TCB, TCX, VCB, VHM, VIB, VIC, VJC, VNM, VPB, VPL, VRE. Định dạng: <a href="/co-phieu/{mã_thường}.html" class="ticker-badge" title="Định giá & Dữ liệu {MÃ}"><i class="fa-solid fa-chart-line"></i> {MÃ VIẾT HOA}</a>
+     + TUYỆT ĐỐI KHÔNG GẮN LINK (KHÔNG DÙNG THẺ <a>) CHO BẤT KỲ MÃ NÀO NGOÀI 30 MÃ TRÊN (ví dụ: DXG, DIG, VND, VCI, NVL, PDR, KDH... phải viết in đậm thường <strong>DXG</strong>, cấm gắn thẻ <a> để triệt tiêu hoàn toàn lỗi 404).
    - External link: 1 link trích dẫn nguồn uy tín từ danh sách trắng (HOSE: https://www.hsx.vn, SBV: https://sbv.gov.vn, GSO: https://gso.gov.vn).
+   - QUY TẮC DARK THEME: Website chạy chuẩn Dark Navy (#0b1120). TUYỆT ĐỐI CẤM sử dụng màu nền sáng/trắng (#ffffff, #f8fafc, #f1f5f9, #ecfdf5, #fffbeb) cho bảng biểu hoặc card. Dùng màu nền tối kính mờ (background: rgba(15, 23, 42, 0.85)), viền mờ (border: 1px solid rgba(255, 255, 255, 0.08)) và chữ sáng (#cbd5e1).
+   - QUY TẮC BULLET: TUYỆT ĐỐI KHÔNG gõ dấu chấm '•' bên trong thẻ <li> (viết '<li>Nội dung</li>', cấm viết '<li>• Nội dung</li>') để tránh lỗi 2 dấu chấm '••'.
+8. QUY CHUẨN ĐỊNH DANH CHỦ THỂ & SỐ LIỆU (CHỐNG MƠ HỒ):
+   - BẮT BUỘC gọi ĐÍCH DANH tên nhân vật, quỹ đầu tư, công ty và mã cổ phiếu cụ thể (Ví dụ: Michael Burry, quỹ Scion Asset Management, Build-A-Bear Workshop - mã NYSE: BBW; Warren Buffett, Berkshire Hathaway - BRK...). TUYỆT ĐỐI KHÔNG dùng lối viết ẩn danh mập mờ kiểu 'huyền thoại 2008' hay 'một công ty gấu bông' mà không nêu tên chính xác.
 8. TIÊU CHUẨN ẢNH BÌA:
    - imageSearchQuery: 3-6 từ tiếng Anh mang tính biểu trưng (ví dụ: "modern finance office workspace", "bull market bronze sculpture", "skyscrapers financial district").
 

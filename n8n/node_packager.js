@@ -291,8 +291,8 @@ function sanitizeInternalLinks(html) {
   
   const vn30Set = new Set([
     'acb', 'bid', 'bsr', 'ctg', 'fpt', 'gas', 'gvr', 'hdb', 'hpg', 'lpb',
-    'mbb', 'mch', 'msn', 'mwg', 'plx', 'pnj', 'pow', 'sab', 'shb', 'ssb',
-    'ssi', 'stb', 'tcb', 'tpb', 'vhm', 'vib', 'vic', 'vjc', 'vnm', 'vpb', 'vre'
+    'mbb', 'mch', 'msn', 'mwg', 'sab', 'shb', 'ssb', 'ssi', 'stb', 'tcb',
+    'tcx', 'vcb', 'vhm', 'vib', 'vic', 'vjc', 'vnm', 'vpb', 'vpl', 'vre'
   ]);
 
   return html.replace(/<a\s+([^>]*)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi, (match, beforeHref, href, afterHref, innerText) => {
@@ -321,8 +321,13 @@ function sanitizeInternalLinks(html) {
 
     // 4. Valid VN30 stock detail page: /co-phieu/{ticker}.html
     const tickerMatch = href.match(/^\/co-phieu\/([a-z0-9]+)\.html$/i);
-    if (tickerMatch && vn30Set.has(tickerMatch[1].toLowerCase())) {
-      return match;
+    if (tickerMatch) {
+      if (vn30Set.has(tickerMatch[1].toLowerCase())) {
+        return match;
+      }
+      // Nếu là mã KHÔNG nằm trong Data Hub (như dxg, dig, vnd...): gỡ link, giữ in đậm thường để triệt tiêu 404!
+      const cleanStock = innerText.replace(/<[^>]+>/g, '').trim();
+      return `<strong>${cleanStock}</strong>`;
     }
 
     // 5. ANY other internal path is potentially hallucinated by AI (e.g. /market/bao-cao-xyz)
@@ -338,6 +343,29 @@ function sanitizeInternalLinks(html) {
 
     return `<a ${beforeHref} href="${safeHref}" ${afterHref}>${innerText}</a>`;
   });
+}
+
+
+// ==========================================
+// BỘ LỌC CHUẨN HÓA DARK THEME (FAILSAFE ANTI-WHITE)
+// ==========================================
+function sanitizeDarkTheme(html) {
+  if (!html) return '';
+  // 1. Chuyển đổi màu nền sáng (#f8fafc, #f1f5f9, #ffffff, #fff) thành Dark Theme sang trọng
+  html = html.replace(/background:\s*(?:#f8fafc|#f1f5f9|#ffffff|#fff)\b/gi, 'background: rgba(15, 23, 42, 0.85)');
+  // 2. Chuyển đổi nền kịch bản sáng (#ecfdf5, #fffbeb, #fef2f2) sang nền tối có sắc thái
+  html = html.replace(/background:\s*#ecfdf5\b/gi, 'background: rgba(16, 185, 129, 0.12)');
+  html = html.replace(/background:\s*#fffbeb\b/gi, 'background: rgba(245, 158, 11, 0.12)');
+  html = html.replace(/background:\s*#fef2f2\b/gi, 'background: rgba(239, 68, 68, 0.12)');
+  // 3. Chuyển đổi màu chữ tối (dành cho nền trắng) sang màu chữ sáng chuẩn Dark Mode
+  html = html.replace(/color:\s*#(?:1e293b|0f172a|334155|64748b)\b/gi, 'color: #cbd5e1');
+  html = html.replace(/color:\s*#065f46\b/gi, 'color: #34d399');
+  html = html.replace(/color:\s*#92400e\b/gi, 'color: #fbbf24');
+  html = html.replace(/color:\s*#991b1b\b/gi, 'color: #f87171');
+  // 4. Chuyển đổi viền xám sáng sang viền mờ Dark Mode
+  html = html.replace(/border(?:-[a-z]+)?:\s*1px\s+solid\s+#(?:e2e8f0|cbd5e1|cbd5e0)\b/gi, 'border: 1px solid rgba(255, 255, 255, 0.08)');
+  html = html.replace(/border-bottom:\s*2px\s+solid\s+#cbd5e1\b/gi, 'border-bottom: 2px solid rgba(255, 255, 255, 0.12)');
+  return html;
 }
 
 function applySmartLinking(html, category, topic) {
@@ -372,11 +400,11 @@ function applySmartLinking(html, category, topic) {
     });
   }
 
-  // TIER 0: VN30 Data Hub Whitelist (/co-phieu/{ticker}.html)
+  // TIER 0: VN30 & Data Hub Whitelist (30 mã có file /co-phieu/{ticker}.html)
   const vn30Tickers = [
     'ACB', 'BID', 'BSR', 'CTG', 'FPT', 'GAS', 'GVR', 'HDB', 'HPG', 'LPB',
-    'MBB', 'MCH', 'MSN', 'MWG', 'PLX', 'PNJ', 'POW', 'SAB', 'SHB', 'SSB',
-    'SSI', 'STB', 'TCB', 'TPB', 'VHM', 'VIB', 'VIC', 'VJC', 'VNM', 'VPB', 'VRE'
+    'MBB', 'MCH', 'MSN', 'MWG', 'SAB', 'SHB', 'SSB', 'SSI', 'STB', 'TCB',
+    'TCX', 'VCB', 'VHM', 'VIB', 'VIC', 'VJC', 'VNM', 'VPB', 'VPL', 'VRE'
   ];
 
   let linkedTickers = 0;
@@ -394,7 +422,7 @@ function applySmartLinking(html, category, topic) {
     for (const pat of patterns) {
       const beforeLen = modifiedHtml.length;
       modifiedHtml = safeReplaceFirstInParagraphs(modifiedHtml, pat, (matched) => {
-        return `<a href="/co-phieu/${ticker.toLowerCase()}.html" class="ticker-badge" style="display:inline-flex; align-items:center; gap:5px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); padding:2px 8px; border-radius:6px; color:#fbbf24; font-weight:600; text-decoration:none; font-family:var(--font-mono, monospace); font-size:0.9em;" title="Định giá & Dữ liệu cổ phiếu ${ticker}"><i class="fa-solid fa-chart-line"></i> ${ticker}</a>`;
+        return `<a href="/co-phieu/${ticker.toLowerCase()}.html" class="ticker-badge" title="Định giá & Dữ liệu cổ phiếu ${ticker}"><i class="fa-solid fa-chart-line"></i> ${ticker}</a>`;
       });
       if (modifiedHtml.length !== beforeLen) {
         linkedTickers++;
@@ -538,6 +566,13 @@ let processedBody = ensureSemanticHeadings(rawBody);
 // Clean out any hallucinated 404 links first, then apply smart linking & whitelisted stock badges
 processedBody = sanitizeInternalLinks(processedBody);
 processedBody = applySmartLinking(processedBody, category, title);
+
+// Chuẩn hóa Dark Theme tự động cho mọi bảng biểu, infographic card, kịch bản (failsafe)
+processedBody = sanitizeDarkTheme(processedBody);
+
+// Khử trùng lặp ký tự bullet
+processedBody = processedBody.replace(/<li>\s*[•\-\*]\s*/gi, '<li>');
+processedBody = processedBody.replace(/([•\-\*]\s*)+([•\-\*]\s*)/g, '• ');
 
 // TOC
 const headingRegex = /<(h2)([^>]*)>(.*?)<\/h2>/gi;
