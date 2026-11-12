@@ -470,6 +470,24 @@ function applySmartLinking(html, category, topic) {
 }
 
 // 3. Gold Key Takeaways & Metrics Grid
+function getKpiTheme(label, val) {
+  const combined = (String(label || '') + ' ' + String(val || '')).toLowerCase();
+  // 1. ĐỎ: Giảm, âm, bán ròng, lỗ, thâm hụt, nợ xấu
+  if (/giảm|bán ròng|thâm hụt|suy giảm|lỗ|âm|nợ xấu|rủi ro/i.test(combined) || (/-[0-9]/.test(String(val || '')))) {
+    return { color: '#ef4444', border: 'rgba(239, 68, 68, 0.35)' };
+  }
+  // 2. XANH LÁ: Tăng, dương, mua ròng, lãi, thặng dư, bứt phá
+  if (/tăng|mua ròng|thặng dư|lãi|vượt|bứt phá|tăng trưởng|hồi phục/i.test(combined) || (/\+[0-9]/.test(String(val || '')))) {
+    return { color: '#10b981', border: 'rgba(16, 185, 129, 0.35)' };
+  }
+  // 3. XANH DƯƠNG: Thanh khoản, khối lượng, tỷ trọng, vốn hóa
+  if (/thanh khoản|khối lượng|tỷ trọng|vốn hóa|giá trị giao dịch/i.test(combined)) {
+    return { color: '#38bdf8', border: 'rgba(56, 189, 248, 0.35)' };
+  }
+  // 4. VÀNG: Trung tính, đi ngang, định giá P/E, P/B, tỷ giá
+  return { color: '#fbbf24', border: 'rgba(245, 158, 11, 0.35)' };
+}
+
 function buildKeyTakeaways(summaryMsg, kpiCards, body, category) {
   let kpiList = [];
   if (kpiCards && Array.isArray(kpiCards) && kpiCards.length >= 2) {
@@ -503,10 +521,13 @@ function buildKeyTakeaways(summaryMsg, kpiCards, body, category) {
   let metricsGridHtml = '';
   if (kpiList.length >= 2) {
     const colCount = Math.min(4, kpiList.length);
-    const cardsHtml = kpiList.slice(0, 4).map(k => `        <div class="metric-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 12px 14px; text-align: center;">
+    const cardsHtml = kpiList.slice(0, 4).map(k => {
+      const theme = getKpiTheme(k.label, k.val);
+      return `        <div class="metric-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid ${theme.border}; border-radius: 8px; padding: 12px 14px; text-align: center;">
           <div class="metric-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">${k.label}</div>
-          <div class="metric-val" style="font-size: 1.15rem; font-weight: 700; color: #fbbf24; font-family: var(--font-mono, monospace); margin-top: 4px; font-variant-numeric: tabular-nums;">${k.val}</div>
-        </div>`).join('\n');
+          <div class="metric-val" style="font-size: 1.15rem; font-weight: 700; color: ${theme.color} !important; font-family: var(--font-mono, monospace); margin-top: 4px; font-variant-numeric: tabular-nums;">${k.val}</div>
+        </div>`;
+    }).join('\n');
     metricsGridHtml = `\n      <div class="gseo-metrics-grid" style="display: grid; grid-template-columns: repeat(${colCount}, 1fr); gap: 12px; margin-top: 16px; width: 100%;">\n${cardsHtml}\n      </div>`;
   }
 
@@ -516,7 +537,7 @@ function buildKeyTakeaways(summaryMsg, kpiCards, body, category) {
       <div class="key-takeaways" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(30, 41, 59, 0.7)); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 22px 24px; margin: 25px 0 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
           <span style="font-size: 1.25rem;">⚡</span>
-          <div class="key-takeaways-title" style="margin: 0; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">Tóm tắt Định lượng & Chiến lược (Key Takeaways)</div>
+          <div class="key-takeaways-title" style="margin: 0; color: #fbbf24; font-size: 1.1rem; font-weight: 700;">Điểm tin Định lượng & Chiến lược</div>
         </div>
         <ul style="margin: 0; padding-left: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;">
           <li style="margin-bottom: 8px;"><strong>Thông điệp trọng tâm:</strong> ${finalMsg}</li>
@@ -630,7 +651,27 @@ ${tocItems}
 }
 
 const takeawaysHtml = buildKeyTakeaways(articleData.summaryMsg, articleData.kpiCards, processedBody, category);
-const { faqHtml, faqSchema } = buildFaqSection(articleData.faqs);
+// Khống chế tần suất gắn link: Mỗi mã cổ phiếu Data Hub CHỈ ĐƯỢC GẮN LINK 1 LẦN DUY NHẤT (lần đầu tiên)
+const seenTickers = new Set();
+processedBody = processedBody.replace(/<a\s+([^>]*?)href=["']\/co-phieu\/([a-z0-9]+)\.html["']([^>]*?)>([\s\S]*?)<\/a>/gi, (match, before, tickerCode, after, inner) => {
+  const tUpper = tickerCode.toUpperCase();
+  if (seenTickers.has(tUpper)) {
+    // Từ lần xuất hiện thứ 2 trở đi: chuyển thành in đậm thường, không gắn link
+    const cleanText = inner.replace(/<[^>]+>/g, '').trim();
+    return `<strong>${cleanText}</strong>`;
+  }
+  seenTickers.add(tUpper);
+  return match;
+});
+
+// FAQ Fallback: Nếu node 2 vô tình trả về mảng faqs rỗng, tự động lấy lại bộ FAQ từ node 1 (draftArticle)
+const faqsToUse = (articleData.faqs && Array.isArray(articleData.faqs) && articleData.faqs.length > 0)
+  ? articleData.faqs
+  : ((normalizerData.draftArticle && Array.isArray(normalizerData.draftArticle.faqs) && normalizerData.draftArticle.faqs.length > 0)
+      ? normalizerData.draftArticle.faqs
+      : (normalizerData.faqs || []));
+
+const { faqHtml, faqSchema } = buildFaqSection(faqsToUse);
 
 // Schemas
 const articleSchema = {
@@ -773,7 +814,6 @@ ${faqSchemaTag}
       font-size: 1.15rem;
       font-weight: 700;
       margin-top: 4px;
-      color: #fbbf24 !important;
       font-family: var(--font-mono, monospace) !important;
       font-variant-numeric: tabular-nums;
     }
@@ -917,7 +957,7 @@ const previewMsg = `🎯 <b>BẢN TIN PHÂN TÍCH CHUẨN GSEO & DATA HUB ĐÃ H
 📌 <b>Tiêu đề:</b> ${title}
 📂 <b>Chuyên mục:</b> ${categoryName}
 ⚡ <b>Thông điệp cốt lõi:</b> <i>${articleData.summaryMsg || metaDesc}</i>
-📊 <b>Thẻ KPI:</b> ${articleData.kpiCards && articleData.kpiCards.length ? (articleData.kpiCards.length + ' thẻ định lượng (Gold #fbbf24)') : 'Tự động quét số liệu thị trường'}
+📊 <b>Thẻ KPI:</b> ${articleData.kpiCards && articleData.kpiCards.length ? (articleData.kpiCards.length + ' thẻ định lượng (Đỏ - Xanh - Vàng)') : 'Tự động quét số liệu thị trường'}
 ❓ <b>FAQ Accordion:</b> ${articleData.faqs && articleData.faqs.length ? (articleData.faqs.length + ' câu hỏi chuẩn Schema FAQPage') : 'Đã tối ưu'}
 
 🚀 <b>SEO & pSEO:</b> Đã tự động gắn huy hiệu Data Hub VN30 và Schema Article/BreadcrumbList!`;
