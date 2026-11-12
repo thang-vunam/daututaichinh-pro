@@ -375,15 +375,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!relatedListContainer) return;
 
     // Determine current path and category
-    // Location can be like '/market/nhan-dinh-thi-truong.html' or '/blog/bai-viet.html'
+    // Support category from meta tag, URL path (/market/... or /blog/...), or fallback to 'market'
     const currentPath = window.location.pathname;
     const pathParts = currentPath.split('/').filter(p => p);
     
     let currentCategory = '';
-    if (pathParts.length >= 2) {
+    const metaCat = document.querySelector('meta[name="article-category"]')?.getAttribute('content');
+    if (metaCat && ['market', 'blog', 'vip'].includes(metaCat.toLowerCase())) {
+        currentCategory = metaCat.toLowerCase();
+    } else if (pathParts.length >= 2) {
         currentCategory = pathParts[pathParts.length - 2];
     } else if (pathParts.length === 1 && !currentPath.endsWith('.html')) {
         currentCategory = pathParts[0];
+    } else {
+        currentCategory = 'market';
     }
 
     if (!currentCategory) {
