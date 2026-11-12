@@ -952,15 +952,29 @@ try {
   }
 } catch (e) {}
 
-const previewMsg = `🎯 <b>BẢN TIN PHÂN TÍCH CHUẨN GSEO & DATA HUB ĐÃ HOÀN TẤT!</b>
+const isMorning = category === 'market' || (title && (title.includes('Nhận định') || title.includes('trước giờ')));
+const isRefined = normalizerData && normalizerData.mode === 'refine';
+
+const headerTitle = isRefined 
+  ? '✨ <b>ĐÃ HIỆU CHỈNH BÀI VIẾT THEO YÊU CẦU CỦA BẠN!</b>' 
+  : (isMorning ? '🌅 <b>BẢN TIN NHẬN ĐỊNH THỊ TRƯỜNG TRƯỚC GIỜ GIAO DỊCH</b>' : '🎯 <b>BẢN TIN PHÂN TÍCH CHUẨN GSEO ĐÃ HOÀN TẤT!</b>');
+
+const kpiStr = (articleData.kpiCards && articleData.kpiCards.length)
+  ? articleData.kpiCards.map(k => `• ${k.label}: <b>${k.val}</b>`).join('\n')
+  : 'Đã tự động tính toán số liệu thị trường';
+
+const previewMsg = `${headerTitle}
 
 📌 <b>Tiêu đề:</b> ${title}
 📂 <b>Chuyên mục:</b> ${categoryName}
 ⚡ <b>Thông điệp cốt lõi:</b> <i>${articleData.summaryMsg || metaDesc}</i>
-📊 <b>Thẻ KPI:</b> ${articleData.kpiCards && articleData.kpiCards.length ? (articleData.kpiCards.length + ' thẻ định lượng (Đỏ - Xanh - Vàng)') : 'Tự động quét số liệu thị trường'}
-❓ <b>FAQ Accordion:</b> ${articleData.faqs && articleData.faqs.length ? (articleData.faqs.length + ' câu hỏi chuẩn Schema FAQPage') : 'Đã tối ưu'}
 
-🚀 <b>SEO & pSEO:</b> Đã tự động gắn huy hiệu Data Hub VN30 và Schema Article/BreadcrumbList!`;
+📊 <b>Số liệu định lượng (KPI Cards):</b>
+${kpiStr}
+
+❓ <b>FAQ Accordion:</b> ${articleData.faqs && articleData.faqs.length ? (articleData.faqs.length + ' câu hỏi thị trường chuẩn Schema') : '3 câu hỏi thị trường'}
+
+💡 <i>Mẹo: Bấm nút bên dưới để duyệt đăng bài, hoặc gửi tin nhắn phản hồi trực tiếp vào đây (ví dụ: "Sửa lại vùng hỗ trợ", "Thêm mã VHM"...) để AI hiệu chỉnh lại ngay lập tức!</i>`;
 
 const livePreviewUrl = 'https://daututaichinh.pro/preview.html';
 const callbackApprove = 'approve';
