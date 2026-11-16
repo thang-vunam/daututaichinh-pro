@@ -11138,13 +11138,25 @@ Viết xuất sắc nhất có thể. Khởi chạy với Từ khóa chính: ${t
 
                 await triggerIndexNow(category, slug);
 
+                // BƯỚC 7: Tự động phát tín hiệu Google Indexing API qua Gateway n8n
+                try {
+                    const postUrl = `https://www.daututaichinh.pro/${category}/${slug}.html`;
+                    await fetch('https://n8n.kotaduck.cc/webhook/google-index-url', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: postUrl })
+                    });
+                } catch(gIndexErr) {
+                    console.warn("Google Indexing API Gateway warning:", gIndexErr);
+                }
+
 
 
                 
 
 
 
-                alert("🎉 Xuất bản thành công!\n✅ Bài viết đã push\n✅ Cả 2 danh mục đã đồng bộ\n✅ Trang chủ đã cập nhật với số thứ tự\n✅ Sitemap.xml đã tự động bổ sung bài mới!\n✅ llms.txt đã cập nhật cho các Bot AI!\n✅ IndexNow đã phát tín hiệu lập chỉ mục siêu tốc cho Bing & AI Search Engines!");
+                alert("🎉 Xuất bản thành công!\n✅ Bài viết đã push lên GitHub Live\n✅ Cả 2 danh mục đã đồng bộ\n✅ Trang chủ đã cập nhật\n✅ Sitemap.xml đã tự động bổ sung bài mới (Domain www)!\n✅ llms.txt đã cập nhật cho Bot AI!\n✅ IndexNow đã ping Bing & AI Search Engines!\n⚡ Google Indexing API đã được kích hoạt ép bot Google cào bài!");
 
 
 
@@ -13198,7 +13210,7 @@ ${subCardsHtml}
 
 
 
-                    host: 'daututaichinh.pro',
+                    host: 'www.daututaichinh.pro',
 
 
 
@@ -21733,13 +21745,13 @@ function toggleFaq(el) {
             
             const slug = document.getElementById('review-slug')?.value || 'bai-viet';
             const coverRelativeUrl = `/images/cover-${slug}.png`;
-            const coverAbsoluteUrl = `https://daututaichinh.pro${coverRelativeUrl}`;
+            const coverAbsoluteUrl = `https://www.daututaichinh.pro${coverRelativeUrl}`;
             
             const urlInput = document.getElementById('review-image-url');
             if (urlInput) urlInput.value = coverRelativeUrl;
             
             // Dùng URL chuẩn cho OpenGraph / Twitter / Schema.org để Google Search Console không báo lỗi Incorrect value type
-            applyCoverImageToHtml(coverAbsoluteUrl, 'Đầu Tư Tài Chính .pro', 'https://daututaichinh.pro');
+            applyCoverImageToHtml(coverAbsoluteUrl, 'Đầu Tư Tài Chính .pro', 'https://www.daututaichinh.pro');
             
             if (typeof currentArticleData !== 'undefined' && currentArticleData) {
                 currentArticleData.coverBase64Payload = currentBrandCoverBase64.split(',')[1];
