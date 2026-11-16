@@ -257,7 +257,7 @@ function pickCoverImage(query, title) {
 const photoId = pickCoverImage(articleData.imageSearchQuery, articleData.title);
 let imageUrl = `https://images.unsplash.com/${photoId}?auto=format&fit=crop&w=1200&q=80`;
 if (!imageUrl || imageUrl.startsWith('data:image')) {
-  imageUrl = `https://daututaichinh.pro/images/cover-${articleData.slug}.png`;
+  imageUrl = `https://www.daututaichinh.pro/images/cover-${articleData.slug}.png`;
 }
 
 // 1. Ensure Semantic Headings
@@ -319,7 +319,7 @@ function sanitizeInternalLinks(html) {
         if (!attrs.includes('rel=')) attrs += ' rel="noopener"';
         return `<a ${attrs}>${innerText}</a>`;
       }
-      // If internal absolute URL (https://daututaichinh.pro/...), normalize to relative
+      // If internal absolute URL (https://www.daututaichinh.pro/...), normalize to relative
       href = href.replace(/^https?:\/\/daututaichinh\.pro/, '') || '/';
     }
 
@@ -588,7 +588,7 @@ const slug = articleData.slug || 'tin-thi-truong';
 const category = articleData.category || normalizerData.category || 'market';
 const categoryName = category === 'market' ? 'Thị trường' : 'Bài viết';
 const metaDesc = articleData.metaDescription || (title + '. Phân tích xu hướng thị trường tài chính chuyên sâu.');
-const canonicalUrl = `https://daututaichinh.pro/${category}/${slug}.html`;
+const canonicalUrl = `https://www.daututaichinh.pro/${category}/${slug}.html`;
 const dateIso = new Date().toISOString();
 const d = new Date();
 const dateDisplay = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -685,14 +685,14 @@ const articleSchema = {
   "author": {
     "@type": "Organization",
     "name": "Đầu tư & Tài chính chuyên sâu",
-    "url": "https://daututaichinh.pro"
+    "url": "https://www.daututaichinh.pro"
   },
   "publisher": {
     "@type": "Organization",
     "name": "Đầu tư & Tài chính chuyên sâu",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://daututaichinh.pro/logo.png"
+      "url": "https://www.daututaichinh.pro/logo.png"
     }
   }
 };
@@ -705,13 +705,13 @@ const breadcrumbSchema = {
       "@type": "ListItem",
       "position": 1,
       "name": "Trang chủ",
-      "item": "https://daututaichinh.pro/"
+      "item": "https://www.daututaichinh.pro/"
     },
     {
       "@type": "ListItem",
       "position": 2,
       "name": categoryName,
-      "item": `https://daututaichinh.pro/${category}/`
+      "item": `https://www.daututaichinh.pro/${category}/`
     },
     {
       "@type": "ListItem",
@@ -976,7 +976,7 @@ ${kpiStr}
 
 💡 <i>Mẹo: Bấm nút bên dưới để duyệt đăng bài, hoặc gửi tin nhắn phản hồi trực tiếp vào đây (ví dụ: "Sửa lại vùng hỗ trợ", "Thêm mã VHM"...) để AI hiệu chỉnh lại ngay lập tức!</i>`;
 
-const livePreviewUrl = 'https://daututaichinh.pro/preview.html';
+const livePreviewUrl = 'https://www.daututaichinh.pro/preview.html';
 const callbackApprove = 'approve';
 const callbackReject = 'reject';
 

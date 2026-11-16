@@ -218,7 +218,7 @@ try {
   const existingSitemap = await ghRequest(sitemapPath);
   if (existingSitemap && existingSitemap.content) {
     let sitemapXml = Buffer.from(existingSitemap.content.replace(/\n/g, ''), 'base64').toString('utf-8');
-    const targetUrl = `https://daututaichinh.pro/${category}/${slug}.html`;
+    const targetUrl = `https://www.daututaichinh.pro/${category}/${slug}.html`;
     if (!sitemapXml.includes(targetUrl)) {
       const today = new Date().toISOString().split('T')[0];
       const newUrlEntry = `  <url>\n    <loc>${targetUrl}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n</urlset>`;
@@ -238,7 +238,7 @@ try {
   const existingLlms = await ghRequest(llmsPath);
   if (existingLlms && existingLlms.content) {
     let llmsText = Buffer.from(existingLlms.content.split('\n').join(''), 'base64').toString('utf-8');
-    const targetUrl = `https://daututaichinh.pro/${category}/${slug}.html`;
+    const targetUrl = `https://www.daututaichinh.pro/${category}/${slug}.html`;
     if (!llmsText.includes(targetUrl)) {
       const entry = `- [${title}](${targetUrl}): ${desc}`;
       const marker = '## Key Analytical Reports (Báo cáo tiêu biểu)';
@@ -375,7 +375,7 @@ ${bItemsHtml}    </div>`;
   }
 
   // 5.5. IndexNow Instant Search Engine Indexing (Bing, Yandex, Naver...)
-  const livePostUrl = `https://daututaichinh.pro/${category}/${slug}.html`;
+  const livePostUrl = `https://www.daututaichinh.pro/${category}/${slug}.html`;
   try {
     await makeRequest({
       method: 'POST',
@@ -385,13 +385,13 @@ ${bItemsHtml}    </div>`;
         'User-Agent': 'n8n-daututaichinh-pro-publisher'
       },
       body: {
-        host: 'daututaichinh.pro',
+        host: 'www.daututaichinh.pro',
         key: 'c0e81b67f1b2413a9643a6d7f022ef10',
-        keyLocation: 'https://daututaichinh.pro/c0e81b67f1b2413a9643a6d7f022ef10.txt',
+        keyLocation: 'https://www.daututaichinh.pro/c0e81b67f1b2413a9643a6d7f022ef10.txt',
         urlList: [
           livePostUrl,
-          'https://daututaichinh.pro/sitemap.xml',
-          'https://daututaichinh.pro/index.html'
+          'https://www.daututaichinh.pro/sitemap.xml',
+          'https://www.daututaichinh.pro/index.html'
         ]
       },
       json: true
@@ -418,7 +418,7 @@ const chatId = (input.callback_query && input.callback_query.message) ? input.ca
 return [{
   json: {
     success: true,
-    liveUrl: `https://daututaichinh.pro/${category}/${slug}.html`,
+    liveUrl: `https://www.daututaichinh.pro/${category}/${slug}.html`,
     title: title || slug,
     chatId: String(chatId)
   }

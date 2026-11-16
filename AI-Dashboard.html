@@ -2135,7 +2135,7 @@ Bạn có thể viết:
 
 
 
-                <input type="text" id="delete-url-input" placeholder="Ví dụ: https://daututaichinh.pro/blog/ten-bai-viet.html hoặc ten-bai-viet" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;" />
+                <input type="text" id="delete-url-input" placeholder="Ví dụ: https://www.daututaichinh.pro/blog/ten-bai-viet.html hoặc ten-bai-viet" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white;" />
 
 
 
@@ -10507,10 +10507,10 @@ main {
             const iframe = document.getElementById('preview-iframe');
             let html = document.getElementById('review-html').value;
             if(iframe && html) {
-                // 1. Tự động chuyển toàn bộ link nội bộ (dạng /market/, /blog/...) thành URL đầy đủ https://daututaichinh.pro/...
+                // 1. Tự động chuyển toàn bộ link nội bộ (dạng /market/, /blog/...) thành URL đầy đủ https://www.daututaichinh.pro/...
                 // Kèm target="_blank" để khi user click kiểm tra trong Preview, link sẽ mở ngay tab mới trên trang web thật (tránh hoàn toàn file:///C:/)
                 html = html.replace(/<a\s+([^>]*?)href=(["'])(\/[^"']*)\2([^>]*?)>/gi, (match, before, quote, path, after) => {
-                    let attrs = `${before} href="https://daututaichinh.pro${path}" ${after}`.trim();
+                    let attrs = `${before} href="https://www.daututaichinh.pro${path}" ${after}`.trim();
                     if (!attrs.includes('target=')) attrs += ' target="_blank"';
                     if (!attrs.includes('rel=')) attrs += ' rel="noopener"';
                     return `<a ${attrs}>`;
@@ -11004,7 +11004,7 @@ Viết xuất sắc nhất có thể. Khởi chạy với Từ khóa chính: ${t
 
             const path = `${category}/${slug}.html`;
             const coverPath = `images/cover-${slug}.png`;
-            const publicCoverUrl = `https://daututaichinh.pro/${coverPath}`;
+            const publicCoverUrl = `https://www.daututaichinh.pro/${coverPath}`;
             const relativeCoverUrl = `/${coverPath}`;
 
             // BƯỚC 0: Tự động trích xuất và Upload Ảnh Bìa Thương Hiệu nếu có base64
@@ -11964,7 +11964,7 @@ async function generateListingFromCatalog(owner, repo, token, category, catalog)
 
 
 
-      <img src="https://daututaichinh.pro/logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
+      <img src="https://www.daututaichinh.pro/logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
 
 
 
@@ -12918,7 +12918,7 @@ ${subCardsHtml}
 
 
 
-                const articleUrl = `https://daututaichinh.pro/${category}/${slug}.html`;
+                const articleUrl = `https://www.daututaichinh.pro/${category}/${slug}.html`;
 
 
 
@@ -13078,7 +13078,7 @@ ${subCardsHtml}
 
 
 
-                const articleUrl = `https://daututaichinh.pro/${category}/${slug}.html`;
+                const articleUrl = `https://www.daututaichinh.pro/${category}/${slug}.html`;
 
 
 
@@ -13190,7 +13190,7 @@ ${subCardsHtml}
 
 
 
-                const postUrl = `https://daututaichinh.pro/${category}/${slug}.html`;
+                const postUrl = `https://www.daututaichinh.pro/${category}/${slug}.html`;
 
 
 
@@ -13206,7 +13206,7 @@ ${subCardsHtml}
 
 
 
-                    keyLocation: `https://daututaichinh.pro/${indexNowKey}.txt`,
+                    keyLocation: `https://www.daututaichinh.pro/${indexNowKey}.txt`,
 
 
 
@@ -14493,7 +14493,7 @@ ${subCardsHtml}
 
 
 
-      "url": "https://daututaichinh.pro/"
+      "url": "https://www.daututaichinh.pro/"
 
 
 
@@ -14633,11 +14633,11 @@ ${subCardsHtml}
 
 
 
-    "url": "https://daututaichinh.pro/",
+    "url": "https://www.daututaichinh.pro/",
 
 
 
-    "logo": "https://daututaichinh.pro/logo.png"
+    "logo": "https://www.daututaichinh.pro/logo.png"
 
 
 
@@ -18953,7 +18953,7 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
 
 
 
-            const canonicalUrl = `https://daututaichinh.pro/${category}/${articleSlug}.html`;
+            const canonicalUrl = `https://www.daututaichinh.pro/${category}/${articleSlug}.html`;
 
 
 
@@ -19673,7 +19673,7 @@ gtag('config', 'G-RJZJX69KDM');
 
 
 
-    "url": "https://daututaichinh.pro/"
+    "url": "https://www.daututaichinh.pro/"
 
 
 
@@ -19701,7 +19701,7 @@ gtag('config', 'G-RJZJX69KDM');
 
 
 
-      "url": "https://daututaichinh.pro/favicon.png"
+      "url": "https://www.daututaichinh.pro/favicon.png"
 
 
 
@@ -19765,7 +19765,7 @@ gtag('config', 'G-RJZJX69KDM');
 
 
 
-      "item": "https://daututaichinh.pro/"
+      "item": "https://www.daututaichinh.pro/"
 
 
 
@@ -19789,7 +19789,7 @@ gtag('config', 'G-RJZJX69KDM');
 
 
 
-      "item": "https://daututaichinh.pro/${category}/"
+      "item": "https://www.daututaichinh.pro/${category}/"
 
 
 
@@ -20312,7 +20312,7 @@ td { padding: 14px 18px !important; border-bottom: 1px solid rgba(255,255,255,0.
 
 
 
-<img src="https://daututaichinh.pro/logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
+<img src="https://www.daututaichinh.pro/logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
 
 
 

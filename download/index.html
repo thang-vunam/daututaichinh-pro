@@ -1,156 +1,312 @@
 <!DOCTYPE html>
+
 <html lang="vi">
+
 <head>
+
   <!-- Google tag (gtag.js) -->
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJZJX69KDM"></script>
+
   <script>
+
     window.dataLayer = window.dataLayer || [];
+
     function gtag(){dataLayer.push(arguments);}
+
     gtag('js', new Date());
+
   
+
     gtag('config', 'G-RJZJX69KDM');
+
   </script>
+
   <meta charset="UTF-8">
+
   <title>Tải tài liệu | daututaichinh.pro</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <meta name="description" content="Tải tài liệu đầu tư, chứng khoán và tài chính cá nhân sau khi điền form.">
+
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+
   <link rel="shortcut icon" href="/favicon.ico">
+
   <link rel="stylesheet" href="../style.css?v=editorial-2.1">
+
   <link rel="stylesheet" href="../lead-form.css">
+
   <link rel="stylesheet" href="../chatbot.css">
+
   <style>
+
     .download-box {
+
       max-width: 900px;
+
       margin: 0 auto;
+
       padding: 60px 20px;
+
     }
+
     .download-box h1 { margin-bottom: 12px; }
+
     .download-box p { color: #bfc6d1; margin-bottom: 24px; }
 
+
+
     .download-grid {
+
       display: grid;
+
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
       gap: 20px;
+
       margin-top: 30px;
+
     }
+
     .download-card {
+
       background: #0f1a2e;
+
       border-radius: 12px;
+
       padding: 20px;
+
       border: 1px solid rgba(255,255,255,0.08);
+
       transition: 0.2s;
+
     }
+
     .download-card:hover {
+
       transform: translateY(-4px);
+
       border-color: #3b82f6;
+
     }
+
     .download-card h3 { margin-bottom: 10px; font-size: 18px; }
+
     .download-card a {
+
       color: #60a5fa;
+
       font-weight: 500;
+
       text-decoration: none;
+
     }
+
     .download-card a:hover { text-decoration: underline; }
 
+
+
     .warning {
+
       margin-top: 40px;
+
       font-size: 14px;
+
       color: #9ca3af;
+
     }
+
   </style>
+
   <!-- Google Fonts: Playfair Display (Serif), Inter (Sans), JetBrains Mono (Code/Numbers) -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
+
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+
 </head>
+
 <body>
+
 <header class="top-bar">
+
   <div class="container nav">
+
     <a href="/" class="brand">
+
       <img src="../logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="brand-logo">
+
       <div class="brand-text">
+
         <span class="brand-title">Đầu tư & Tài chính chuyên sâu</span>
+
         <span class="brand-sub">Hệ sinh thái nội dung tài chính cho người Việt</span>
+
       </div>
+
     </a>
+
     <nav class="nav-links">
+
       <a href="/">Trang chủ</a>
+
       <a href="/market/">Thị trường</a>
+
       <a href="/blog/">Bài viết</a>
+
       <a href="/download/" style="color:var(--ed-gold,#f59e0b);font-weight:700;">Tài liệu</a>
+
       <a href="/co-phieu/" style="color:#fbbf24; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:4px 10px; font-weight:600; text-decoration:none; transition:all 0.2s;">📊 Data Hub</a>
+
       <a href="/#contact">Liên hệ</a>
+
     </nav>
+
   </div>
+
 </header>
 
 
+
+
+
 <main class="section">
+
   <div class="download-box">
+
     <h1>📥 Nhận link tải tài liệu</h1>
+
     <p>
+
       Để truy cập kho tài liệu đầu tư, vui lòng để lại thông tin cơ bản.
+
       Sau khi điền form, bạn có thể tải từng nhóm tài liệu theo nhu cầu.
+
     </p>
 
+
+
     <!-- CHƯA ĐIỀN FORM → Inline form sẽ được render ở đây bởi lead-form.js -->
+
     <div id="need-form" style="display:none"></div>
 
+
+
     <!-- ĐÃ ĐIỀN FORM → Hiện danh sách tài liệu -->
+
     <div id="download-area" style="display:none">
+
       <div class="download-grid">
+
         <div class="download-card">
+
           <h3>📊 Excel ứng dụng</h3>
+
           <a href="excel.html">Truy cập thư mục →</a>
+
         </div>
+
         <div class="download-card">
+
           <h3>📈 Phân tích (Cơ bản & Kỹ thuật)</h3>
+
           <a href="phan-tich.html">Truy cập thư mục →</a>
+
         </div>
+
         <div class="download-card">
+
           <h3>💼 Quản trị tài chính doanh nghiệp</h3>
+
           <a href="tai-chinh.html">Truy cập thư mục →</a>
+
         </div>
+
         <div class="download-card">
+
           <h3>🏦 Banking</h3>
+
           <a href="banking.html">Truy cập thư mục →</a>
+
         </div>
+
         <div class="download-card">
+
           <h3>📂 Tài liệu khác</h3>
+
           <a href="khac.html">Truy cập thư mục →</a>
+
         </div>
+
       </div>
+
       <p class="warning">
+
         ⚠️ Tài liệu mang tính tham khảo, không phải khuyến nghị mua/bán.
+
         Người đọc tự chịu trách nhiệm với quyết định đầu tư của mình.
+
       </p>
+
     </div>
+
   </div>
+
 </main>
 
+
+
 <script src="../lead-form.js"></script>
+
 <script>
+
   // Check if already submitted
+
   const hasSubmitted = localStorage.getItem("formSubmitted");
+
   if (hasSubmitted === "yes") {
+
     document.getElementById("download-area").style.display = "block";
+
   } else {
+
     document.getElementById("need-form").style.display = "block";
+
   }
+
 </script>
+
+
 
 <footer class="footer">
+
   <div class="container">
+
     <p>© <span id="year"></span> daututaichinh.pro</p>
+
   </div>
+
 </footer>
+
 <script>
+
   document.getElementById("year").textContent = new Date().getFullYear();
+
 </script>
+
 <script src="../chatbot.js" defer></script>
 
+
+
 </body>
+
 </html>
+
