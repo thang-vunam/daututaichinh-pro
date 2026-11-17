@@ -6369,7 +6369,11 @@ ${contentForBody.substring(0, 35000)}`;
 
 
 
-                document.getElementById('review-slug').value = (seo.slug || '').replace(/<[^>]+>/g, '').trim();
+                const finalManualSlug = (seo.slug && seo.slug !== 'tin-thi-truong' && !seo.slug.includes('tieu-diem') && seo.slug.length > 8)
+                    ? seo.slug
+                    : generateSlug(seo.title || detectedTitle || keyword, category);
+                document.getElementById('review-slug').value = finalManualSlug;
+                seo.slug = finalManualSlug;
 
 
 
@@ -10565,6 +10569,31 @@ main {
 
 
 
+        
+        function generateSlug(text, category) {
+            if (!text) return (category === 'market' ? 'nhan-dinh-thi-truong-' : 'bai-viet-') + new Date().toISOString().split('T')[0];
+            let s = text.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd')
+                .replace(/[^a-z0-9\s-]/g, '')
+                .trim()
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+            
+            if (s.length > 80) {
+                s = s.substring(0, 80);
+                const lastHyphen = s.lastIndexOf('-');
+                if (lastHyphen > 40) s = s.substring(0, lastHyphen);
+            }
+            s = s.replace(/-+$/, '');
+
+            if (!s || s === 'tin-thi-truong' || s === 'url-khong-dau-ngan-gon-chuan-seo' || s.includes('tieu-diem')) {
+                return (category === 'market' ? 'nhan-dinh-thi-truong-' : 'bai-viet-') + new Date().toISOString().split('T')[0];
+            }
+            return s;
+        }
+
         async function generateDraft() {
 
 
@@ -10836,6 +10865,9 @@ ${JSON.stringify({
 
 
 
+                data.slug = (data.slug && data.slug !== 'tin-thi-truong' && !data.slug.includes('tieu-diem') && data.slug.length > 8)
+                    ? data.slug
+                    : generateSlug(data.title, category);
                 document.getElementById('review-slug').value = data.slug;
 
 
@@ -18774,10 +18806,13 @@ KHÔNG viết thêm bất kỳ câu giải thích nào bên ngoài JSON.`;
                 if (response.ok) {
                     const data = await response.json();
                     if (data.results && data.results.length > 0) {
-                        // 3. Ưu tiên lấy ảnh chuẩn xác nhất (Top 1), tuyệt đối không bốc ngẫu nhiên vào ảnh họa tiết rác
-                        const photo = data.results[0];
+                        // 3. Lọc bỏ ảnh chiếc laptop cũ đã bị trùng và bốc thông minh trong Top 5
+                        let candidates = data.results.filter(p => !p.id.includes('1460925895917') && !(p.urls && p.urls.raw && p.urls.raw.includes('1460925895917')));
+                        if (!candidates.length) candidates = data.results;
+                        const topPool = candidates.slice(0, 5);
+                        const photo = topPool[Math.floor(Math.random() * topPool.length)];
                         return {
-                            url: photo.urls.raw + '&auto=format&fit=crop&w=800&q=80',
+                            url: photo.urls.raw + '&auto=format&fit=crop&w=1200&q=80',
                             authorName: photo.user.name || 'Unsplash',
                             authorLink: photo.user.links.html || 'https://unsplash.com'
                         };
