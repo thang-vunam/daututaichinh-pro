@@ -504,19 +504,6 @@
     border: 1px solid #141e33;
     background: #090e1a;
   }
-  .sf-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 0.84rem;
-    text-align: left;
-  }
-  .sf-table-container {
-    overflow-x: auto;
-    border-radius: 10px;
-    border: 1px solid #141e33;
-    background: #090e1a;
-  }
   @media (min-width: 992px) {
     .sf-table-container {
       overflow: visible;
@@ -537,6 +524,13 @@
     }
   }
 
+  .sf-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.84rem;
+    text-align: left;
+  }
   .sf-table th {
     background: #0b1324;
     color: #64748b;
@@ -548,27 +542,6 @@
     border-bottom: 1px solid #1e293b;
     white-space: nowrap;
     user-select: none;
-  }
-
-  /* Mobile floating header for sector table */
-  @media (min-width: 992px) {
-    #sf-mobile-floating-header {
-      display: none !important;
-    }
-  }
-  @media (max-width: 991px) {
-    #sf-mobile-floating-header {
-      position: fixed;
-      z-index: 85;
-      display: none;
-      overflow-x: hidden;
-      background: #0d1527;
-      border-bottom: 2px solid rgba(59, 130, 246, 0.5);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
-    }
-    #sf-mobile-floating-header th {
-      background: #0d1527 !important;
-    }
   }
   .sf-table td {
     padding: 11px 14px;
@@ -810,8 +783,25 @@
     font-size: 0.75rem;
   }
 
-  /* Responsive Mobile */
-  @media (max-width: 900px) {
+  /* Mobile floating header for sector table */
+  @media (min-width: 992px) {
+    #sf-mobile-floating-header {
+      display: none !important;
+    }
+  }
+  @media (max-width: 991px) {
+    #sf-mobile-floating-header {
+      position: fixed;
+      z-index: 85;
+      display: none;
+      overflow-x: hidden;
+      background: #0d1527;
+      border-bottom: 2px solid rgba(59, 130, 246, 0.5);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+    }
+    #sf-mobile-floating-header th {
+      background: #0d1527 !important;
+    }
     .hub-tab-bar {
       gap: 8px;
       margin: 16px 0 20px 0;
@@ -911,9 +901,7 @@
     </button>
   </div>
 
-  <!-- CONTROLS: SEARCH + SECTOR FILTER -->
-  <div class="controls-panel">
-    
+  
   <!-- WORKSPACE 1: REALTIME ICB SECTOR FLOW & MARKET BREADTH MATRIX -->
   <section id="view-sectors" class="hub-tab-content">
     <div id="sector-flow-wrapper">
@@ -936,24 +924,23 @@
         </div>
       </div>
 
-      
-  <!-- MOBILE FLOATING HEADER FOR SECTOR FLOW -->
-  <div id="sf-mobile-floating-header">
-    <table class="sf-table" id="sf-mobile-floating-table" style="margin-bottom:0; width:100%; border-collapse:separate;">
-      <thead>
-        <tr>
-          <th style="min-width: 220px;">NGÀNH</th>
-          <th style="text-align: right;">HÔM NAY</th>
-          <th style="text-align: right;" class="sf-hide-mobile">1T</th>
-          <th style="text-align: right;" class="sf-hide-mobile">1TH</th>
-          <th style="text-align: right;" class="sf-hide-mobile">3TH</th>
-          <th style="text-align: right;" class="sf-hide-mobile">1N</th>
-          <th style="text-align: center; min-width: 170px;">ĐỘ RỘNG</th>
-          <th style="text-align: center; min-width: 110px;">DẪN DẮT</th>
-        </tr>
-      </thead>
-    </table>
-  </div>
+      <!-- MOBILE FLOATING HEADER FOR SECTOR FLOW -->
+      <div id="sf-mobile-floating-header">
+        <table class="sf-table" id="sf-mobile-floating-table" style="margin-bottom:0; width:100%; border-collapse:separate;">
+          <thead>
+            <tr>
+              <th style="min-width: 220px;">NGÀNH</th>
+              <th style="text-align: right;">HÔM NAY</th>
+              <th style="text-align: right;" class="sf-hide-mobile">1T</th>
+              <th style="text-align: right;" class="sf-hide-mobile">1TH</th>
+              <th style="text-align: right;" class="sf-hide-mobile">3TH</th>
+              <th style="text-align: right;" class="sf-hide-mobile">1N</th>
+              <th style="text-align: center; min-width: 170px;">ĐỘ RỘNG</th>
+              <th style="text-align: center; min-width: 110px;">DẪN DẮT</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
 
       <div class="sf-table-container">
         <table class="sf-table" id="sf-table">
@@ -980,6 +967,8 @@
 
   <!-- WORKSPACE 2: VN30 STOCKS PROFILE & MINI CALCULATOR VALUATION -->
   <section id="view-stocks" class="hub-tab-content" style="display: none;">
+    <!-- CONTROLS: SEARCH + SECTOR FILTER -->
+  <div class="controls-panel">
     <div class="search-box-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="filter-search" placeholder="Tìm kiếm nhanh mã CP hoặc tên công ty (VD: SSI, HPG, FPT, VCB...)..." oninput="applyFilters()" />
@@ -1457,8 +1446,8 @@
       </tbody>
     </table>
   </div>
-
   </section>
+
 </main>
 
 <!-- FOOTER -->
@@ -1635,7 +1624,7 @@ function switchDataTab(tab, updateHash = true) {
     if (viewSectors) viewSectors.style.display = 'block';
     if (viewStocks) viewStocks.style.display = 'none';
 
-    // Cập nhật tiêu đề hoàn toàn thuần túy cho Bản đồ 20 Nhóm ngành (Không dính VN30)
+    // Cập nhật tiêu đề hoàn toàn thuần túy cho Bản đồ 20 Nhóm ngành
     if (mainBadge) mainBadge.innerHTML = '🚀 Phân Tích Dòng Tiền & Sức Mạnh Ngành';
     if (mainTitle) mainTitle.innerText = 'Bản Đồ Dòng Tiền & Sức Mạnh 20 Nhóm Ngành ICB';
     if (mainSub) mainSub.innerText = 'Hệ thống phân cấp đa tầng Chuẩn ICB FireAnt (20 Nhóm ngành L2 & Ngành con L3/L4) • Giám sát độ rộng thị trường, dòng tiền luân chuyển và các cổ phiếu dẫn dắt Realtime.';
@@ -4367,10 +4356,8 @@ const SectorFlowModule = (function () {
 
 document.addEventListener('DOMContentLoaded', function () {
   SectorFlowModule.init();
-  
-  // ==========================================================
-  // MOBILE FLOATING HEADER SYNC FOR SECTOR TABLE
-  // ==========================================================
+
+  // Mobile Floating Header Sync for Sector Table
   (function () {
     const origTable = document.getElementById('sf-table');
     const container = document.querySelector('.sf-table-container');
@@ -4434,7 +4421,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { passive: true });
     window.addEventListener('resize', syncSectorMobileHeader, { passive: true });
   })();
-
 });
 </script>
 
