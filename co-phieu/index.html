@@ -763,7 +763,47 @@
   }
 
   /* Leader Cell */
+  
+  .sf-vn30-pill {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 4px;
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .sf-stock-card.is-vn30 {
+    border-color: rgba(245, 158, 11, 0.35);
+  }
+  .sf-stock-card.is-vn30:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+  }
   .sf-leader-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #0f172a;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid #1e293b;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .sf-leader-tag:hover {
+    border-color: #3b82f6;
+    background: #1e293b;
+  }
+  .sf-leader-tag.is-vn30:hover {
+    border-color: #f59e0b;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+  }
+
+  .sf-old-leader-tag {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -962,14 +1002,14 @@
         <table class="sf-table" id="sf-mobile-floating-table" style="margin-bottom:0; width:100%; border-collapse:separate;">
           <thead>
             <tr>
-              <th style="min-width: 220px;">NGÀNH</th>
+              <th style="min-width: 200px;">NGÀNH</th>
+              <th style="text-align: center; min-width: 110px;">DẪN DẮT</th>
               <th style="text-align: right;">HÔM NAY</th>
               <th style="text-align: right;" class="sf-hide-mobile">1T</th>
               <th style="text-align: right;" class="sf-hide-mobile">1TH</th>
               <th style="text-align: right;" class="sf-hide-mobile">3TH</th>
               <th style="text-align: right;" class="sf-hide-mobile">1N</th>
               <th style="text-align: center; min-width: 170px;">ĐỘ RỘNG</th>
-              <th style="text-align: center; min-width: 110px;">DẪN DẮT</th>
             </tr>
           </thead>
         </table>
@@ -979,14 +1019,14 @@
         <table class="sf-table" id="sf-table">
           <thead>
             <tr>
-              <th style="min-width: 220px;">NGÀNH</th>
+              <th style="min-width: 200px;">NGÀNH</th>
+              <th style="text-align: center; min-width: 110px;">DẪN DẮT</th>
               <th style="text-align: right;">HÔM NAY</th>
               <th style="text-align: right;" class="sf-hide-mobile">1T</th>
               <th style="text-align: right;" class="sf-hide-mobile">1TH</th>
               <th style="text-align: right;" class="sf-hide-mobile">3TH</th>
               <th style="text-align: right;" class="sf-hide-mobile">1N</th>
               <th style="text-align: center; min-width: 170px;">ĐỘ RỘNG</th>
-              <th style="text-align: center; min-width: 110px;">DẪN DẮT</th>
             </tr>
           </thead>
           <tbody id="sf-tbody">
@@ -2509,6 +2549,57 @@ const SectorFlowModule = (function () {
     if (!tbody) return;
     tbody.innerHTML = '';
 
+    const VN30_TICKERS = new Set([
+      'ACB', 'BID', 'BSR', 'CTG', 'FPT', 'GAS', 'GVR', 'HDB', 'HPG', 'LPB', 
+      'MBB', 'MCH', 'MSN', 'MWG', 'SAB', 'SHB', 'SSB', 'SSI', 'STB', 'TCB', 
+      'TCX', 'VCB', 'VHM', 'VIB', 'VIC', 'VJC', 'VNM', 'VPB', 'VPL', 'VRE'
+    ]);
+
+    function createLeaderTag(leader) {
+      if (!leader || !leader.ticker) return '<span style="color:#475569">—</span>';
+      const isVN30 = VN30_TICKERS.has(leader.ticker.toUpperCase());
+      const href = isVN30 ? `/co-phieu/${leader.ticker.toLowerCase()}.html` : `https://fireant.vn/ma-chung-khoan/${leader.ticker}`;
+      const targetAttr = 'target="_blank" rel="noopener"';
+      const titleAttr = isVN30 ? `Xem hồ sơ định giá ${leader.ticker} trên Data Hub` : `Xem ${leader.ticker} trên FireAnt`;
+      const ptsColor = leader.pts >= 0 ? 'sf-up' : 'sf-down';
+      const ptsSign = leader.pts >= 0 ? '+' : '';
+      return `
+        <a href="${href}" ${targetAttr} class="sf-leader-tag ${isVN30 ? 'is-vn30' : ''}" title="${titleAttr}">
+          <span class="sf-leader-sym">${leader.ticker}</span>
+          <span class="sf-leader-pts ${ptsColor}">
+            ${ptsSign}${leader.pts.toFixed(2)}
+          </span>
+        </a>
+      `;
+    }
+
+    function createStockChip(stk) {
+      const isVN30 = VN30_TICKERS.has(stk.ticker.toUpperCase());
+      const stockHref = isVN30 ? `/co-phieu/${stk.ticker.toLowerCase()}.html` : `https://fireant.vn/ma-chung-khoan/${stk.ticker}`;
+      const targetAttr = 'target="_blank" rel="noopener"';
+      const titleAttr = isVN30 ? `Xem hồ sơ định giá chi tiết ${stk.ticker} trên Data Hub` : `Xem biểu đồ ${stk.ticker} trên FireAnt`;
+      const vn30Badge = isVN30 ? `<span class="sf-vn30-pill" title="Hồ sơ định giá Data Hub">VN30</span>` : '';
+      const priceCls = stk.pct > 0 ? 'sf-up' : (stk.pct < 0 ? 'sf-down' : 'sf-ref');
+      const pctSign = stk.pct > 0 ? '+' : '';
+
+      return `
+        <a href="${stockHref}" ${targetAttr} class="sf-stock-card ${isVN30 ? 'is-vn30' : ''}" title="${titleAttr}">
+          <div class="sf-stk-top">
+            <span class="sf-stk-sym">
+              <i class="fa-solid fa-arrow-trend-up" style="font-size:0.75rem; color:#60a5fa;"></i> 
+              ${stk.ticker}
+              ${vn30Badge}
+            </span>
+            <span class="sf-stk-price ${priceCls}">${stk.price ? stk.price.toFixed(2) : '--'}</span>
+          </div>
+          <div class="sf-stk-sub">
+            <span class="sf-stk-name">${stk.name}</span>
+            <span class="sf-stk-pct ${priceCls}">${pctSign}${stk.pct ? stk.pct.toFixed(2) : '0.00'}%</span>
+          </div>
+        </a>
+      `;
+    }
+
     sectors.forEach(sec => {
       const hasSubs = sec.subSectors && sec.subSectors.length > 0;
       const hasDirectStocks = !hasSubs && sec.stocks && sec.stocks.length > 0;
@@ -2519,14 +2610,7 @@ const SectorFlowModule = (function () {
       const yPct = totalBreadth > 0 ? ((sec.yellow / totalBreadth) * 100).toFixed(1) : 33;
       const rPct = totalBreadth > 0 ? ((sec.red / totalBreadth) * 100).toFixed(1) : 34;
 
-      const leaderHtml = sec.leader ? `
-        <span class="sf-leader-tag">
-          <span class="sf-leader-sym">${sec.leader.ticker}</span>
-          <span class="sf-leader-pts ${sec.leader.pts >= 0 ? 'sf-up' : 'sf-down'}">
-            ${sec.leader.pts >= 0 ? '+' : ''}${sec.leader.pts.toFixed(2)}
-          </span>
-        </span>
-      ` : '<span style="color:#475569">—</span>';
+      const leaderHtml = createLeaderTag(sec.leader);
 
       const parentTr = document.createElement('tr');
       parentTr.className = 'sf-parent-row';
@@ -2539,6 +2623,7 @@ const SectorFlowModule = (function () {
           <span>${sec.name}</span>
           <span class="sf-count-badge">${sec.count || ''}</span>
         </td>
+        <td style="text-align: center;">${leaderHtml}</td>
         <td style="text-align: right;">${formatPct(sec.today)}</td>
         <td style="text-align: right;" class="sf-hide-mobile">${formatPct(sec.w1)}</td>
         <td style="text-align: right;" class="sf-hide-mobile">${formatPct(sec.m1)}</td>
@@ -2556,7 +2641,6 @@ const SectorFlowModule = (function () {
             </span>
           </div>
         </td>
-        <td style="text-align: center;">${leaderHtml}</td>
       `;
       tbody.appendChild(parentTr);
 
@@ -2568,14 +2652,7 @@ const SectorFlowModule = (function () {
           const syPct = subTotal > 0 ? ((sub.yellow / subTotal) * 100).toFixed(1) : 33;
           const srPct = subTotal > 0 ? ((sub.red / subTotal) * 100).toFixed(1) : 34;
 
-          const subLeader = sub.leader ? `
-            <span class="sf-leader-tag">
-              <span class="sf-leader-sym">${sub.leader.ticker}</span>
-              <span class="sf-leader-pts ${sub.leader.pts >= 0 ? 'sf-up' : 'sf-down'}">
-                ${sub.leader.pts >= 0 ? '+' : ''}${sub.leader.pts.toFixed(2)}
-              </span>
-            </span>
-          ` : '<span style="color:#475569">—</span>';
+          const subLeader = createLeaderTag(sub.leader);
 
           const subTr = document.createElement('tr');
           subTr.className = `sf-sub-row sf-sub-of-${sec.id}`;
@@ -2588,6 +2665,7 @@ const SectorFlowModule = (function () {
               <span>${sub.name}</span>
               <span class="sf-count-badge">${sub.count || ''}</span>
             </td>
+            <td style="text-align: center;">${subLeader}</td>
             <td style="text-align: right;">${formatPct(sub.today)}</td>
             <td style="text-align: right;" class="sf-hide-mobile">${formatPct(sub.w1)}</td>
             <td style="text-align: right;" class="sf-hide-mobile">${formatPct(sub.m1)}</td>
@@ -2605,30 +2683,18 @@ const SectorFlowModule = (function () {
                 </span>
               </div>
             </td>
-            <td style="text-align: center;">${subLeader}</td>
           `;
           tbody.appendChild(subTr);
 
-          // Render stock chips for subsector
+          // Component stocks of subsector
           if (sub.stocks && sub.stocks.length > 0) {
-            const chipsTr = document.createElement('tr');
-            chipsTr.className = `sf-stocks-row sf-stocks-of-${sec.id}`;
-            chipsTr.id = `sf-stocks-${sub.id}`;
+            const stkTr = document.createElement('tr');
+            stkTr.className = `sf-stocks-row sf-stocks-of-${sub.id}`;
+            stkTr.id = `sf-stocks-${sub.id}`;
 
-            const chipsHtml = sub.stocks.map(stk => `
-              <a href="https://fireant.vn/ma-chung-khoan/${stk.ticker}" target="_blank" rel="noopener" class="sf-stock-card">
-                <div class="sf-stk-top">
-                  <span class="sf-stk-sym"><i class="fa-solid fa-arrow-trend-up" style="font-size:0.75rem; color:#60a5fa;"></i> ${stk.ticker}</span>
-                  <span class="sf-stk-price ${stk.pct > 0 ? 'sf-up' : (stk.pct < 0 ? 'sf-down' : 'sf-ref')}">${stk.price ? stk.price.toFixed(2) : '--'}</span>
-                </div>
-                <div class="sf-stk-sub">
-                  <span class="sf-stk-name" title="${stk.name}">${stk.name}</span>
-                  <span class="sf-stk-pct">${formatStockPct(stk.pct)}</span>
-                </div>
-              </a>
-            `).join('');
+            const chips = sub.stocks.map(stk => createStockChip(stk)).join('');
 
-            chipsTr.innerHTML = `
+            stkTr.innerHTML = `
               <td colspan="8" style="padding: 0;">
                 <div class="sf-stocks-wrapper">
                   <div class="sf-stocks-header">
@@ -2636,36 +2702,25 @@ const SectorFlowModule = (function () {
                     <span class="sf-stocks-standard"><i class="fa-solid fa-filter"></i> Tiêu chuẩn: Top cổ phiếu lớn nhất theo Vốn hóa & Thanh khoản</span>
                   </div>
                   <div class="sf-stocks-grid">
-                    ${chipsHtml}
+                    ${chips}
                   </div>
                 </div>
               </td>
             `;
-            tbody.appendChild(chipsTr);
+            tbody.appendChild(stkTr);
           }
         });
       }
 
-      // Direct stocks for sectors with NO subsectors (e.g., Ngân hàng)
+      // Direct component stocks for supersectors without subsectors (e.g. Ngân hàng)
       if (hasDirectStocks) {
-        const directTr = document.createElement('tr');
-        directTr.className = `sf-stocks-row sf-stocks-of-${sec.id}`;
-        directTr.id = `sf-direct-stocks-${sec.id}`;
+        const stkTr = document.createElement('tr');
+        stkTr.className = `sf-stocks-row sf-stocks-of-${sec.id}`;
+        stkTr.id = `sf-stocks-${sec.id}`;
 
-        const directChipsHtml = sec.stocks.map(stk => `
-          <a href="https://fireant.vn/ma-chung-khoan/${stk.ticker}" target="_blank" rel="noopener" class="sf-stock-card">
-            <div class="sf-stk-top">
-              <span class="sf-stk-sym"><i class="fa-solid fa-arrow-trend-up" style="font-size:0.75rem; color:#60a5fa;"></i> ${stk.ticker}</span>
-              <span class="sf-stk-price ${stk.pct > 0 ? 'sf-up' : (stk.pct < 0 ? 'sf-down' : 'sf-ref')}">${stk.price ? stk.price.toFixed(2) : '--'}</span>
-            </div>
-            <div class="sf-stk-sub">
-              <span class="sf-stk-name" title="${stk.name}">${stk.name}</span>
-              <span class="sf-stk-pct">${formatStockPct(stk.pct)}</span>
-            </div>
-          </a>
-        `).join('');
+        const chips = sec.stocks.map(stk => createStockChip(stk)).join('');
 
-        directTr.innerHTML = `
+        stkTr.innerHTML = `
           <td colspan="8" style="padding: 0;">
             <div class="sf-stocks-wrapper">
               <div class="sf-stocks-header">
@@ -2673,12 +2728,12 @@ const SectorFlowModule = (function () {
                 <span class="sf-stocks-standard"><i class="fa-solid fa-filter"></i> Tiêu chuẩn: Top cổ phiếu lớn nhất theo Vốn hóa & Thanh khoản</span>
               </div>
               <div class="sf-stocks-grid">
-                ${directChipsHtml}
+                ${chips}
               </div>
             </div>
           </td>
         `;
-        tbody.appendChild(directTr);
+        tbody.appendChild(stkTr);
       }
     });
   }
