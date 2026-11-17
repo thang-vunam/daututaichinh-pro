@@ -5,12 +5,30 @@ export const config = {
   regions: ['sin1'],
 };
 
+// Danh sách toàn bộ các mã cổ phiếu thành phần cần kéo giá Realtime
+const ALL_TICKERS = [
+  'ACB', 'ACV', 'ADG', 'ANV', 'BFC', 'BHN', 'BID', 'BMI', 'BMP', 'BSR', 
+  'BVH', 'BWE', 'CAR', 'CC1', 'CII', 'CLC', 'CMG', 'CNG', 'CRE', 'CSM', 
+  'CSV', 'CTD', 'CTG', 'CTR', 'DAH', 'DCL', 'DCM', 'DGC', 'DGW', 'DHG', 
+  'DHP', 'DIG', 'DPM', 'DRC', 'DXG', 'DXS', 'EID', 'ELC', 'FIT', 'FOX', 
+  'FPT', 'FRT', 'GAS', 'GEE', 'GEG', 'GEX', 'GIL', 'GMD', 'GVR', 'HAH', 
+  'HAP', 'HCM', 'HHS', 'HHV', 'HNG', 'HPG', 'HSG', 'HT1', 'HTL', 'HVN', 
+  'IMP', 'INN', 'IPA', 'JVC', 'KDC', 'KDH', 'KHG', 'KSB', 'KSV', 'LIX', 
+  'MBB', 'MCH', 'MIG', 'MSH', 'MSN', 'MSR', 'MWG', 'NBC', 'NET', 'NKG', 
+  'NLG', 'NT2', 'NVL', 'OCH', 'PDR', 'PET', 'PGV', 'PNJ', 'POW', 'PVB', 
+  'PVC', 'PVD', 'PVI', 'PVS', 'PVT', 'QNS', 'REE', 'SAB', 'SAM', 'SAV', 
+  'SBT', 'SHS', 'SKG', 'SMB', 'SSI', 'STB', 'STC', 'TCB', 'TCM', 'TCX', 
+  'TDM', 'THD', 'TLG', 'TNG', 'TNH', 'TRA', 'TTN', 'TVC', 'VCB', 'VCG', 
+  'VCI', 'VCS', 'VEF', 'VGC', 'VGI', 'VGS', 'VHC', 'VHM', 'VIC', 'VIP', 
+  'VIX', 'VJC', 'VNB', 'VND', 'VNM', 'VOS', 'VPB', 'VSC', 'VTC'
+];
+
 export default async function handler(req) {
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Cache-Control': 's-maxage=15, stale-while-revalidate=30'
+    'Cache-Control': 's-maxage=10, stale-while-revalidate=20'
   };
 
   if (req.method === 'OPTIONS') {
@@ -18,90 +36,79 @@ export default async function handler(req) {
   }
 
   try {
-    // 1. Thử kéo dữ liệu live từ endpoint thị trường
-    // Nếu có mạng và nguồn phản hồi tốt, đồng bộ % thay đổi và độ rộng
-    let liveData = JSON.parse(JSON.stringify(FIREANT_FULL_SECTORS));
+    let sectors = JSON.parse(JSON.stringify(FIREANT_FULL_SECTORS));
 
+    // Kéo dữ liệu giá trực tiếp từ Cổng dữ liệu khớp lệnh Realtime
     try {
-      const resp = await fetch('https://restv2.fireant.vn/icb/latest-index', {
+      const liveResp = await fetch(`https://bgapidatafeed.vps.com.vn/getliststockdata/${ALL_TICKERS.join(',')}`, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)',
-          'Referer': 'https://fireant.vn/'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         },
-        signal: AbortSignal.timeout(3500)
+        signal: AbortSignal.timeout(2800)
       });
 
-      if (resp.ok) {
-        const rawItems = await resp.json();
-        if (Array.isArray(rawItems) && rawItems.length > 0) {
-          const indexMap = {};
-          rawItems.forEach(item => {
-            if (item.industryCode && item.indexValues) {
-              const v = item.indexValues;
-              const close = v.IndexClose || 0;
-              const prev = v.IndexPrev || 0;
-              const pct = prev > 0 ? ((close - prev) / prev) * 100 : 0;
-              indexMap[item.industryCode] = {
-                pct: parseFloat(pct.toFixed(2)),
-                close,
-                prev,
-                vol: v.Volume || 0,
-                mcap: v.MarketCap || 0
-              };
-            }
+      if (liveResp.ok) {
+        const liveStocks = await liveResp.json();
+        if (Array.isArray(liveStocks) && liveStocks.length > 0) {
+          const priceMap = {};
+          liveStocks.forEach(item => {
+            const sym = item.sym;
+            const last = item.lastPrice || item.r || 0;
+            const ref = item.r || 0;
+            const pct = ref > 0 ? parseFloat((((last - ref) / ref) * 100).toFixed(2)) : 0;
+            const lot = item.lot || 0;
+            const volStr = lot >= 1000000 ? `${(lot / 1000000).toFixed(1)}M` : (lot >= 1000 ? `${(lot / 1000).toFixed(0)}K` : `${lot}`);
+
+            priceMap[sym] = {
+              price: last,
+              pct: pct,
+              vol: volStr
+            };
           });
 
-          // Cập nhật giá trị vào cây ngành nếu có mã tương ứng
-          const codeMap = {
-            'bds': '3510',
-            'nganhang': '3010',
-            'thucpham': '4510',
-            'taichinh': '3020',
-            'congnghiep': '5020',
-            'hatang': '6510',
-            'dulich': '4050',
-            'tainguyen': '5510',
-            'vienthong': '1510',
-            'banle': '4040',
-            'xaydung': '5010',
-            'nangluong': '6010',
-            'hoachat': '5520',
-            'cntt': '1010',
-            'baohiem': '3030',
-            'suckhoe': '2010',
-            'tieudung': '4020',
-            'cuahang': '4520',
-            'oto': '4010',
-            'truyenthong': '4030'
-          };
+          // Cập nhật giá và % biến động từng cổ phiếu
+          sectors.forEach(sec => {
+            if (sec.stocks) {
+              sec.stocks.forEach(stk => {
+                if (priceMap[stk.ticker]) {
+                  stk.price = priceMap[stk.ticker].price;
+                  stk.pct = priceMap[stk.ticker].pct;
+                  stk.vol = priceMap[stk.ticker].vol;
+                }
+              });
+            }
 
-          liveData.forEach(sec => {
-            const icb = codeMap[sec.id];
-            if (icb && indexMap[icb]) {
-              sec.today = indexMap[icb].pct;
+            if (sec.subSectors) {
+              sec.subSectors.forEach(sub => {
+                if (sub.stocks) {
+                  sub.stocks.forEach(stk => {
+                    if (priceMap[stk.ticker]) {
+                      stk.price = priceMap[stk.ticker].price;
+                      stk.pct = priceMap[stk.ticker].pct;
+                      stk.vol = priceMap[stk.ticker].vol;
+                    }
+                  });
+                }
+              });
             }
           });
         }
       }
-    } catch (fetchErr) {
-      // Fallback êm ái sang dữ liệu chuẩn đã lưu nếu kết nối ngoài chậm
-      console.warn('Realtime fetch fallback:', fetchErr.message);
+    } catch (liveErr) {
+      console.warn('Realtime live stock feed skipped:', liveErr.message);
     }
 
-    const payload = {
+    return new Response(JSON.stringify({
       success: true,
       updatedAt: new Date().toISOString(),
       timestamp: Date.now(),
-      totalSectors: liveData.length,
-      data: liveData
-    };
-
-    return new Response(JSON.stringify(payload), {
+      totalSectors: sectors.length,
+      data: sectors
+    }), {
       status: 200,
       headers
     });
   } catch (error) {
-    // Trả về bản snapshot chuẩn hóa, đảm bảo client KHÔNG BAO GIỜ bị lỗi 500
     return new Response(JSON.stringify({
       success: true,
       isFallback: true,
