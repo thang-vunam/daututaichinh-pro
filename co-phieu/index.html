@@ -11,14 +11,14 @@
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cổng Dữ Liệu & Định Giá Cổ Phiếu VN30 | daututaichinh.pro</title>
+  <title>Bản đồ sức mạnh nhóm ngành & Định giá cổ phiếu VN30 | daututaichinh.pro</title>
   <meta name="description" content="Tra cứu dữ liệu tài chính, chỉ số P/E, P/B, EPS, BVPS và công cụ Mini Calculator định giá giá trị thực cho toàn bộ 30 cổ phiếu thuộc rổ chỉ số VN30." />
   <meta name="keywords" content="định giá cổ phiếu VN30, dữ liệu tài chính VN30, tra cứu cổ phiếu, P/E VN30, BCTC VN30, Mini Calculator cổ phiếu" />
   <link rel="canonical" href="https://www.daututaichinh.pro/co-phieu/" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Cổng Dữ Liệu & Định Giá Cổ Phiếu VN30 | daututaichinh.pro" />
+  <meta property="og:title" content="Bản đồ sức mạnh nhóm ngành & Định giá cổ phiếu VN30 | daututaichinh.pro" />
   <meta property="og:description" content="Tra cứu chỉ số P/E, P/B, EPS, BVPS và công cụ Mini Calculator định giá thực tế cho 30 cổ phiếu VN30." />
   <meta property="og:url" content="https://www.daututaichinh.pro/co-phieu/" />
   <meta property="og:image" content="https://www.daututaichinh.pro/logo.png" />
@@ -880,11 +880,8 @@
 
   <!-- HERO SECTION -->
   <section class="hub-hero">
-    <span class="hub-badge" id="hub-main-badge">🚀 Phân Tích Dòng Tiền & Sức Mạnh Ngành</span>
-    <h1 class="hub-title" id="hub-main-title">Bản Đồ Dòng Tiền & Sức Mạnh 20 Nhóm Ngành ICB</h1>
-    <p class="hub-sub" id="hub-main-sub">
-      Hệ thống phân cấp đa tầng Chuẩn ICB FireAnt (20 Nhóm ngành L2 & Ngành con L3/L4) • Giám sát độ rộng thị trường, dòng tiền luân chuyển và các cổ phiếu dẫn dắt Realtime.
-    </p>
+    <span class="hub-badge" id="hub-main-badge">🚀 Data Hub & Định Giá Chuyên Sâu</span>
+    <h1 class="hub-title" id="hub-main-title">Bản đồ sức mạnh nhóm ngành & Định giá cổ phiếu VN30</h1>
   </section>
 
   <!-- MASTER TAB BAR NAVIGATION -->
@@ -1606,10 +1603,6 @@ function switchDataTab(tab, updateHash = true) {
   const btnStocks = document.getElementById('tab-btn-stocks');
   const viewSectors = document.getElementById('view-sectors');
   const viewStocks = document.getElementById('view-stocks');
-
-  const mainBadge = document.getElementById('hub-main-badge');
-  const mainTitle = document.getElementById('hub-main-title');
-  const mainSub = document.getElementById('hub-main-sub');
   const breadcrumbCurrent = document.getElementById('hub-breadcrumb-current');
 
   if (tab === 'sectors') {
@@ -1624,10 +1617,6 @@ function switchDataTab(tab, updateHash = true) {
     if (viewSectors) viewSectors.style.display = 'block';
     if (viewStocks) viewStocks.style.display = 'none';
 
-    // Cập nhật tiêu đề hoàn toàn thuần túy cho Bản đồ 20 Nhóm ngành
-    if (mainBadge) mainBadge.innerHTML = '🚀 Phân Tích Dòng Tiền & Sức Mạnh Ngành';
-    if (mainTitle) mainTitle.innerText = 'Bản Đồ Dòng Tiền & Sức Mạnh 20 Nhóm Ngành ICB';
-    if (mainSub) mainSub.innerText = 'Hệ thống phân cấp đa tầng Chuẩn ICB FireAnt (20 Nhóm ngành L2 & Ngành con L3/L4) • Giám sát độ rộng thị trường, dòng tiền luân chuyển và các cổ phiếu dẫn dắt Realtime.';
     if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Bản Đồ 20 Nhóm Ngành ICB';
 
     if (updateHash && window.history && window.history.replaceState) {
@@ -1645,10 +1634,6 @@ function switchDataTab(tab, updateHash = true) {
     if (viewSectors) viewSectors.style.display = 'none';
     if (viewStocks) viewStocks.style.display = 'block';
 
-    // Cập nhật tiêu đề chuyên biệt cho Hồ sơ & Định giá VN30
-    if (mainBadge) mainBadge.innerHTML = '🚀 Định Giá Chuyên Sâu & Tra Cứu Tài Chính';
-    if (mainTitle) mainTitle.innerText = 'Hồ Sơ & Công Cụ Định Giá 30 Cổ Phiếu Trụ Cột VN30';
-    if (mainSub) mainSub.innerText = 'Cổng tra cứu chỉ số tài chính (P/E, P/B, EPS, BVPS, Vốn hóa) và công cụ Mini Calculator định giá trực quan theo kịch bản lợi nhuận độc quyền từ daututaichinh.pro.';
     if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Định Giá Cổ Phiếu VN30';
 
     if (updateHash && window.history && window.history.replaceState) {
