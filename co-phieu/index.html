@@ -341,43 +341,82 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style id="sector-flow-styles">
   /* ==========================================================
-     MODULE: REALTIME ICB SECTOR FLOW & MARKET BREADTH MATRIX
-     Namespace: #sector-flow-wrapper, .sf-* (Zero side effects)
+     MASTER TABS & WORKSPACE NAVIGATION
      ========================================================== */
   .hub-tab-bar {
     display: flex;
     gap: 12px;
-    margin: 20px 0 24px 0;
+    margin: 24px 0 28px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding-bottom: 12px;
+    padding-bottom: 16px;
     flex-wrap: wrap;
   }
   .hub-tab-btn {
-    background: rgba(15, 23, 42, 0.6);
+    flex: 1 1 240px;
+    background: rgba(15, 23, 42, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #94a3b8;
-    padding: 10px 18px;
-    border-radius: 10px;
-    font-size: 0.92rem;
-    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    user-select: none;
   }
   .hub-tab-btn:hover {
     color: #f1f5f9;
-    background: rgba(30, 41, 59, 0.8);
+    background: rgba(30, 41, 59, 0.85);
     border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
   }
   .hub-tab-btn.active {
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.25), rgba(59, 130, 246, 0.15));
     border-color: #3b82f6;
     color: #60a5fa;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+  }
+  .hub-tab-tag {
+    font-size: 0.7rem;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .hub-tab-btn.active .hub-tab-tag.tag-realtime {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+  .hub-tab-btn:not(.active) .hub-tab-tag.tag-realtime {
+    background: rgba(255, 255, 255, 0.06);
+    color: #64748b;
+  }
+  .hub-tab-btn.active .hub-tab-tag.tag-vn30 {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.4);
+  }
+  .hub-tab-btn:not(.active) .hub-tab-tag.tag-vn30 {
+    background: rgba(255, 255, 255, 0.06);
+    color: #64748b;
   }
 
+  /* WORKSPACE WRAPPERS */
+  #view-sectors, #view-stocks {
+    animation: sfFadeIn 0.25s ease-in-out;
+  }
+  @keyframes sfFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTOR FLOW MODULE STYLING */
   #sector-flow-wrapper {
     background: #070a11;
     border: 1px solid #1e293b;
@@ -739,6 +778,16 @@
 
   /* Responsive Mobile */
   @media (max-width: 900px) {
+    .hub-tab-bar {
+      gap: 8px;
+      margin: 16px 0 20px 0;
+      padding-bottom: 12px;
+    }
+    .hub-tab-btn {
+      flex: 1 1 100%;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+    }
     .sf-hide-mobile {
       display: none !important;
     }
@@ -808,69 +857,77 @@
   <!-- HERO SECTION -->
   <section class="hub-hero">
     <span class="hub-badge">🚀 Data Hub & Định Giá Chuyên Sâu</span>
-    <h1 class="hub-title">Hồ Sơ & Công Cụ Định Giá 30 Cổ Phiếu Trụ Cột VN30</h1>
-    <p class="hub-sub">
-      Cổng tra cứu chỉ số tài chính (P/E, P/B, EPS, BVPS, Vốn hóa) và công cụ Mini Calculator định giá trực quan theo kịch bản lợi nhuận độc quyền từ daututaichinh.pro.
+    <h1 class="hub-title" id="hub-main-title">Trung Tâm Dữ Liệu Thị Trường & Định Giá Cổ Phiếu</h1>
+    <p class="hub-sub" id="hub-main-sub">
+      Hệ thống phân tích dòng tiền 20 nhóm ngành ICB Realtime kết hợp cổng tra cứu chỉ số tài chính và công cụ định giá 30 cổ phiếu trụ cột VN30.
     </p>
   </section>
+
+  <!-- MASTER TAB BAR NAVIGATION -->
+  <div class="hub-tab-bar" role="tablist">
+    <button class="hub-tab-btn active" id="tab-btn-sectors" role="tab" aria-selected="true" onclick="switchDataTab('sectors')">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Bản Đồ 20 Nhóm Ngành ICB</span>
+      <span class="hub-tab-tag tag-realtime"><i class="fa-solid fa-circle" style="font-size:0.5rem; color:#10b981; margin-right:3px;"></i> Realtime</span>
+    </button>
+    <button class="hub-tab-btn" id="tab-btn-stocks" role="tab" aria-selected="false" onclick="switchDataTab('stocks')">
+      <i class="fa-solid fa-calculator"></i>
+      <span>Hồ Sơ & Định Giá Cổ Phiếu VN30</span>
+      <span class="hub-tab-tag tag-vn30">30 Mã Trụ Cột</span>
+    </button>
+  </div>
 
   <!-- CONTROLS: SEARCH + SECTOR FILTER -->
   <div class="controls-panel">
     
-  <!-- TAB BAR NAVIGATION -->
-  <div class="hub-tab-bar">
-    <button class="hub-tab-btn active" id="tab-btn-sectors" onclick="switchDataTab('sectors')">
-      <i class="fa-solid fa-layer-group"></i> Bản đồ 20 Nhóm ngành ICB
-    </button>
-    <button class="hub-tab-btn" id="tab-btn-stocks" onclick="switchDataTab('stocks')">
-      <i class="fa-solid fa-table-list"></i> Bảng Lọc Cổ Phiếu Tinh Gọn
-    </button>
-  </div>
-
-  <!-- SECTION 1: REALTIME ICB SECTOR FLOW & MARKET BREADTH MATRIX -->
-  <section id="sector-flow-wrapper">
-    <div class="sf-header">
-      <div class="sf-title-box">
-        <h2>
-          <span>Bản đồ Dòng tiền & Sức mạnh 20 Nhóm ngành ICB</span>
-          <span class="sf-badge-live"><span class="sf-pulse-dot"></span> LIVE REALTIME</span>
-        </h2>
-        <p>Phân cấp đa tầng Chuẩn ICB FireAnt (20 Nhóm ngành L2 & Ngành con L3/L4) • Nhấp vào từng dòng để mở rộng ngành con & top cổ phiếu trụ cột</p>
-      </div>
-
-      <div class="sf-controls">
-        <div class="sf-search-wrap">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="sf-search-input" placeholder="Tìm ngành, mã CP..." oninput="SectorFlowModule.filter(this.value)">
+  <!-- WORKSPACE 1: REALTIME ICB SECTOR FLOW & MARKET BREADTH MATRIX -->
+  <section id="view-sectors" class="hub-tab-content">
+    <div id="sector-flow-wrapper">
+      <div class="sf-header">
+        <div class="sf-title-box">
+          <h2>
+            <span>Bản đồ Dòng tiền & Sức mạnh 20 Nhóm ngành ICB</span>
+            <span class="sf-badge-live"><span class="sf-pulse-dot"></span> LIVE REALTIME</span>
+          </h2>
+          <p>Phân cấp đa tầng Chuẩn ICB FireAnt (20 Nhóm ngành L2 & Ngành con L3/L4) • Nhấp vào từng dòng để mở rộng ngành con & top cổ phiếu trụ cột</p>
         </div>
-        <div style="font-size:0.75rem; color:#64748b; font-family:'JetBrains Mono', monospace;" id="sf-clock-txt">
-          Cập nhật: --:--:--
+
+        <div class="sf-controls">
+          <div class="sf-search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="sf-search-input" placeholder="Tìm ngành, mã CP..." oninput="SectorFlowModule.filter(this.value)">
+          </div>
+          <div style="font-size:0.75rem; color:#64748b; font-family:'JetBrains Mono', monospace;" id="sf-clock-txt">
+            Cập nhật: --:--:--
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="sf-table-container">
-      <table class="sf-table" id="sf-table">
-        <thead>
-          <tr>
-            <th style="min-width: 220px;">NGÀNH</th>
-            <th style="text-align: right;">HÔM NAY</th>
-            <th style="text-align: right;" class="sf-hide-mobile">1T</th>
-            <th style="text-align: right;" class="sf-hide-mobile">1TH</th>
-            <th style="text-align: right;" class="sf-hide-mobile">3TH</th>
-            <th style="text-align: right;" class="sf-hide-mobile">1N</th>
-            <th style="text-align: center; min-width: 170px;">ĐỘ RỘNG</th>
-            <th style="text-align: center; min-width: 110px;">DẪN DẮT</th>
-          </tr>
-        </thead>
-        <tbody id="sf-tbody">
-          <!-- Rendered dynamically by SectorFlowModule -->
-        </tbody>
-      </table>
+      <div class="sf-table-container">
+        <table class="sf-table" id="sf-table">
+          <thead>
+            <tr>
+              <th style="min-width: 220px;">NGÀNH</th>
+              <th style="text-align: right;">HÔM NAY</th>
+              <th style="text-align: right;" class="sf-hide-mobile">1T</th>
+              <th style="text-align: right;" class="sf-hide-mobile">1TH</th>
+              <th style="text-align: right;" class="sf-hide-mobile">3TH</th>
+              <th style="text-align: right;" class="sf-hide-mobile">1N</th>
+              <th style="text-align: center; min-width: 170px;">ĐỘ RỘNG</th>
+              <th style="text-align: center; min-width: 110px;">DẪN DẮT</th>
+            </tr>
+          </thead>
+          <tbody id="sf-tbody">
+            <!-- Rendered dynamically by SectorFlowModule -->
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
 
+  <!-- WORKSPACE 2: VN30 STOCKS PROFILE & MINI CALCULATOR VALUATION -->
+  <section id="view-stocks" class="hub-tab-content" style="display: none;">
     <div class="search-box-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="filter-search" placeholder="Tìm kiếm nhanh mã CP hoặc tên công ty (VD: SSI, HPG, FPT, VCB...)..." oninput="applyFilters()" />
@@ -1348,6 +1405,8 @@
       </tbody>
     </table>
   </div>
+
+  </section>
 </main>
 
 <!-- FOOTER -->
@@ -1499,27 +1558,56 @@
 
 <script>
 // ==========================================================
-// TAB SWITCHER (Zero Impact on Existing Stocks Table)
+// MASTER WORKSPACE TAB SWITCHER (Zero Impact / Seamless State)
 // ==========================================================
-function switchDataTab(tab) {
+function switchDataTab(tab, updateHash = true) {
   const btnSectors = document.getElementById('tab-btn-sectors');
   const btnStocks = document.getElementById('tab-btn-stocks');
-  const secFlow = document.getElementById('sector-flow-wrapper');
-  const stocksTable = document.getElementById('stocks-table');
-  const filterBox = document.querySelector('.filter-container');
-  const searchBox = document.querySelector('.search-wrapper');
-  const filterPills = document.querySelector('.filter-pills');
+  const viewSectors = document.getElementById('view-sectors');
+  const viewStocks = document.getElementById('view-stocks');
 
   if (tab === 'sectors') {
-    if (btnSectors) btnSectors.classList.add('active');
-    if (btnStocks) btnStocks.classList.remove('active');
-    if (secFlow) secFlow.style.display = 'block';
+    if (btnSectors) {
+      btnSectors.classList.add('active');
+      btnSectors.setAttribute('aria-selected', 'true');
+    }
+    if (btnStocks) {
+      btnStocks.classList.remove('active');
+      btnStocks.setAttribute('aria-selected', 'false');
+    }
+    if (viewSectors) viewSectors.style.display = 'block';
+    if (viewStocks) viewStocks.style.display = 'none';
+
+    if (updateHash && window.history && window.history.replaceState) {
+      window.history.replaceState(null, null, '#nganh-nghe');
+    }
   } else {
-    if (btnSectors) btnSectors.classList.remove('active');
-    if (btnStocks) btnStocks.classList.add('active');
-    if (secFlow) secFlow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (btnSectors) {
+      btnSectors.classList.remove('active');
+      btnSectors.setAttribute('aria-selected', 'false');
+    }
+    if (btnStocks) {
+      btnStocks.classList.add('active');
+      btnStocks.setAttribute('aria-selected', 'true');
+    }
+    if (viewSectors) viewSectors.style.display = 'none';
+    if (viewStocks) viewStocks.style.display = 'block';
+
+    if (updateHash && window.history && window.history.replaceState) {
+      window.history.replaceState(null, null, '#dinh-gia');
+    }
   }
 }
+
+// Initialize Tab from URL Hash
+window.addEventListener('DOMContentLoaded', function () {
+  const hash = window.location.hash;
+  if (hash === '#dinh-gia' || hash === '#vn30' || hash === '#co-phieu') {
+    switchDataTab('stocks', false);
+  } else {
+    switchDataTab('sectors', false);
+  }
+});
 
 // ==========================================================
 // MODULE: REALTIME ICB SECTOR FLOW ENGINE (Self-Contained)
