@@ -346,7 +346,7 @@
   .hub-tab-bar {
     display: flex;
     gap: 12px;
-    margin: 24px 0 28px 0;
+    margin: 20px 0 24px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding-bottom: 16px;
     flex-wrap: wrap;
@@ -356,7 +356,7 @@
     background: rgba(15, 23, 42, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #94a3b8;
-    padding: 12px 20px;
+    padding: 13px 20px;
     border-radius: 12px;
     font-size: 0.95rem;
     font-weight: 700;
@@ -383,9 +383,9 @@
   }
   .hub-tab-tag {
     font-size: 0.7rem;
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: 20px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.02em;
   }
   .hub-tab-btn.active .hub-tab-tag.tag-realtime {
@@ -433,22 +433,9 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 16px;
-    margin-bottom: 20px;
-  }
-  .sf-title-box h2 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #f8fafc;
-    margin: 0 0 4px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    letter-spacing: -0.01em;
-  }
-  .sf-title-box p {
-    font-size: 0.82rem;
-    color: #94a3b8;
-    margin: 0;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .sf-controls {
@@ -851,15 +838,15 @@
   <nav class="breadcrumbs" aria-label="Breadcrumb">
     <a href="/">Trang chủ</a>
     <span>&rsaquo;</span>
-    <span style="color:#f1f5f9; font-weight:600;">Data Hub: Cổ Phiếu VN30</span>
+    <span id="hub-breadcrumb-current" style="color:#f1f5f9; font-weight:600;">Bản Đồ 20 Nhóm Ngành ICB</span>
   </nav>
 
   <!-- HERO SECTION -->
   <section class="hub-hero">
-    <span class="hub-badge">🚀 Data Hub & Định Giá Chuyên Sâu</span>
-    <h1 class="hub-title" id="hub-main-title">Trung Tâm Dữ Liệu Thị Trường & Định Giá Cổ Phiếu</h1>
+    <span class="hub-badge" id="hub-main-badge">🚀 Phân Tích Dòng Tiền & Sức Mạnh Ngành</span>
+    <h1 class="hub-title" id="hub-main-title">Bản Đồ Dòng Tiền & Sức Mạnh 20 Nhóm Ngành ICB</h1>
     <p class="hub-sub" id="hub-main-sub">
-      Hệ thống phân tích dòng tiền 20 nhóm ngành ICB Realtime kết hợp cổng tra cứu chỉ số tài chính và công cụ định giá 30 cổ phiếu trụ cột VN30.
+      Hệ thống phân cấp đa tầng Chuẩn ICB FireAnt (20 Nhóm ngành L2 & Ngành con L3/L4) • Giám sát độ rộng thị trường, dòng tiền luân chuyển và các cổ phiếu dẫn dắt Realtime.
     </p>
   </section>
 
@@ -885,11 +872,10 @@
     <div id="sector-flow-wrapper">
       <div class="sf-header">
         <div class="sf-title-box">
-          <h2>
-            <span>Bản đồ Dòng tiền & Sức mạnh 20 Nhóm ngành ICB</span>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
             <span class="sf-badge-live"><span class="sf-pulse-dot"></span> LIVE REALTIME</span>
-          </h2>
-          <p>Phân cấp đa tầng Chuẩn ICB FireAnt (20 Nhóm ngành L2 & Ngành con L3/L4) • Nhấp vào từng dòng để mở rộng ngành con & top cổ phiếu trụ cột</p>
+            <span style="font-size:0.82rem; color:#94a3b8;"><i class="fa-solid fa-circle-info" style="color:#38bdf8;"></i> Nhấp vào từng dòng để mở rộng ngành con & top cổ phiếu trụ cột</span>
+          </div>
         </div>
 
         <div class="sf-controls">
@@ -1558,13 +1544,18 @@
 
 <script>
 // ==========================================================
-// MASTER WORKSPACE TAB SWITCHER (Zero Impact / Seamless State)
+// MASTER WORKSPACE TAB SWITCHER (Zero Cross-Contamination)
 // ==========================================================
 function switchDataTab(tab, updateHash = true) {
   const btnSectors = document.getElementById('tab-btn-sectors');
   const btnStocks = document.getElementById('tab-btn-stocks');
   const viewSectors = document.getElementById('view-sectors');
   const viewStocks = document.getElementById('view-stocks');
+
+  const mainBadge = document.getElementById('hub-main-badge');
+  const mainTitle = document.getElementById('hub-main-title');
+  const mainSub = document.getElementById('hub-main-sub');
+  const breadcrumbCurrent = document.getElementById('hub-breadcrumb-current');
 
   if (tab === 'sectors') {
     if (btnSectors) {
@@ -1577,6 +1568,12 @@ function switchDataTab(tab, updateHash = true) {
     }
     if (viewSectors) viewSectors.style.display = 'block';
     if (viewStocks) viewStocks.style.display = 'none';
+
+    // Cập nhật tiêu đề hoàn toàn thuần túy cho Bản đồ 20 Nhóm ngành (Không dính VN30)
+    if (mainBadge) mainBadge.innerHTML = '🚀 Phân Tích Dòng Tiền & Sức Mạnh Ngành';
+    if (mainTitle) mainTitle.innerText = 'Bản Đồ Dòng Tiền & Sức Mạnh 20 Nhóm Ngành ICB';
+    if (mainSub) mainSub.innerText = 'Hệ thống phân cấp đa tầng Chuẩn ICB FireAnt (20 Nhóm ngành L2 & Ngành con L3/L4) • Giám sát độ rộng thị trường, dòng tiền luân chuyển và các cổ phiếu dẫn dắt Realtime.';
+    if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Bản Đồ 20 Nhóm Ngành ICB';
 
     if (updateHash && window.history && window.history.replaceState) {
       window.history.replaceState(null, null, '#nganh-nghe');
@@ -1592,6 +1589,12 @@ function switchDataTab(tab, updateHash = true) {
     }
     if (viewSectors) viewSectors.style.display = 'none';
     if (viewStocks) viewStocks.style.display = 'block';
+
+    // Cập nhật tiêu đề chuyên biệt cho Hồ sơ & Định giá VN30
+    if (mainBadge) mainBadge.innerHTML = '🚀 Định Giá Chuyên Sâu & Tra Cứu Tài Chính';
+    if (mainTitle) mainTitle.innerText = 'Hồ Sơ & Công Cụ Định Giá 30 Cổ Phiếu Trụ Cột VN30';
+    if (mainSub) mainSub.innerText = 'Cổng tra cứu chỉ số tài chính (P/E, P/B, EPS, BVPS, Vốn hóa) và công cụ Mini Calculator định giá trực quan theo kịch bản lợi nhuận độc quyền từ daututaichinh.pro.';
+    if (breadcrumbCurrent) breadcrumbCurrent.innerText = 'Định Giá Cổ Phiếu VN30';
 
     if (updateHash && window.history && window.history.replaceState) {
       window.history.replaceState(null, null, '#dinh-gia');
