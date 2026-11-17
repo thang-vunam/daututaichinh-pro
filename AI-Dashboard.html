@@ -10573,6 +10573,7 @@ main {
         function generateSlug(text, category) {
             if (!text) return (category === 'market' ? 'nhan-dinh-thi-truong-' : 'bai-viet-') + new Date().toISOString().split('T')[0];
             let s = text.toLowerCase()
+                .replace(/\//g, '-')
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '')
                 .replace(/đ/g, 'd')
