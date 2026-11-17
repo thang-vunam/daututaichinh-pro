@@ -2773,7 +2773,7 @@ const SectorFlowModule = (function () {
       if (hasDirectStocks) {
         const stkTr = document.createElement('tr');
         stkTr.className = `sf-stocks-row sf-stocks-of-${sec.id}`;
-        stkTr.id = `sf-stocks-${sec.id}`;
+        stkTr.id = `sf-direct-stocks-${sec.id}`;
 
         const chips = sec.stocks.map(stk => createStockChip(stk)).join('');
 
@@ -2801,7 +2801,7 @@ const SectorFlowModule = (function () {
     if (!parent) return;
     const isExpanded = parent.classList.contains('expanded');
     const subRows = document.querySelectorAll(`.sf-sub-of-${secId}`);
-    const directStocks = document.getElementById(`sf-direct-stocks-${secId}`);
+    const directStocks = document.getElementById(`sf-direct-stocks-${secId}`) || document.getElementById(`sf-stocks-${secId}`);
 
     if (isExpanded) {
       parent.classList.remove('expanded');
