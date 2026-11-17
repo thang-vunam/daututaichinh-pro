@@ -812,8 +812,44 @@
       padding: 10px 14px;
       font-size: 0.88rem;
     }
+    /* Mobile: Keep all timeframe columns (1T, 1TH, 3TH, 1N) with smooth horizontal scrolling & sticky Sector name */
     .sf-hide-mobile {
-      display: none !important;
+      display: table-cell !important;
+    }
+    .sf-table-container {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+    .sf-table th:first-child,
+    .sf-table td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 10;
+      box-shadow: 3px 0 8px rgba(0, 0, 0, 0.5);
+    }
+    .sf-table thead th:first-child {
+      z-index: 25;
+      background: #0d1527 !important;
+    }
+    .sf-parent-row td:first-child {
+      background: #070a12 !important;
+    }
+    .sf-parent-row:hover td:first-child {
+      background: #0d1527 !important;
+    }
+    .sf-sub-row td:first-child {
+      background: #0b1120 !important;
+    }
+    .sf-sub-row:hover td:first-child {
+      background: #0f1a30 !important;
+    }
+    #sf-mobile-floating-table th:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 95;
+      background: #0d1527 !important;
+      box-shadow: 3px 0 8px rgba(0, 0, 0, 0.5);
     }
     .sf-stocks-grid {
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
