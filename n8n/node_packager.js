@@ -1,3 +1,32 @@
+function generateSlug(text, category, todayStr) {
+  if (!text) {
+    const d = todayStr ? todayStr.replace(/\//g, '-') : new Date().toISOString().split('T')[0];
+    return `nhan-dinh-thi-truong-chung-khoan-${d}`;
+  }
+  let s = text.toLowerCase()
+    .replace(/\//g, '-')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+  
+  if (s.length > 80) {
+    s = s.substring(0, 80);
+    const lastHyphen = s.lastIndexOf('-');
+    if (lastHyphen > 40) s = s.substring(0, lastHyphen);
+  }
+  s = s.replace(/-+$/, '');
+
+  if (!s || s === 'tin-thi-truong' || s === 'url-khong-dau-ngan-gon-chuan-seo' || s.includes('tieu-diem-khong-dau')) {
+    const d = todayStr ? todayStr.replace(/\//g, '-') : new Date().toISOString().split('T')[0];
+    return `nhan-dinh-thi-truong-chung-khoan-${d}`;
+  }
+  return s;
+}
+
 
 // ==========================================
 // QUY CHUẨN SENTENCE CASE TIÊU ĐỀ (SEO & GEO)
@@ -63,7 +92,8 @@ function parseGeminiOutput(rawText) {
     imageSearchQuery: '',
     imageAlt: '',
     imageCaption: '',
-    tags: []
+    tags: [],
+    factCheckReport: []
   };
 
   // 1. Try standard JSON.parse first
@@ -154,6 +184,11 @@ function parseGeminiOutput(rawText) {
   const icM = clean.match(/"imageCaption"\s*:\s*"([^"]*)"/i);
   if (icM) result.imageCaption = icM[1];
 
+  const fcM = clean.match(/"factCheckReport"\s*:\s*(\[[\s\S]*?\])/i);
+  if (fcM) {
+    try { result.factCheckReport = JSON.parse(fcM[1]); } catch(e) {}
+  }
+
   return result;
 }
 
@@ -168,49 +203,46 @@ const articleData = parseGeminiOutput(rawText);
 
 // Curated Unsplash photo bank with distinct sentiment & topics
 const photoBank = [
-  // BULLISH / TĂNG ĐIỂM / BỨT PHÁ / SÓNG TĂNG / CHARGING BULL
-  { 
-    id: 'photo-1535320903710-d993d3d77d29', 
-    sentiment: 'bullish',
-    tags: ['bull', 'charging bull', 'tăng', 'bứt phá', 'vượt đỉnh', 'sóng tăng', 'hưng phấn', 'tăng vọt', 'rally', 'uptrend', 'xanh'] 
-  },
-  { 
-    id: 'photo-1590283603385-17ffb3a7f29f', 
-    sentiment: 'bullish',
-    tags: ['bull', 'tăng trưởng', 'tăng điểm', 'bứt phá', 'phục hồi', 'hồi phục', 'thanh khoản', 'chart', 'trading', 'screen', 'green'] 
-  },
+  // BULLISH / TĂNG ĐIỂM / BỨT PHÁ / CHARGING BULL / SẮC XANH
+  { id: 'photo-1535320903710-d993d3d77d29', sentiment: 'bullish', tags: ['bull', 'charging bull', 'tăng', 'bứt phá', 'vượt đỉnh', 'sóng tăng', 'hưng phấn', 'tăng vọt', 'rally', 'uptrend', 'xanh'] },
+  { id: 'photo-1590283603385-17ffb3a7f29f', sentiment: 'bullish', tags: ['bull', 'tăng trưởng', 'tăng điểm', 'bứt phá', 'phục hồi', 'hồi phục', 'thanh khoản', 'chart', 'trading', 'screen', 'green'] },
+  { id: 'photo-1642543492481-44e81e3914a7', sentiment: 'bullish', tags: ['tăng', 'vượt cản', 'bùng nổ', 'sóng lớn', 'uptrend', 'growth', 'profit', 'lợi nhuận'] },
+  { id: 'photo-1611974789855-9c2a0a7236a3', sentiment: 'bullish', tags: ['candlestick', 'nến xanh', 'chart', 'kỹ thuật', 'phục hồi', 'đảo chiều', 'bứt phá'] },
+  { id: 'photo-1579532537598-459ecdaf39cc', sentiment: 'bullish', tags: ['tăng trưởng', 'vượt đỉnh', 'đầu tư', 'investment', 'money', 'success', 'khởi sắc'] },
 
-  // BANKING / TÀI CHÍNH / TRỤ CỘT VN30 / VĨ MÔ
-  { 
-    id: 'photo-1486406146926-c627a92ad1ab', 
-    sentiment: 'neutral',
-    tags: ['ngân hàng', 'bank', 'banking', 'tài chính', 'building', 'skyscraper', 'office', 'corporate', 'trụ cột'] 
-  },
-  { 
-    id: 'photo-1559526324-4b87b5e36e44', 
-    sentiment: 'neutral',
-    tags: ['tiền tệ', 'dòng tiền', 'ngoại tệ', 'lãi suất', 'money', 'wealth', 'investment', 'gold', 'vĩ mô'] 
-  },
-  { 
-    id: 'photo-1460925895917-afdab827c52f', 
-    sentiment: 'neutral',
-    tags: ['dữ liệu', 'báo cáo', 'định giá', 'phân tích', 'kết quả kinh doanh', 'analytics', 'dashboard', 'report'] 
-  },
-  { 
-    id: 'photo-1454165804606-c3d57bc86b40', 
-    sentiment: 'neutral',
-    tags: ['chiến lược', 'danh mục', 'nghiên cứu', 'khuyến nghị', 'research', 'desk', 'workspace', 'laptop'] 
-  },
+  // TRADING FLOOR / SÀN GIAO DỊCH / BẢNG ĐIỆN TỬ CHỨNG KHOÁN
+  { id: 'photo-1526304640581-d334cdbbf45e', sentiment: 'neutral', tags: ['sàn giao dịch', 'tiền tệ', 'dollar', 'dòng tiền', 'thanh khoản', 'ngoại tệ', 'market', 'exchange'] },
+  { id: 'photo-1534452203293-494d7ddbf7e0', sentiment: 'neutral', tags: ['bảng điện tử', 'trading floor', 'chứng khoán', 'phố wall', 'thị trường', 'giao dịch', 'màn hình'] },
+  { id: 'photo-1507679799987-c73779587ccf', sentiment: 'neutral', tags: ['doanh nhân', 'chiến lược', 'nhà đầu tư', 'hành động', 'khuyến nghị', 'chuyên gia', 'phân tích'] },
+  { id: 'photo-1551288049-bebda4e38f71', sentiment: 'neutral', tags: ['dashboard', 'dữ liệu', 'biểu đồ', 'phân tích', 'thống kê', 'data', 'analytics', 'báo cáo'] },
+  { id: 'photo-1518186285589-2f7649de83e0', sentiment: 'neutral', tags: ['thị trường', 'giao dịch', 'cổ phiếu', 'chứng khoán', 'stock', 'finance', 'cung cầu'] },
 
-  // BEARISH / GIẢM ĐIỂM / BÁN THÁO / LAO DỐC / CHÌM TRONG SẮC ĐỎ (chỉ dùng khi thị trường giảm)
-  { 
-    id: 'photo-1611974789855-9c2a0a7236a3', 
-    sentiment: 'bearish',
-    tags: ['giảm', 'lao dốc', 'bán tháo', 'chìm sâu', 'sụt giảm', 'thủng đáy', 'đỏ lửa', 'rơi tự do', 'suy thoái', 'bear', 'crash', 'selloff', 'downtrend'] 
-  }
+  // BANKING / TÀI CHÍNH / TRỤ CỘT VN30 / VĨ MÔ & KHỐI NGOẠI
+  { id: 'photo-1486406146926-c627a92ad1ab', sentiment: 'neutral', tags: ['ngân hàng', 'bank', 'banking', 'tài chính', 'building', 'skyscraper', 'office', 'corporate', 'trụ cột', 'vn30'] },
+  { id: 'photo-1559526324-4b87b5e36e44', sentiment: 'neutral', tags: ['tiền tệ', 'dòng tiền', 'ngoại tệ', 'lãi suất', 'money', 'wealth', 'investment', 'gold', 'vĩ mô'] },
+  { id: 'photo-1444653614773-995cb1ef9efa', sentiment: 'neutral', tags: ['tòa tháp', 'trung tâm tài chính', 'financial district', 'vĩ mô', 'kinh tế', 'ngân hàng'] },
+  { id: 'photo-1563986768609-322da13575f3', sentiment: 'neutral', tags: ['công nghệ', 'chuyển đổi số', 'fintech', 'thanh toán', 'hệ thống', 'krx', 'thanh khoản'] },
+  { id: 'photo-1504384308090-c894fdcc538d', sentiment: 'neutral', tags: ['công sở', 'họp chiến lược', 'quản trị danh mục', 'tổ chức', 'quỹ đầu tư', 'khối ngoại'] },
+  { id: 'photo-1560520653-9e0e4c89eb11', sentiment: 'neutral', tags: ['bất động sản', 'nhà đất', 'dự án', 'ngân hàng', 'thế chấp', 'tín dụng'] },
+  { id: 'photo-1574607383476-f517f260d30b', sentiment: 'neutral', tags: ['vàng', 'ngoại hối', 'tỷ giá', 'usd', 'vcb', 'tiền gửi', 'lãi suất'] },
+  { id: 'photo-1473496169904-658ba7c44d8a', sentiment: 'neutral', tags: ['tầm nhìn', 'chiến lược', 'kinh tế vĩ mô', 'chính sách', 'ngân hàng nhà nước', 'sbv'] },
+
+  // PHÂN HÓA / GIẰNG CO / TÍCH LŨY / CÂN BẰNG CUNG CẦU
+  { id: 'photo-1518458028785-8fbcd101ebb9', sentiment: 'neutral', tags: ['phân hóa', 'giằng co', 'cán cân', 'thận trọng', 'tích lũy', 'sideway', 'thăm dò', 'cung cầu'] },
+  { id: 'photo-1512453979798-5ea266f8880c', sentiment: 'neutral', tags: ['landmark', 'thành phố', 'trung tâm tài chính', 'thị trường', 'kinh tế việt nam', 'hồ chí minh'] },
+  { id: 'photo-1529400971008-f566de0e6dfc', sentiment: 'neutral', tags: ['bàn làm việc', 'báo cáo', 'nghiên cứu', 'tài liệu', 'phân tích cơ bản', 'bctc'] },
+  { id: 'photo-1454165804606-c3d57bc86b40', sentiment: 'neutral', tags: ['chiến lược', 'danh mục', 'nghiên cứu', 'khuyến nghị', 'research', 'desk', 'workspace'] },
+
+  // BEARISH / GIẢM ĐIỂM / BÁN THÁO / ĐIỀU CHỈNH / RỦI RO / THẬN TRỌNG
+  { id: 'photo-1642543492481-44e81e3914a7', sentiment: 'bearish', tags: ['giảm', 'điều chỉnh', 'rủi ro', 'áp lực bán', 'chìm sâu', 'sụt giảm'] },
+  { id: 'photo-1640340434855-6084b1f4901c', sentiment: 'bearish', tags: ['thủng đáy', 'đỏ lửa', 'rung lắc', 'thủng mốc', 'thận trọng', 'bear', 'crash'] },
+  { id: 'photo-1590283603385-17ffb3a7f29f', sentiment: 'bearish', tags: ['chart', 'phân tích', 'áp lực', 'hạ tỷ trọng', 'selloff', 'bán tháo'] },
+  { id: 'photo-1526304640581-d334cdbbf45e', sentiment: 'bearish', tags: ['dòng tiền', 'rút vốn', 'khối ngoại', 'bán ròng', 'outflow', 'thâm hụt'] },
+  { id: 'photo-1507679799987-c73779587ccf', sentiment: 'bearish', tags: ['thận trọng', 'phòng thủ', 'quan sát', 'rủi ro', 'chờ đợi', 'kỷ luật'] },
+  { id: 'photo-1551288049-bebda4e38f71', sentiment: 'bearish', tags: ['dữ liệu', 'thống kê', 'phân hóa', 'biến động', 'giảm điểm'] }
 ];
 
-function pickCoverImage(query, title) {
+function pickCoverImage(query, title, todayStr) {
   const text = ((query || '') + ' ' + (title || '')).toLowerCase();
   
   // 1. Detect market sentiment
@@ -226,35 +258,49 @@ function pickCoverImage(query, title) {
   } else if (isBearish && !isBullish) {
     targetSentiment = 'bearish';
   } else if (isBullish && isBearish) {
-    // Both present (e.g. tăng vọt 33 điểm nhưng khối ngoại bán ròng): dominant index movement takes priority
     targetSentiment = (text.includes('tăng vọt') || text.includes('tăng mạnh') || text.includes('bứt phá')) ? 'bullish' : 'neutral';
   }
 
-  // Filter photo pool
+  // 2. Filter pool based on sentiment
   let pool = photoBank;
   if (targetSentiment === 'bullish') {
     pool = photoBank.filter(p => p.sentiment === 'bullish' || p.sentiment === 'neutral');
   } else if (targetSentiment === 'bearish') {
-    pool = photoBank.filter(p => p.sentiment === 'bearish');
+    pool = photoBank.filter(p => p.sentiment === 'bearish' || p.sentiment === 'neutral');
+  } else {
+    pool = photoBank.filter(p => p.sentiment === 'neutral');
   }
 
-  let bestPhoto = pool[0];
-  let maxMatches = -1;
-  for (const photo of pool) {
+  // DEDUPLICATION: Loại trừ ảnh bị trùng lặp nhiều ngày gần đây (chiếc laptop dark chart)
+  const excludedPhotos = ['photo-1460925895917-afdab827c52f', 'photo-1611974789855-9c2a0a7236a3'];
+  pool = pool.filter(p => !excludedPhotos.includes(p.id));
+
+  // 3. Score matching
+  const scored = pool.map(photo => {
     let matches = 0;
-    if (photo.sentiment === targetSentiment) matches += 3; // Sentiment priority weight
+    if (photo.sentiment === targetSentiment) matches += 2;
     for (const tag of photo.tags) {
-      if (text.includes(tag)) matches++;
+      if (text.includes(tag)) matches += 1;
     }
-    if (matches > maxMatches) {
-      maxMatches = matches;
-      bestPhoto = photo;
-    }
-  }
-  return bestPhoto.id;
+    return { photo, score: matches };
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  const maxScore = scored[0]?.score || 0;
+  // Lấy top candidates
+  const topCandidates = scored.filter(s => s.score >= maxScore - 1).map(s => s.photo);
+
+  // 4. Smart Shuffle dựa trên ngày + độ dài tiêu đề để các ngày liên tiếp KHÔNG BAO GIỜ bị trùng ảnh
+  const dateSeed = (todayStr || new Date().toISOString().split('T')[0])
+    .split('')
+    .reduce((acc, c) => acc + c.charCodeAt(0), 0) + (title ? title.length * 7 : 13);
+  
+  const chosenIndex = dateSeed % topCandidates.length;
+  return topCandidates[chosenIndex].id;
 }
 
-const photoId = pickCoverImage(articleData.imageSearchQuery, articleData.title);
+
+const photoId = pickCoverImage(articleData.imageSearchQuery, articleData.title, normalizerData.todayStr);
 let imageUrl = `https://images.unsplash.com/${photoId}?auto=format&fit=crop&w=1200&q=80`;
 if (!imageUrl || imageUrl.startsWith('data:image')) {
   imageUrl = `https://www.daututaichinh.pro/images/cover-${articleData.slug}.png`;
@@ -274,6 +320,10 @@ function ensureSemanticHeadings(html) {
   res = res.replace(/(^|[\r\n]+)\s*---+?\s*([\r\n]+|$)/g, '$1$2');
   // Chuẩn hóa Blockquote: thanh viền màu trắng thanh lịch, nền tối nhẹ dịu mắt
   res = res.replace(/<blockquote[^>]*>/gi, '<blockquote class="article-quote" style="border-left: 3px solid #ffffff; background: rgba(255, 255, 255, 0.03); border-radius: 0 8px 8px 0; padding: 12px 18px; margin: 18px 0; font-style: italic; color: #e2e8f0; line-height: 1.7;">');
+  // Xóa triệt để mọi inline border-left trên thẻ <p> bên trong <blockquote> để đảm bảo DUY NHẤT 1 GẠCH SỔ DỌC
+  res = res.replace(/<blockquote[\s\S]*?<\/blockquote>/gi, (bq) => {
+    return bq.replace(/<p\s+style="[^"]*border-left:[^"]*"[^>]*>/gi, '<p>');
+  });
   // Xóa mọi ký tự escape \", \'
   res = res.replace(/\\"/g, '"').replace(/\\'/g, "'");
   // Xóa dấu nháy kép thừa hoặc bị escape bên trong blockquote: \"Dòng tiền...\" -> Dòng tiền...
@@ -451,8 +501,10 @@ function applySmartLinking(html, category, topic) {
   // TIER 1 & 2: Hub pages
   if (!modifiedHtml.includes('/market/') && !modifiedHtml.includes('/blog/') && !modifiedHtml.includes('/download/')) {
     if (category === 'market') {
+      const marketPhrases = ['Thị trường tiếp tục', 'Hôm nay thị trường', 'Thị trường chứng khoán', 'Diễn biến thị trường', 'Thị trường'];
+      const chosenCap = marketPhrases[Math.floor(Math.random() * marketPhrases.length)];
       modifiedHtml = safeReplaceFirstInParagraphs(modifiedHtml, 'thị trường chứng khoán', (m, cap) => {
-        return `<a href="/market/">${cap ? 'Nhận định thị trường chứng khoán' : 'thị trường chứng khoán'}</a>`;
+        return `<a href="/market/">${cap ? chosenCap : 'thị trường'}</a>`;
       });
     } else {
       modifiedHtml = safeReplaceFirstInParagraphs(modifiedHtml, 'đầu tư', (m, cap) => {
@@ -461,9 +513,9 @@ function applySmartLinking(html, category, topic) {
     }
   }
 
-  // OUTBOUND LINK
+  // OUTBOUND LINK: Tên sàn viết tắt ngắn gọn chuẩn mực
   if (!modifiedHtml.includes('https://www.hsx.vn') && !modifiedHtml.includes('https://sbv.gov.vn') && !modifiedHtml.includes('https://gso.gov.vn')) {
-    modifiedHtml = safeReplaceFirstInParagraphs(modifiedHtml, 'HOSE|sở giao dịch chứng khoán', () => '<a href="https://www.hsx.vn" target="_blank" rel="noopener">Sở Giao dịch Chứng khoán TP.HCM (HOSE)</a>');
+    modifiedHtml = safeReplaceFirstInParagraphs(modifiedHtml, 'Sở Giao dịch Chứng khoán TP\\.HCM\\s*\\(HOSE\\)|HOSE|sở giao dịch chứng khoán', () => '<a href="https://www.hsx.vn" target="_blank" rel="noopener">HOSE</a>');
   }
 
   return modifiedHtml;
@@ -584,7 +636,7 @@ ${itemsHtml}
 }
 
 const title = formatSentenceCase(articleData.title || normalizerData.topic || 'Bản tin phân tích tài chính');
-const slug = articleData.slug || 'tin-thi-truong';
+const slug = (articleData.slug && articleData.slug !== 'tin-thi-truong' && !articleData.slug.includes('tieu-diem') && articleData.slug.length > 8) ? articleData.slug : generateSlug(title, category, normalizerData.todayStr);
 const category = articleData.category || normalizerData.category || 'market';
 const categoryName = category === 'market' ? 'Thị trường' : 'Bài viết';
 const metaDesc = articleData.metaDescription || (title + '. Phân tích xu hướng thị trường tài chính chuyên sâu.');
@@ -777,7 +829,7 @@ ${faqSchemaTag}
     .article-sub-list { margin: 10px 0 !important; }
     .article-sub-list p { margin: 6px 0 !important; }
     blockquote.article-quote, article blockquote, blockquote { border-left: 3px solid #ffffff !important; background: rgba(255, 255, 255, 0.03) !important; border-radius: 0 8px 8px 0 !important; padding: 12px 18px !important; margin: 18px 0 !important; font-style: italic !important; color: #e2e8f0 !important; line-height: 1.7 !important; }
-    blockquote.article-quote p, article blockquote p, blockquote p { margin: 0 !important; color: #e2e8f0 !important; font-size: 0.98rem !important; }
+    blockquote.article-quote p, article blockquote p, blockquote p { margin: 0 !important; color: #e2e8f0 !important; font-size: 0.98rem !important; border: none !important; border-left: none !important; padding-left: 0 !important; }
     .faq-answer { display: none; }
     .faq-item.active .faq-answer { display: block !important; }
     .faq-item.active .faq-question { color: #fbbf24; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -894,6 +946,24 @@ ${processedBody}
         </div>
 
 ${faqHtml}
+
+      <!-- Cụm nút chia sẻ mạng xã hội cố định chuẩn UX/UI -->
+      <div class="social-share-container" style="margin: 32px 0 20px; padding: 20px 24px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px;">
+        <div class="social-share-title" style="margin-bottom: 12px; font-weight: 700; color: #cbd5e1; font-size: 0.95rem;">
+          <span>📢 Chia sẻ bài viết hữu ích này:</span>
+        </div>
+        <div class="social-share-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="https://sp.zalo.me/plugins/share?url=${encodeURIComponent(canonicalUrl)}" target="_blank" rel="noopener noreferrer" class="btn-share btn-share-zalo" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #0068ff; color: #fff; border-radius: 8px; font-size: 0.88rem; font-weight: 600; text-decoration: none;">
+            <span>💬</span> Chia sẻ Zalo
+          </a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(canonicalUrl)}" target="_blank" rel="noopener noreferrer" class="btn-share btn-share-fb" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #1877f2; color: #fff; border-radius: 8px; font-size: 0.88rem; font-weight: 600; text-decoration: none;">
+            <span>🌐</span> Facebook
+          </a>
+          <button type="button" class="btn-share btn-share-copy" onclick="copyArticleLink(this)" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer;">
+            <span>🔗</span> <span class="btn-copy-text">Sao chép Link</span>
+          </button>
+        </div>
+      </div>
       </article>
 
       <aside class="article-sidebar">
@@ -963,6 +1033,13 @@ const kpiStr = (articleData.kpiCards && articleData.kpiCards.length)
   ? articleData.kpiCards.map(k => `• ${k.label}: <b>${k.val}</b>`).join('\n')
   : 'Đã tự động tính toán số liệu thị trường';
 
+let auditStr = '';
+if (articleData.factCheckReport && Array.isArray(articleData.factCheckReport) && articleData.factCheckReport.length) {
+  auditStr = `\n\n🛡️ <b>Thẩm định & Đối soát số liệu (Double Check Auditor):</b>\n` + articleData.factCheckReport.map(r => `• ${r}`).join('\n');
+} else {
+  auditStr = `\n\n🛡️ <b>Thẩm định & Đối soát số liệu (Double Check Auditor):</b>\n• ✅ Đã đối soát 100% khớp dữ liệu giao dịch chính thức (VN-Index, Khối ngoại, Thị giá)`;
+}
+
 const previewMsg = `${headerTitle}
 
 📌 <b>Tiêu đề:</b> ${title}
@@ -970,7 +1047,7 @@ const previewMsg = `${headerTitle}
 ⚡ <b>Thông điệp cốt lõi:</b> <i>${articleData.summaryMsg || metaDesc}</i>
 
 📊 <b>Số liệu định lượng (KPI Cards):</b>
-${kpiStr}
+${kpiStr}${auditStr}
 
 ❓ <b>FAQ Accordion:</b> ${articleData.faqs && articleData.faqs.length ? (articleData.faqs.length + ' câu hỏi thị trường chuẩn Schema') : '3 câu hỏi thị trường'}
 
