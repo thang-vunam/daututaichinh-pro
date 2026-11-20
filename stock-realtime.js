@@ -204,6 +204,12 @@
       if (t) tickersSet.add(t.trim().toUpperCase());
     });
 
+    // 139 ICB Sector Map Tickers (KDH, NVL, PDR, DXG, DIG, NLG, etc.)
+    const SECTOR_ALL_TICKERS = [
+      'ACB', 'ACV', 'ADG', 'ANV', 'BFC', 'BHN', 'BID', 'BMI', 'BMP', 'BSR', 'BVH', 'BWE', 'CAR', 'CC1', 'CII', 'CLC', 'CMG', 'CNG', 'CRE', 'CSM', 'CSV', 'CTD', 'CTG', 'CTR', 'DAH', 'DCL', 'DCM', 'DGC', 'DGW', 'DHG', 'DHP', 'DIG', 'DPM', 'DRC', 'DXG', 'DXS', 'EID', 'ELC', 'FIT', 'FOX', 'FPT', 'FRT', 'GAS', 'GEE', 'GEG', 'GEX', 'GIL', 'GMD', 'GVR', 'HAH', 'HAP', 'HCM', 'HHS', 'HHV', 'HNG', 'HPG', 'HSG', 'HT1', 'HTL', 'HVN', 'IMP', 'INN', 'IPA', 'JVC', 'KDC', 'KDH', 'KHG', 'KSB', 'KSV', 'LIX', 'MBB', 'MCH', 'MIG', 'MSH', 'MSN', 'MSR', 'MWG', 'NBC', 'NET', 'NKG', 'NLG', 'NT2', 'NVL', 'OCH', 'PDR', 'PET', 'PGV', 'PNJ', 'POW', 'PVB', 'PVC', 'PVD', 'PVI', 'PVS', 'PVT', 'QNS', 'REE', 'SAB', 'SAM', 'SAV', 'SBT', 'SHS', 'SKG', 'SMB', 'SSI', 'STB', 'STC', 'TCB', 'TCM', 'TCX', 'TDM', 'THD', 'TLG', 'TNG', 'TNH', 'TRA', 'TTN', 'TVC', 'VCB', 'VCG', 'VCI', 'VCS', 'VEF', 'VGC', 'VGI', 'VGS', 'VHC', 'VHM', 'VIC', 'VIP', 'VIX', 'VJC', 'VNB', 'VND', 'VNM', 'VOS', 'VPB', 'VSC', 'VTC'
+    ];
+    SECTOR_ALL_TICKERS.forEach(t => tickersSet.add(t));
+
     // Auto-discover all tickers from Sector Map (.sf-stock-card)
     document.querySelectorAll('.sf-stock-card').forEach(card => {
       const symEl = card.querySelector('.sf-stk-sym');
@@ -214,10 +220,12 @@
     });
 
     const tickers = Array.from(tickersSet);
+    window.syncSectorStockCards = syncSectorStockCards;
 
     // 1. STEP 0: Apply cached data immediately (0ms instant render)
     const cached = getCachedStocks();
     if (cached) {
+      window.dttcStockData = cached;
       if (rows.length) applyDataToPortalRows(rows, cached);
       syncSectorStockCards(cached);
     }
@@ -226,6 +234,8 @@
     async function syncPortal() {
       const freshData = await fetchVpsBatch(tickers);
       if (freshData) {
+        window.dttcStockData = freshData;
+        setCachedStocks(freshData);
         if (rows.length) applyDataToPortalRows(rows, freshData);
         syncSectorStockCards(freshData);
         updatePortalLiveIndicator(true);
