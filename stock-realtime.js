@@ -273,26 +273,41 @@
 
       const price = stock.currentPrice;
       const ref = stock.refPrice || price;
+      const ceiling = stock.ceiling;
+      const floor = stock.floor;
       const diff = stock.diff !== undefined ? stock.diff : (price - ref);
-      const pct = stock.changePct !== undefined ? stock.changePct : 0;
+      const pct = stock.changePct !== undefined ? parseFloat(stock.changePct) : 0;
 
       // Price displayed in Sector Card is in 'k' (e.g. 237.70, 41.20)
       const displayPrice = (price >= 1000 ? (price / 1000) : price).toFixed(2);
       const pctSign = diff > 0 ? '+' : '';
 
-      let priceCls = 'text-amber-400';
-      if (diff > 0) priceCls = 'text-emerald-400';
-      else if (diff < 0) priceCls = 'text-rose-400';
+      // Standard Market Color Scheme:
+      // - Xanh: Tăng (sf-up: #10b981)
+      // - Đỏ: Giảm (sf-down: #ef4444)
+      // - Vàng: Tham chiếu (sf-ref: #f59e0b)
+      // - Tím: Tăng trần (sf-ceil: #c084fc)
+      // - Xanh lơ / Cyan: Giảm sàn (sf-floor: #38d0d0)
+      let colorCls = 'sf-ref';
+      if (ceiling && price >= ceiling) {
+        colorCls = 'sf-ceil';
+      } else if (floor && price <= floor) {
+        colorCls = 'sf-floor';
+      } else if (diff > 0) {
+        colorCls = 'sf-up';
+      } else if (diff < 0) {
+        colorCls = 'sf-down';
+      }
 
       const priceEl = card.querySelector('.sf-stk-price');
       if (priceEl) {
-        priceEl.className = `sf-stk-price ${priceCls}`;
+        priceEl.className = `sf-stk-price ${colorCls}`;
         priceEl.innerText = displayPrice;
       }
 
       const pctEl = card.querySelector('.sf-stk-pct');
       if (pctEl) {
-        pctEl.className = `sf-stk-pct ${priceCls}`;
+        pctEl.className = `sf-stk-pct ${colorCls}`;
         pctEl.innerText = `${pctSign}${pct ? pct.toFixed(2) : '0.00'}%`;
       }
     });
@@ -322,7 +337,7 @@
       if (stock.ceiling && price >= stock.ceiling) {
         color = '#c084fc'; // trần tím
       } else if (stock.floor && price <= stock.floor) {
-        color = '#22d3ee'; // sàn xanh lơ
+        color = '#38d0d0'; // sàn xanh lơ (chuẩn sàn HOSE & FireAnt)
       }
 
       // Update Price Cell
