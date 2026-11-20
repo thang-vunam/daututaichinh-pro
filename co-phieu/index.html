@@ -707,10 +707,22 @@
     font-weight: 700;
   }
 
-  /* Color Codes */
+  /* Stock Color Codes chuẩn HOSE & FireAnt */
   .sf-up { color: #10b981 !important; }
   .sf-down { color: #ef4444 !important; }
   .sf-ref { color: #f59e0b !important; }
+  .sf-ceil { color: #c084fc !important; }
+  .sf-floor { color: #38d0d0 !important; }
+
+  /* Ensure card links never inherit browser visited purple or blue */
+  .sf-stock-card,
+  .sf-stock-card:visited,
+  .sf-stock-card:hover,
+  .sf-stock-card:active,
+  .sf-stock-card:focus {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
 
   .sf-cell-pill {
     display: inline-block;
@@ -733,6 +745,14 @@
   .sf-cell-pill.sf-bg-ref {
     background: rgba(245, 158, 11, 0.12);
     color: #f59e0b;
+  }
+  .sf-cell-pill.sf-bg-ceil {
+    background: rgba(192, 132, 252, 0.15);
+    color: #c084fc;
+  }
+  .sf-cell-pill.sf-bg-floor {
+    background: rgba(56, 208, 208, 0.15);
+    color: #38d0d0;
   }
 
   /* Market Breadth Bar */
@@ -2639,13 +2659,26 @@ const SectorFlowModule = (function () {
 
       let priceVal = stk.price;
       let pctVal = stk.pct;
+      let ceiling = null;
+      let floor = null;
       if (window.dttcStockData && window.dttcStockData[stk.ticker.toUpperCase()]) {
         const live = window.dttcStockData[stk.ticker.toUpperCase()];
         if (live.currentPrice) priceVal = live.currentPrice >= 1000 ? live.currentPrice / 1000 : live.currentPrice;
         if (live.changePct !== undefined) pctVal = parseFloat(live.changePct);
+        ceiling = live.ceiling ? (live.ceiling >= 1000 ? live.ceiling / 1000 : live.ceiling) : null;
+        floor = live.floor ? (live.floor >= 1000 ? live.floor / 1000 : live.floor) : null;
       }
 
-      const priceCls = pctVal > 0 ? 'sf-up' : (pctVal < 0 ? 'sf-down' : 'sf-ref');
+      let priceCls = 'sf-ref';
+      if (ceiling && priceVal >= ceiling) {
+        priceCls = 'sf-ceil'; // Tím: Tăng trần
+      } else if (floor && priceVal <= floor) {
+        priceCls = 'sf-floor'; // Xanh lơ: Giảm sàn
+      } else if (pctVal > 0) {
+        priceCls = 'sf-up'; // Xanh: Tăng
+      } else if (pctVal < 0) {
+        priceCls = 'sf-down'; // Đỏ: Giảm
+      }
       const pctSign = pctVal > 0 ? '+' : '';
 
       return `
