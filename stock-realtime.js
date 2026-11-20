@@ -194,28 +194,40 @@
   // =========================================================================
   async function initHubPortal() {
     const tableBody = document.getElementById('stocks-body');
-    if (!tableBody) return;
+    const hasSectorCards = document.querySelector('.sf-stock-card');
+    if (!tableBody && !hasSectorCards) return;
 
-    const rows = tableBody.querySelectorAll('tr[data-ticker]');
-    if (!rows.length) return;
-
-    const tickers = [];
+    const rows = tableBody ? tableBody.querySelectorAll('tr[data-ticker]') : [];
+    const tickersSet = new Set();
     rows.forEach(r => {
       const t = r.getAttribute('data-ticker');
-      if (t) tickers.push(t.trim().toUpperCase());
+      if (t) tickersSet.add(t.trim().toUpperCase());
     });
+
+    // Auto-discover all tickers from Sector Map (.sf-stock-card)
+    document.querySelectorAll('.sf-stock-card').forEach(card => {
+      const symEl = card.querySelector('.sf-stk-sym');
+      if (symEl) {
+        const m = symEl.innerText.trim().match(/[A-Z0-9]{3}/);
+        if (m) tickersSet.add(m[0].toUpperCase());
+      }
+    });
+
+    const tickers = Array.from(tickersSet);
 
     // 1. STEP 0: Apply cached data immediately (0ms instant render)
     const cached = getCachedStocks();
     if (cached) {
-      applyDataToPortalRows(rows, cached);
+      if (rows.length) applyDataToPortalRows(rows, cached);
+      syncSectorStockCards(cached);
     }
 
     // 2. STEP 1: Direct VPS Batch Fetch (< 300ms)
     async function syncPortal() {
       const freshData = await fetchVpsBatch(tickers);
       if (freshData) {
-        applyDataToPortalRows(rows, freshData);
+        if (rows.length) applyDataToPortalRows(rows, freshData);
+        syncSectorStockCards(freshData);
         updatePortalLiveIndicator(true);
       } else {
         updatePortalLiveIndicator(false);
@@ -233,6 +245,47 @@
         syncPortal();
       }
     }, intervalMs);
+  }
+
+  function syncSectorStockCards(dataMap) {
+    if (!dataMap) return;
+    const cards = document.querySelectorAll('.sf-stock-card');
+    if (!cards || !cards.length) return;
+
+    cards.forEach(card => {
+      const symEl = card.querySelector('.sf-stk-sym');
+      if (!symEl) return;
+      const m = symEl.innerText.trim().match(/[A-Z0-9]{3}/);
+      if (!m) return;
+      const ticker = m[0].toUpperCase();
+      const stock = dataMap[ticker];
+      if (!stock || !stock.currentPrice) return;
+
+      const price = stock.currentPrice;
+      const ref = stock.refPrice || price;
+      const diff = stock.diff !== undefined ? stock.diff : (price - ref);
+      const pct = stock.changePct !== undefined ? stock.changePct : 0;
+
+      // Price displayed in Sector Card is in 'k' (e.g. 237.70, 41.20)
+      const displayPrice = (price >= 1000 ? (price / 1000) : price).toFixed(2);
+      const pctSign = diff > 0 ? '+' : '';
+
+      let priceCls = 'text-amber-400';
+      if (diff > 0) priceCls = 'text-emerald-400';
+      else if (diff < 0) priceCls = 'text-rose-400';
+
+      const priceEl = card.querySelector('.sf-stk-price');
+      if (priceEl) {
+        priceEl.className = `sf-stk-price ${priceCls}`;
+        priceEl.innerText = displayPrice;
+      }
+
+      const pctEl = card.querySelector('.sf-stk-pct');
+      if (pctEl) {
+        pctEl.className = `sf-stk-pct ${priceCls}`;
+        pctEl.innerText = `${pctSign}${pct ? pct.toFixed(2) : '0.00'}%`;
+      }
+    });
   }
 
   function applyDataToPortalRows(rows, dataMap) {
