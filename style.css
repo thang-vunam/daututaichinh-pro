@@ -1880,3 +1880,27 @@ blockquote p {
 .ticker-badge:hover i, .ticker-link:hover i {
   color: #ffffff !important;
 }
+
+/* =========================================================================
+   Standard Stock Color Palette (HOSE / FireAnt / Data Hub Standards)
+   - Xanh: Tăng điểm (#10b981)
+   - Đỏ: Giảm điểm (#ef4444)
+   - Vàng: Tham chiếu (#f59e0b)
+   - Tím: Tăng trần (#c084fc)
+   - Xanh lơ / Cyan: Giảm sàn (#38d0d0)
+   ========================================================================= */
+.sf-up { color: #10b981 !important; }
+.sf-down { color: #ef4444 !important; }
+.sf-ref { color: #f59e0b !important; }
+.sf-ceil { color: #c084fc !important; }
+.sf-floor { color: #38d0d0 !important; }
+
+/* Prevent any stock card from inheriting default browser purple visited link styling */
+.sf-stock-card,
+.sf-stock-card:visited,
+.sf-stock-card:hover,
+.sf-stock-card:active,
+.sf-stock-card:focus {
+  color: inherit !important;
+  text-decoration: none !important;
+}
