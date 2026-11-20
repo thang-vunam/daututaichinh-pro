@@ -173,7 +173,7 @@ TIÊU CHUẨN CẤU TRÚC BÀI VIẾT (BẮT BUỘC 4 PHẦN CHÍNH DẠNG BÀI 
      {"label": "Chỉ số VN-Index", "val": "[Điểm số] ([+/- %])"},
      {"label": "Thanh khoản HOSE", "val": "[Giá trị tỷ]"},
      {"label": "Khối ngoại HOSE", "val": "[Mua/Bán ròng +/- tỷ]"},
-     {"label": "Chỉ số VN30", "val": "[Điểm số] ([+/- %])"}
+     {"label": "Tỷ giá bán VCB", "val": "[Tỷ giá VND] (ví dụ: 25.840 VND)"}
    ]
 
 8. BỘ 3 CÂU HỎI THƯỜNG GẶP (faqs - BẮT BUỘC 3 CÂU HỎI CHUẨN SCHEMA FAQPAGES):
@@ -185,13 +185,26 @@ TIÊU CHUẨN CẤU TRÚC BÀI VIẾT (BẮT BUỘC 4 PHẦN CHÍNH DẠNG BÀI 
    - Các mã ngoài VN30 (NVL, PVD, KDH...): BẮT BUỘC viết <strong>MÃ</strong>, TUYỆT ĐỐI CẤM gắn thẻ <a>.
    - Mỗi mã VN30 CHỈ GẮN LINK 1 LẦN ĐẦU TIÊN!
    - Dark theme styling: Bảng số liệu bọc trong <div class="data-table-wrap">.
-   - Khối trích dẫn (blockquote): Viền trắng tinh tế (border-left: 3px solid #ffffff).
+   - Khối trích dẫn (blockquote): Viết dạng <blockquote><p>nội dung trích dẫn</p></blockquote> (CHỈ dùng thẻ HTML thuần, TUYỆT ĐỐI KHÔNG tự thêm style hoặc border-left vào thẻ p bên trong để tránh bị 2 gạch dọc).
+   - Tên sàn giao dịch: Dùng từ viết tắt ngắn gọn chuẩn mực như HOSE, HNX (TUYỆT ĐỐI TRÁNH viết rườm rà "Sở Giao dịch Chứng khoán TP.HCM (HOSE)").
+   - Câu mở đầu đoạn 1: Mở bài tự nhiên, linh hoạt văn phong (ví dụ: "Thị trường tiếp tục...", "Hôm nay thị trường...", "Sau áp lực bán..."), TUYỆT ĐỐI TRÁNH rập khuôn lặp đi lặp lại cụm từ "Nhận định thị trường chứng khoán Việt Nam" ở đầu mỗi ngày.
    - Tuyệt đối không xuất ký tự escape \n hay \n\n bên ngoài thẻ HTML.
+
+QUY TẮC TIÊU ĐỀ & URL SLUG (BẮT BUỘC):
+1. TIÊU ĐỀ BÀI VIẾT (title):
+   - Định dạng chuẩn: "Nhận định thị trường chứng khoán DD/MM: [Điểm nhấn định lượng / Nhóm cổ phiếu tâm điểm] - [Trạng thái / Xu hướng chung]".
+   - BẮT BUỘC BÁM SÁT DIỄN BIẾN THỰC TẾ PHIÊN HÔM TRƯỚC: Tiêu đề phải phản ánh ít nhất 1 chi tiết cụ thể (ví dụ: mốc điểm số VN-Index thử thách 1.220 điểm, hoặc nhóm ngành dẫn dắt như Ngân hàng / Thép / Chứng khoán, hoặc động thái mua/bán ròng của khối ngoại).
+   - Vẫn được sử dụng các từ ngữ mô tả trạng thái thị trường như "Phân hóa", "Dòng tiền thận trọng", "Giằng co" nếu phù hợp với phiên, NHƯNG BẮT BUỘC phải đi kèm số liệu hoặc nhóm ngành cụ thể để tiêu đề mỗi ngày là một bài báo độc bản, không bị lặp lại văn mẫu.
+   - Độ dài: 45-65 ký tự, dạng Sentence Case (chỉ viết hoa chữ cái đầu câu và tên riêng / mã CK).
+
+2. ĐƯỜNG DẪN BÀI VIẾT (slug):
+   - BẮT BUỘC tự động chuyển hóa tiêu đề thành chuỗi tiếng Việt không dấu, viết thường, ngăn cách bằng dấu gạch ngang (ví dụ: "nhan-dinh-thi-truong-chung-khoan-18-11-nhom-ngan-hang-giu-nhip").
+   - TUYỆT ĐỐI KHÔNG để giá trị chung chung như "tin-thi-truong" hay "url-khong-dau".
 
 Trả về ĐÚNG 1 chuỗi JSON hợp lệ duy nhất:
 {
-  "title": "Tiêu đề chuẩn tài chính dạng Sentence Case (độ dài 35-55 ký tự)",
-  "slug": "url-khong-dau-ngan-gon-chuan-seo",
+  "title": "Nhận định thị trường chứng khoán ${today}: [Điểm nhấn cụ thể]",
+  "slug": "nhan-dinh-thi-truong-chung-khoan-${today.replace(/\//g, '-')}-[tieu-diem-khong-dau]",
   "metaDescription": "Mô tả SEO tóm lược bài viết từ 130-160 ký tự",
   "category": "market",
   "sapo": "",
@@ -204,7 +217,7 @@ Trả về ĐÚNG 1 chuỗi JSON hợp lệ duy nhất:
     {"label": "Chỉ số VN-Index", "val": "1.746,90 (+0,22%)"},
     {"label": "Thanh khoản HOSE", "val": "13.844,23 tỷ"},
     {"label": "Khối ngoại HOSE", "val": "Mua ròng +128,6 tỷ"},
-    {"label": "Chỉ số VN30", "val": "1.855,27 (-0,30%)"}
+    {"label": "Tỷ giá bán VCB", "val": "25.840 VND"}
   ],
   "faqs": [
     {"question": "Câu hỏi thực tế 1?", "answer": "Câu trả lời ngắn gọn 2-3 câu..."},
