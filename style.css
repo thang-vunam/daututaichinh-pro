@@ -1839,6 +1839,9 @@ blockquote p {
   margin: 0 !important;
   color: #e2e8f0 !important;
   font-size: 0.98rem !important;
+  border: none !important;
+  border-left: none !important;
+  padding-left: 0 !important;
 }
 
 /* Smart Ticker Mention Badges: VN30 / Data Hub Link Indicator */
