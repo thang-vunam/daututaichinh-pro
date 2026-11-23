@@ -735,21 +735,57 @@
 
 
         /* Preview iframe */
-
-
-
         .preview-frame {
-
-
-
-            width: 100%; height: 500px; border: 1px solid var(--border);
-
-
-
-            border-radius: 12px; background: white;
-
-
-
+            width: 100%; min-height: 720px; height: 75vh; border: 1px solid var(--border);
+            border-radius: 12px; background: #0b1120; resize: vertical; transition: all 0.2s ease;
+        }
+        .preview-frame.is-fullscreen {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 999999 !important;
+            border-radius: 0 !important;
+            border: none !important;
+        }
+        /* Layout toggle for Step 3 (Mặc định Full màn hình 100% chiều rộng) */
+        .step3-full-width {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 28px !important;
+        }
+        .step3-full-width .preview-left-col {
+            width: 100% !important;
+        }
+        .step3-full-width .preview-right-col {
+            width: 100% !important;
+        }
+        .step3-full-width .preview-frame {
+            width: 100% !important;
+            min-height: 85vh !important;
+            height: 85vh !important;
+        }
+        .step3-full-width #review-html {
+            width: 100% !important;
+            min-height: 70vh !important;
+            height: 70vh !important;
+        }
+        .tab-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+        .tab-action-btn:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
         }
 
 
@@ -2196,12 +2232,17 @@ Bạn có thể viết:
 
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px;">
-
-
-
-                <h2 style="margin: 0;"><i class="fa-solid fa-clipboard-check"></i> 2. Duyệt bài & Monitor SEO</h2>
-
-
+                <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                    <h2 style="margin: 0;"><i class="fa-solid fa-clipboard-check"></i> 2. Duyệt bài & Monitor SEO</h2>
+                    <div style="display: inline-flex; align-items: center; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 3px; gap: 4px;">
+                        <button type="button" id="btn-layout-full" class="btn-layout" onclick="setStep3Layout('full')" style="background: #3b82f6; color: #ffffff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;" title="Khung xem trước mở rộng 100% full màn hình chuẩn giao diện web">
+                            <i class="fa-solid fa-expand"></i> Toàn màn hình (Mặc định)
+                        </button>
+                        <button type="button" id="btn-layout-split" class="btn-layout" onclick="setStep3Layout('split')" style="background: transparent; color: #94a3b8; border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;" title="Chia đôi 50/50 xem song song">
+                            <i class="fa-solid fa-table-columns"></i> Chia đôi 50/50
+                        </button>
+                    </div>
+                </div>
 
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
 
@@ -2256,15 +2297,11 @@ Bạn có thể viết:
                 </div>
             </div>
 
-            <div class="grid-2">
+            <div id="step-3-container" class="step3-full-width">
 
+                <!-- Bên trái: Preview / Code (Full Width 100% khi ở chế độ Toàn màn hình) -->
 
-
-                <!-- Bên trái: Preview / Code -->
-
-
-
-                <div>
+                <div class="preview-left-col">
 
 
 
@@ -2284,18 +2321,15 @@ Bạn có thể viết:
 
 
 
-                    <div class="tab-bar">
-
-
-
-                        <div class="tab-btn active" onclick="switchPreviewTab('preview')"><i class="fa-solid fa-eye"></i> Xem trước</div>
-
-
-
-                        <div class="tab-btn" onclick="switchPreviewTab('code')"><i class="fa-solid fa-code"></i> Mã HTML</div>
-
-
-
+                    <div class="tab-bar" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <div style="display: flex; gap: 4px;">
+                            <div class="tab-btn active" onclick="switchPreviewTab('preview')"><i class="fa-solid fa-eye"></i> Xem trước</div>
+                            <div class="tab-btn" onclick="switchPreviewTab('code')"><i class="fa-solid fa-code"></i> Mã HTML</div>
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-left: auto;">
+                            <button type="button" class="tab-action-btn" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8;" onclick="openPreviewInNewTab()" title="Mở trang xem trước trong tab mới toàn màn hình (không bị giới hạn)"><i class="fa-solid fa-up-right-from-square"></i> Mở tab mới</button>
+                            <button type="button" class="tab-action-btn" style="background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.35); color: #fbbf24;" onclick="togglePreviewFullscreen()" title="Phóng to / Thu nhỏ toàn màn hình"><i class="fa-solid fa-expand"></i> Toàn màn hình</button>
+                        </div>
                     </div>
 
 
@@ -2534,9 +2568,7 @@ Bạn có thể viết:
 
                 <!-- Bên phải: SEO Panel -->
 
-
-
-                <div style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
+                <div class="preview-right-col" style="background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid var(--border);">
 
 
 
@@ -6047,34 +6079,29 @@ NHIỆM VỤ BIÊN TẬP VÀ KIẾN TRÚC NỘI DUNG CHUYÊN NGHIỆP:
      </div>
    </div>
 
-   VÀ BỘ 4 THẺ ĐIỂM NHẤN (SURPRISE CARDS):
+   VÀ BỘ 4 THẺ ĐIỂM NHẤN (SURPRISE CARDS) - BÁM SÁT THỰC TẾ:
    <div class="surprise-cards-grid">
-     <div class="surprise-card card-bull">
-       <div class="sc-head"><span class="sc-num">ĐIỂM 1 • TÍM TRẦN</span><span class="sc-badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">+6.87% CE</span></div>
-       <div class="sc-title">[Tóm tắt điểm 1]</div>
-       <p class="sc-desc">[Mô tả 1 câu]</p>
-     </div>
-     <div class="surprise-card card-bull">
-       <div class="sc-head"><span class="sc-num">ĐIỂM 2 • KHỐI NGOẠI</span><span class="sc-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">+486.1 tỷ</span></div>
-       <div class="sc-title">[Tóm tắt điểm 2]</div>
-       <p class="sc-desc">[Mô tả 1 câu]</p>
-     </div>
-     <div class="surprise-card card-bear">
-       <div class="sc-head"><span class="sc-num">ĐIỂM 3 • ÁP LỰC TRỤ</span><span class="sc-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">-87.3 tỷ</span></div>
-       <div class="sc-title">[Tóm tắt điểm 3]</div>
-       <p class="sc-desc">[Mô tả 1 câu]</p>
-     </div>
-     <div class="surprise-card card-gold">
-       <div class="sc-head"><span class="sc-num">ĐIỂM 4 • THANH KHOẢN</span><span class="sc-badge" style="background: rgba(251, 191, 36, 0.2); color: #fbbf24;">825.0 TỶ</span></div>
-       <div class="sc-title">[Tóm tắt điểm 4]</div>
-       <p class="sc-desc">[Mô tả 1 câu]</p>
-     </div>
+     <!-- 4 thẻ phân tích bám sát 100% nội dung thực tế của tác giả:
+          - Nếu giảm/chiết khấu/đáy/bán ròng: dùng class "surprise-card card-bear" (sc-badge màu đỏ rgba(239, 68, 68, 0.2), #f87171)
+          - Nếu tăng/bứt phá/mua gom: dùng class "surprise-card card-bull" (sc-badge màu xanh lá rgba(16, 185, 129, 0.2), #34d399 hoặc tím trần nếu có trần)
+          - Nếu thanh khoản/thỏa thuận/trung tính: dùng class "surprise-card card-gold" (sc-badge màu vàng rgba(251, 191, 36, 0.2), #fbbf24)
+          TUYỆT ĐỐI KHÔNG tự ý bịa đặt 'TÍM TRẦN' hay số liệu nếu tác giả không đề cập! -->
    </div>
 
-4. CẤU TRÚC 3 TRỤ CỘT BÀI BÁO (3 PILLARS H2):
-   - ## 1. Bối cảnh phiên bùng nổ: Dòng tiền lớn trở lại và xung lực vượt cản
-   - ## 2. Phân tích điểm nhấn dòng tiền: Khối ngoại gom ròng và các nhóm ngành nổi bật
-   - ## 3. Kịch bản thị trường & Khuyến nghị quản trị danh mục phiên kế tiếp (Kèm Ma trận 2 Kịch bản: <div class="scenario-grid"><div class="scenario-box scenario-base">...</div><div class="scenario-box scenario-cautious">...</div></div>)
+4. CẤU TRÚC ĐỀ MỤC H2 (3 TRỤ CỘT NỘI DUNG) - NGUYÊN TẮC THÍCH ỨNG ĐỘNG (DYNAMIC CONTEXTUAL HEADINGS):
+   - ĐẶT TÊN ĐỀ MỤC H2 BÁM SÁT 100% DIỄN BIẾN THỰC TẾ TRONG BÀI VIẾT CỦA TÁC GIẢ, TUYỆT ĐỐI KHÔNG DÙNG TIÊU ĐỀ RẬP KHUÔN:
+     * KHI THỊ TRƯỜNG GIẢM / ĐIỀU CHỈNH / THỦNG ĐÁY / KHỐI NGOẠI BÁN RÒNG:
+       - ## 1. Bối cảnh thị trường: [Tên chỉ số hoặc nhóm ngành] và áp lực điều chỉnh diện rộng (CẤM dùng từ 'phiên bùng nổ', 'vượt cản', 'hưng phấn' khi thị trường giảm điểm hoặc thủng mốc hỗ trợ!)
+       - ## 2. Phân tích điểm nhấn dòng tiền: [Động thái thực tế: Áp lực từ khối ngoại và sự phân hóa nhóm ngành / hoặc tên luận điểm phân tích của tác giả] (CẤM dùng từ 'khối ngoại gom ròng' nếu tác giả ghi khối ngoại bán ròng / xả hàng!)
+       - ## 3. Kịch bản thị trường & Khuyến nghị quản trị danh mục (Kèm Ma trận 2 Kịch bản: <div class="scenario-grid"><div class="scenario-box scenario-base">...</div><div class="scenario-box scenario-cautious">...</div></div>)
+     * KHI THỊ TRƯỜNG TĂNG / BÙNG NỔ / BỨT PHÁ:
+       - ## 1. Bối cảnh thị trường: [Chỉ số bứt phá / Xung lực vượt cản]
+       - ## 2. Phân tích điểm nhấn dòng tiền: Khối ngoại mua gom và nhóm ngành dẫn dắt
+       - ## 3. Kịch bản thị trường & Chiến lược giải ngân
+     * KHI LÀ BÀI PHÂN TÍCH CHUYÊN SÂU DOANH NGHIỆP / NGÀNH NGHỀ / VĨ MÔ:
+       - Đặt tên H2 theo sát chủ đề của tác giả (1. Bối cảnh & Thực trạng, 2. Phân tích cốt lõi & Số liệu kinh doanh, 3. Định giá & Triển vọng / Khuyến nghị).
+   - NGUYÊN TẮC CHỐNG LẶP NỘI DUNG (DEDUPLICATION):
+     * Trong các đoạn văn, TUYỆT ĐỐI KHÔNG lặp lại cùng một câu văn hoặc cùng một nhận định 2 lần. Câu từ phải gãy gọn, tinh tế.
 
 BẮT BUỘC TRẢ VỀ THEO ĐÚNG 2 KHỐI SAU:
 
@@ -6141,9 +6168,8 @@ ${contentForBody.substring(0, 35000)}`;
                     const bodyMatch = resp.match(/<<<STRUCTURED_BODY>>>([\s\S]*?)<<<END_STRUCTURED_BODY>>>/);
 
                     if (bodyMatch) {
-
                         structuredBodyFromAi = bodyMatch[1].trim();
-
+                        structuredBodyFromAi = sanitizeContextualHeadings(structuredBodyFromAi, contentForBody);
                     }
 
 
@@ -6254,7 +6280,8 @@ ${contentForBody.substring(0, 35000)}`;
                 } else {
                     htmlBody = formatRawTextToHtml(bodySource, finalTitle);
                 }
-                htmlBody = ensureSemanticHeadings(htmlBody);
+                htmlBody = ensureSemanticHeadings(htmlBody, contentForBody);
+                htmlBody = sanitizeContextualHeadings(htmlBody, contentForBody);
 
 
 
@@ -6574,9 +6601,7 @@ ${contentForBody.substring(0, 35000)}`;
                 }
 
                 document.getElementById('step-3').classList.remove('hidden');
-
-
-
+                setStep3Layout(localStorage.getItem('dashboard_preview_layout') || 'full');
                 refreshPreview();
 
 
@@ -6625,9 +6650,59 @@ ${contentForBody.substring(0, 35000)}`;
 
 
 
-                                function ensureSemanticHeadings(html) {
+        function sanitizeContextualHeadings(content, rawContext = '') {
+            if (!content) return content;
+            const combined = (rawContext + ' ' + content.replace(/<[^>]+>/g, ' ')).toLowerCase();
+
+            // 1. Dò tìm xu hướng thị trường thực tế trong nội dung bài viết
+            const isBearish = /(?:thủng|đánh\s*mất|bốc\s*hơi|bốc\s*hơi\s*\d+|sụt\s*giảm|giảm\s*sâu|giảm\s*\d+|bán\s*ròng|xả\s*hàng|lao\s*dốc|sát\s*đáy|vùng\s*giá\s*thấp|chiết\s*khấu\s*sâu|suy\s*yếu|tháo\s*chạy|thận\s*trọng\s*(?:lên\s*đến)?)/i.test(combined);
+            const isForeignSelling = /(?:khối|nhà\s*đầu\s*tư)\s*ngoại\s*(?:đã\s*)?(?:bán\s*ròng|xả\s*hàng|rút\s*vốn|tháo\s*chạy)/i.test(combined);
+
+            let res = content;
+
+            // 2. Chống Hallucination ở Heading H2 khi thị trường điều chỉnh / giảm / thủng hỗ trợ
+            if (isBearish) {
+                // Thay thế "Bối cảnh phiên bùng nổ..." hoặc "xung lực vượt cản" thành tiêu đề chính xác
+                res = res.replace(/(<h2[^>]*>\s*(?:\d+[\.\)]\s*)?)(?:Bối cảnh phiên bùng nổ|Phiên bùng nổ)[^<]*(<\/h2>)/gi, '$1Bối cảnh thị trường: Áp lực điều chỉnh và phân hóa nhóm vốn hóa lớn$2');
+                res = res.replace(/(^|\n)(##\s*(?:\d+[\.\)]\s*)?)(?:Bối cảnh phiên bùng nổ|Phiên bùng nổ)[^\n]*/gi, '$1$2Bối cảnh thị trường: Áp lực điều chỉnh và phân hóa nhóm vốn hóa lớn');
+                
+                res = res.replace(/(<h2[^>]*>[^<]*)(?:phiên\s*bùng\s*nổ|xung\s*lực\s*vượt\s*cản|dòng\s*tiền\s*hưng\s*phấn)([^<]*<\/h2>)/gi, (m, pre, post) => {
+                    return `<h2 id="heading-0">1. Bối cảnh thị trường: Nhịp điều chỉnh và áp lực thử thách vùng đáy</h2>`;
+                });
+                res = res.replace(/(^|\n)(##\s*1[\.\)]\s*)[^\n]*(?:bùng\s*nổ|vượt\s*cản)[^\n]*/gi, '$1$2Bối cảnh thị trường: Nhịp điều chỉnh và áp lực thử thách vùng đáy');
+            }
+
+            // 3. Chống Hallucination khi khối ngoại bán ròng nhưng heading ghi gom ròng
+            if (isForeignSelling) {
+                res = res.replace(/(<h2[^>]*>\s*(?:\d+[\.\)]\s*)?Phân tích điểm nhấn dòng tiền:\s*)Khối ngoại gom ròng[^<]*(<\/h2>)/gi, '$1Áp lực xả hàng từ khối ngoại và sự phân hóa nhóm ngành$2');
+                res = res.replace(/(^|\n)(##\s*(?:\d+[\.\)]\s*)?Phân tích điểm nhấn dòng tiền:\s*)Khối ngoại gom ròng[^\n]*/gi, '$1$2Áp lực xả hàng từ khối ngoại và sự phân hóa nhóm ngành');
+                res = res.replace(/(<h2[^>]*>[^<]*)khối\s*ngoại\s*gom\s*ròng[^<]*(<\/h2>)/gi, '$1khối ngoại xả hàng và diễn biến nhóm ngành$2');
+            }
+
+            // 4. Khử lặp câu văn trùng lặp trong từng đoạn văn <p> (Deduplication)
+            res = res.replace(/<p([^>]*)>([\s\S]*?)<\/p>/gi, (match, attrs, inner) => {
+                const parts = inner.split(/(?<=[.!?])\s+/);
+                if (parts.length <= 1) return match;
+                const seen = new Set();
+                const filtered = [];
+                for (const p of parts) {
+                    const normalized = p.trim().toLowerCase().replace(/<[^>]+>/g, '').replace(/[^\p{L}\p{N}]/gu, '');
+                    if (normalized.length >= 25) {
+                        if (seen.has(normalized)) continue;
+                        seen.add(normalized);
+                    }
+                    filtered.push(p);
+                }
+                return `<p${attrs}>${filtered.join(' ')}</p>`;
+            });
+
+            return res;
+        }
+
+        function ensureSemanticHeadings(html, rawContext = '') {
             if (!html) return '';
             let res = html;
+            res = sanitizeContextualHeadings(res, rawContext);
             
             // 0. Làm sạch escape 1\. -> 1. và bọc bold **...** / italic *...*
             res = res.replace(/(\d+)\\\./g, '$1.');
@@ -8817,14 +8892,91 @@ QUY TẮC BẮT BUỘC:
 
 
                 document.getElementById('code-pane').style.display = 'block';
-
-
-
             }
-
-
-
         }
+
+        function openPreviewInNewTab() {
+            const iframe = document.getElementById('preview-iframe');
+            const codeEl = document.getElementById('review-html');
+            let html = (codeEl && codeEl.value) ? codeEl.value : (iframe ? (iframe.srcdoc || '') : '');
+            if (!html || html.length < 50) return alert('Chưa có nội dung bài viết để xem trước!');
+            
+            // Đảm bảo style.css được nhúng vào blob để tab mới hiển thị trọn vẹn styling
+            if (typeof MASTER_PREVIEW_CSS !== 'undefined' && MASTER_PREVIEW_CSS && !html.includes('id="inlined-preview-css"')) {
+                html = html.replace('</head>', '  <style id="inlined-preview-css">\n' + MASTER_PREVIEW_CSS + '\n  </style>\n</head>');
+            }
+            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const win = window.open(url, '_blank');
+            if (!win) alert('Trình duyệt đang chặn popup! Vui lòng cho phép popup để mở tab mới.');
+        }
+
+        function setStep3Layout(mode) {
+            const container = document.getElementById('step-3-container');
+            const btnFull = document.getElementById('btn-layout-full');
+            const btnSplit = document.getElementById('btn-layout-split');
+            if (!container) return;
+
+            if (mode === 'full') {
+                container.classList.add('step3-full-width');
+                container.classList.remove('grid-2');
+                if (btnFull) {
+                    btnFull.style.background = '#3b82f6';
+                    btnFull.style.color = '#ffffff';
+                }
+                if (btnSplit) {
+                    btnSplit.style.background = 'transparent';
+                    btnSplit.style.color = '#94a3b8';
+                }
+                localStorage.setItem('dashboard_preview_layout', 'full');
+            } else {
+                container.classList.remove('step3-full-width');
+                container.classList.add('grid-2');
+                if (btnFull) {
+                    btnFull.style.background = 'transparent';
+                    btnFull.style.color = '#94a3b8';
+                }
+                if (btnSplit) {
+                    btnSplit.style.background = '#3b82f6';
+                    btnSplit.style.color = '#ffffff';
+                }
+                localStorage.setItem('dashboard_preview_layout', 'split');
+            }
+        }
+
+        function togglePreviewFullscreen() {
+            const iframe = document.getElementById('preview-iframe');
+            if (!iframe) return;
+            const isFull = iframe.classList.toggle('is-fullscreen');
+            let closeBtn = document.getElementById('preview-fullscreen-close-btn');
+            
+            if (isFull) {
+                document.body.style.overflow = 'hidden';
+                if (!closeBtn) {
+                    closeBtn = document.createElement('button');
+                    closeBtn.id = 'preview-fullscreen-close-btn';
+                    closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Thu nhỏ / Đóng (ESC)';
+                    closeBtn.style.cssText = 'position: fixed; top: 18px; right: 24px; z-index: 1000000; background: #ef4444; color: white; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 8px; font-family: Inter, sans-serif;';
+                    closeBtn.onclick = togglePreviewFullscreen;
+                    document.body.appendChild(closeBtn);
+                } else {
+                    closeBtn.style.display = 'flex';
+                }
+            } else {
+                document.body.style.overflow = '';
+                if (closeBtn) closeBtn.style.display = 'none';
+            }
+        }
+
+        // Thoát toàn màn hình khi ấn phím Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const iframe = document.getElementById('preview-iframe');
+                if (iframe && iframe.classList.contains('is-fullscreen')) {
+                    togglePreviewFullscreen();
+                }
+            }
+        });
 
 
 
@@ -11035,9 +11187,7 @@ ${JSON.stringify({
 
 
                 document.getElementById('step-3').classList.remove('hidden');
-
-
-
+                setStep3Layout(localStorage.getItem('dashboard_preview_layout') || 'full');
                 refreshPreview();
 
 
@@ -11262,6 +11412,10 @@ ${JSON.stringify({
 
 
                 await updateLlmsTxt(owner, repo, token, category, slug, title, desc);
+
+                // BƯỚC 5b: Tự động cập nhật rss.xml cho Google News
+                await updateRss(owner, repo, token, category, slug, title, desc);
+
 
 
 
@@ -13318,6 +13472,49 @@ ${subCardsHtml}
 
 
 
+
+        
+        async function updateRss(owner, repo, token, category, slug, title, desc) {
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/rss.xml`;
+            try {
+                const getRes = await fetch(apiUrl, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                if (!getRes.ok) return;
+                const getData = await getRes.json();
+                const sha = getData.sha;
+                let xml = decodeURIComponent(escape(atob(getData.content.replace(/\n/g, ''))));
+                const targetUrl = `https://www.daututaichinh.pro/${category}/${slug}.html`;
+                if (xml.includes(targetUrl)) return;
+
+                const nowRfc = new Date().toUTCString();
+                const safeTitle = (title || slug).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const safeDesc = (desc || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const catCap = category.charAt(0).toUpperCase() + category.slice(1);
+
+                const newItem = `    <item>\n      <title>${safeTitle}</title>\n      <link>${targetUrl}</link>\n      <guid isPermaLink="true">${targetUrl}</guid>\n      <pubDate>${nowRfc}</pubDate>\n      <category>${catCap}</category>\n      <description>${safeDesc}</description>\n    </item>`;
+
+                xml = xml.replace(/<lastBuildDate>[^<]*<\/lastBuildDate>/i, `<lastBuildDate>${nowRfc}</lastBuildDate>`);
+                if (xml.includes('<item>')) {
+                    xml = xml.replace('<item>', `${newItem}\n    <item>`);
+                } else if (xml.includes('</channel>')) {
+                    xml = xml.replace('</channel>', `${newItem}\n  </channel>`);
+                }
+
+                const b64 = btoa(unescape(encodeURIComponent(xml)));
+                await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: `Auto Google News RSS: Thêm ${slug}`, content: b64, sha: sha })
+                });
+            } catch(e) {
+                console.error("Lỗi cập nhật rss.xml:", e);
+            }
+        }
 
         // ==========================================
 
