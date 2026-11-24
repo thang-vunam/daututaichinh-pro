@@ -5,6 +5,26 @@
       "source": "/blog/nang-hang-ftse-lo-trinh-1-5-ty-usd.html",
       "destination": "/blog/con-mua-tien-15-ty-usd-4-su-that-ve-lo-trinh-nang-hang-ftse-cua-35-co-phieu-viet-nam.html",
       "permanent": true
+    },
+    {
+      "source": "/bao-hiem",
+      "destination": "/baohiem",
+      "permanent": true
+    },
+    {
+      "source": "/bao-hiem/",
+      "destination": "/baohiem",
+      "permanent": true
+    },
+    {
+      "source": "/baohiem.html",
+      "destination": "/baohiem",
+      "permanent": true
+    },
+    {
+      "source": "/bao-hiem.html",
+      "destination": "/baohiem",
+      "permanent": true
     }
   ]
 }
