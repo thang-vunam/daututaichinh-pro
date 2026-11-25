@@ -66,39 +66,40 @@
 <body class="font-sans antialiased selection:bg-gold-500 selection:text-space-950">
 
     <!-- 1. HEADER & NAVIGATION (ĐỒNG BỘ DARK THEME) -->
-    <header class="sticky top-0 z-50 bg-[#070a11]/90 backdrop-blur-md border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <a href="/" class="flex items-center space-x-3.5 group">
+    <header class="sticky top-0 z-50 bg-[#070a11]/95 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            <a href="/" class="flex items-center space-x-3 group flex-shrink-0">
                 <img src="/logo.png" alt="Đầu tư & Tài chính chuyên sâu" class="w-10 h-10 rounded-full bg-white object-contain p-0.5 border border-white/20 shadow-md group-hover:scale-105 transition duration-200">
-                <div>
+                <div class="flex-shrink-0">
                     <div class="flex items-center space-x-2">
-                        <span class="text-base sm:text-lg font-bold text-white tracking-tight">MINH BẠCH BẢO HIỂM</span>
-                        <span class="text-[10px] font-semibold bg-gold-500/20 text-gold-400 border border-gold-500/30 px-1.5 py-0.5 rounded">Pro</span>
+                        <span class="text-base sm:text-lg font-bold text-white tracking-tight whitespace-nowrap">MINH BẠCH BẢO HIỂM</span>
+                        <span class="text-[10px] font-semibold bg-gold-500/20 text-gold-400 border border-gold-500/30 px-1.5 py-0.5 rounded whitespace-nowrap">Pro</span>
                     </div>
-                    <span class="text-xs text-slate-400 font-medium block">Hệ sinh thái daututaichinh.pro</span>
+                    <span class="text-xs text-slate-400 font-medium block whitespace-nowrap">Hệ sinh thái daututaichinh.pro</span>
                 </div>
             </a>
             
-            <!-- Desktop Nav -->
-            <nav class="hidden lg:flex items-center space-x-8 text-sm font-medium text-slate-300">
-                <a href="#thuc-trang" class="hover:text-gold-400 transition">Thực trạng</a>
-                <a href="#cong-cu" class="hover:text-gold-400 transition">Công cụ bóc tách</a>
-                <a href="#ra-soat" class="hover:text-gold-400 transition">Rà soát hợp đồng</a>
-                <a href="#dam-noi-that" class="hover:text-gold-400 transition">Dám nói thật</a>
-                <a href="#ve-toi" class="hover:text-gold-400 transition">Về tôi</a>
-                <a href="/" class="text-slate-400 hover:text-white transition flex items-center gap-1">
-                    <span>← Trang chủ</span>
+            <!-- Desktop Nav: whitespace-nowrap triệt để để không bao giờ bị rớt dòng -->
+            <nav class="hidden lg:flex items-center space-x-3.5 xl:space-x-6 text-[13px] xl:text-sm font-medium text-slate-300 flex-shrink-0">
+                <a href="#thuc-trang" class="whitespace-nowrap hover:text-gold-400 transition">Thực trạng</a>
+                <a href="#cong-cu" class="whitespace-nowrap hover:text-gold-400 transition">Bóc tách dòng tiền</a>
+                <a href="#mong-nha" class="whitespace-nowrap text-gold-400 hover:text-gold-300 font-semibold transition">Móng nhà &amp; Đầu tư</a>
+                <a href="#ra-soat" class="whitespace-nowrap hover:text-gold-400 transition">Rà soát hợp đồng</a>
+                <a href="#dam-noi-that" class="whitespace-nowrap hover:text-gold-400 transition">Dám nói thật</a>
+                <a href="#ve-toi" class="whitespace-nowrap hover:text-gold-400 transition">Về tôi</a>
+                <a href="/" class="whitespace-nowrap text-slate-400 hover:text-white transition flex items-center gap-1 border-l border-white/10 pl-3.5 xl:pl-5">
+                    <span>← Chứng khoán</span>
                 </a>
             </nav>
 
-            <div class="hidden sm:flex items-center space-x-3">
-                <a href="#ra-soat" class="inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-semibold text-space-950 bg-gold-400 hover:bg-gold-500 shadow-lg shadow-gold-500/20 transition">
+            <div class="hidden lg:flex items-center flex-shrink-0">
+                <a href="#ra-soat" class="whitespace-nowrap inline-flex items-center justify-center px-3.5 xl:px-4 py-2 rounded-lg text-xs xl:text-sm font-bold text-space-950 bg-gold-400 hover:bg-gold-500 shadow-lg shadow-gold-500/20 transition">
                     Đặt lịch trao đổi 1-1
                 </a>
             </div>
 
             <!-- Mobile Hamburger Button -->
-            <button id="mobileMenuBtn" type="button" aria-label="Mở menu" class="lg:hidden p-2 text-slate-400 hover:text-white focus:outline-none">
+            <button id="mobileMenuBtn" type="button" aria-label="Mở menu" class="lg:hidden p-2 text-slate-400 hover:text-white focus:outline-none flex-shrink-0">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path id="menuIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                 </svg>
@@ -109,10 +110,11 @@
         <div id="mobileMenu" class="hidden lg:hidden bg-space-900 border-b border-white/10 px-4 pt-2 pb-5 space-y-3 text-sm font-medium">
             <a href="#thuc-trang" class="mobile-link block py-2 text-slate-300 hover:text-gold-400">Thực trạng thị trường</a>
             <a href="#cong-cu" class="mobile-link block py-2 text-slate-300 hover:text-gold-400">Công cụ bóc tách dòng tiền</a>
+            <a href="#mong-nha" class="mobile-link block py-2 text-gold-400 font-semibold">Bảo hiểm làm Móng, Đầu tư xây Nhà</a>
             <a href="#ra-soat" class="mobile-link block py-2 text-slate-300 hover:text-gold-400">Rà soát hợp đồng cũ</a>
             <a href="#dam-noi-that" class="mobile-link block py-2 text-slate-300 hover:text-gold-400">Dám nói thật</a>
             <a href="#ve-toi" class="mobile-link block py-2 text-slate-300 hover:text-gold-400">Về tôi</a>
-            <a href="/" class="mobile-link block py-2 text-slate-400 hover:text-white">← Về trang chủ daututaichinh.pro</a>
+            <a href="/" class="mobile-link block py-2 text-slate-400 hover:text-white">← Về trang chứng khoán daututaichinh.pro</a>
             <a href="#ra-soat" class="mobile-link block text-center py-2.5 px-4 rounded-lg bg-gold-400 text-space-950 font-bold">Đặt lịch trao đổi 1-1</a>
         </div>
     </header>
@@ -260,6 +262,135 @@
         </div>
     </section>
 
+    
+
+<!-- 4.5. TRIẾT LÝ THÁP TÀI SẢN: MÓNG VỮNG - NHÀ CAO (BTID) -->
+    <section id="mong-nha" class="py-16 md:py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-white/10">
+        <div class="text-center mb-14">
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-gold-500/10 border border-gold-500/20 text-xs font-semibold text-gold-400 font-mono mb-3">
+                <span>⚡ TRIẾT LÝ THÁP TÀI SẢN • BTID (BUY TERM, INVEST THE DIFFERENCE)</span>
+            </div>
+            <h2 class="font-serif text-2xl md:text-4xl font-bold text-white mt-1">
+                Bảo hiểm làm Móng, Đầu tư xây Nhà
+            </h2>
+            <p class="text-slate-400 mt-3 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+                Đừng nhầm lẫn giữa <strong>"Bảo vệ rủi ro"</strong> và <strong>"Tích lũy sinh lời"</strong>. Không ai đổ một cái móng nhà chiếm tới 30-40% thu nhập rồi mong cái móng đó... đẻ ra tiền lời. Móng chỉ cần vững chãi, tiền còn lại phải dùng để xây nhà!
+            </p>
+        </div>
+
+        <!-- Hai kịch bản so sánh Side-by-side Dark Theme -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Cột 1: Kịch bản thị trường hay làm -->
+            <div class="bg-space-850 rounded-3xl p-7 sm:p-9 border border-red-500/20 relative flex flex-col justify-between hover:border-red-500/40 transition duration-300">
+                <div class="absolute top-5 right-5 text-[11px] font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/30 px-2.5 py-1 rounded-full">
+                    Cách thị trường hay tư vấn
+                </div>
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-5">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Kịch bản 1: "Ôm đồm" gom cả vào một gói</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 mb-6">
+                        Dồn toàn bộ ngân sách <strong class="text-slate-200">50 triệu/năm</strong> vào 1 hợp đồng bảo hiểm liên kết đầu tư (với kỳ vọng vừa được bảo vệ khủng, vừa có lãi suất cao sau này).
+                    </p>
+
+                    <ul class="space-y-4 text-xs sm:text-sm text-slate-300">
+                        <li class="flex items-start gap-3">
+                            <span class="text-red-400 font-bold text-base mt-0.5">✕</span>
+                            <div>
+                                <strong class="text-white block">Phí ban đầu bị "xẻ thịt" nặng nề:</strong>
+                                <span class="text-slate-400">Năm 1 bị trừ ~60% (mất đứt 30 triệu). Năm 2 trừ ~30% (mất 15 triệu). Hầu như không còn bao nhiêu tiền đi vào tài khoản sinh lời.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-red-400 font-bold text-base mt-0.5">✕</span>
+                            <div>
+                                <strong class="text-white block">Giam vốn và mất thanh khoản:</strong>
+                                <span class="text-slate-400">Nếu gia đình có việc đột xuất cần tiền ở năm 2 hoặc năm 3, rút ra sẽ mất gần như toàn bộ số vốn đã đóng.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-red-400 font-bold text-base mt-0.5">✕</span>
+                            <div>
+                                <strong class="text-white block">Lợi nhuận bị bào mòn bởi 2 tầng phí:</strong>
+                                <span class="text-slate-400">Hàng năm phải gánh thêm phí quản lý quỹ bảo hiểm (1.5% - 2%) cộng với chi phí rủi ro tăng dần theo độ tuổi mỗi năm.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/10 text-xs text-red-300/80 font-mono">
+                    👉 Kết quả: "Cái móng" quá nặng khiến bạn mệt mỏi duy trì phí, tiền đầu tư thì teo tóp.
+                </div>
+            </div>
+
+            <!-- Cột 2: Tư duy chuẩn tài chính: Móng vững - Nhà cao -->
+            <div class="bg-gradient-to-br from-space-850 via-space-850 to-space-800 rounded-3xl p-7 sm:p-9 border border-emerald-500/40 relative flex flex-col justify-between shadow-2xl shadow-emerald-500/5 hover:border-emerald-400 transition duration-300">
+                <div class="absolute top-5 right-5 text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+                    Tư duy tài chính chuẩn xác
+                </div>
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-5">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Kịch bản 2: Tách biệt Móng vững &amp; Nhà cao</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 mb-6">
+                        Cùng ngân sách <strong class="text-gold-400">50 triệu/năm</strong>, nhưng phân bổ thông minh: <strong class="text-white">15 triệu làm Móng</strong> và <strong class="text-white">35 triệu Xây Nhà</strong>.
+                    </p>
+
+                    <ul class="space-y-4 text-xs sm:text-sm text-slate-300">
+                        <li class="flex items-start gap-3">
+                            <span class="text-emerald-400 font-bold text-base mt-0.5">✓</span>
+                            <div>
+                                <strong class="text-white block">15 triệu/năm: Đổ cái Móng bảo vệ kiên cố</strong>
+                                <span class="text-slate-400">Thiết kế gói thuần bảo vệ: Mệnh giá nhân thọ 2 tỷ + Thẻ chăm sóc sức khỏe toàn cầu 1 tỷ/năm + 500 triệu bệnh hiểm nghèo. Gia đình được bảo bọc tối đa trước mọi rủi ro!</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-emerald-400 font-bold text-base mt-0.5">✓</span>
+                            <div>
+                                <strong class="text-white block">35 triệu/năm: Tự tích sản đầu tư (Xây nhà)</strong>
+                                <span class="text-slate-400">Toàn bộ 35 triệu này <strong>không bị khấu trừ 60% phí ban đầu</strong>! Bạn tự đem tích sản cổ phiếu VN30, chứng chỉ quỹ mở hoặc vàng. Tiền 100% nằm trong quyền kiểm soát của bạn.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-emerald-400 font-bold text-base mt-0.5">✓</span>
+                            <div>
+                                <strong class="text-white block">Thanh khoản linh hoạt &amp; Lãi kép thực thụ</strong>
+                                <span class="text-slate-400">Cần tiền bất kỳ lúc nào cũng có thể bán rút vốn mà không bị phạt. Sau 15 - 20 năm, khoản 35 triệu/năm tích sản đều đặn sẽ nở ra thành gia tài tiền tỷ nhờ lãi kép thị trường.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/10 text-xs text-emerald-300/90 font-mono">
+                    👉 Kết quả: Móng nhà siêu bền vững, còn ngôi nhà tài chính thì cao lớn, tự do!
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 Nguyên tắc vàng khi làm móng -->
+        <div class="mt-12 bg-space-850/60 border border-white/10 rounded-2xl p-6 sm:p-8">
+            <h4 class="text-base sm:text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <span class="text-gold-400 font-mono">📌</span> 3 Nguyên tắc vàng trước khi bạn đặt bút ký hợp đồng bảo hiểm:
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs sm:text-sm text-slate-300">
+                <div class="border-l-2 border-gold-400 pl-4 py-1">
+                    <strong class="text-white block mb-1">1. Tỷ trọng dưới 15% thu nhập</strong>
+                    <span class="text-slate-400 leading-relaxed">Đừng bao giờ để phí bảo hiểm vượt quá 15% tổng thu nhập hàng năm. Cái móng nhà không được phép đè sập tài chính gia đình.</span>
+                </div>
+                <div class="border-l-2 border-gold-400 pl-4 py-1">
+                    <strong class="text-white block mb-1">2. Ưu tiên người trụ cột trước</strong>
+                    <span class="text-slate-400 leading-relaxed">Mua bảo vệ cho người kiếm ra tiền chính trong gia đình trước, sau đó mới đến các thành viên phụ thuộc.</span>
+                </div>
+                <div class="border-l-2 border-gold-400 pl-4 py-1">
+                    <strong class="text-white block mb-1">3. Kê khai trung thực tuyệt đối</strong>
+                    <span class="text-slate-400 leading-relaxed">Dù tiền sử bệnh nhỏ nhất cũng phải khai báo rõ ràng. Đó là chìa khóa duy nhất để bảo đảm bạn được bồi thường khi hữu sự.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- 5. DỊCH VỤ RÀ SOÁT HỢP ĐỒNG CŨ -->
     <section id="ra-soat" class="py-16 md:py-24 max-w-5xl mx-auto px-4 sm:px-6">
         <div class="bg-gradient-to-br from-space-850 to-space-800 border border-white/10 rounded-3xl p-7 md:p-12 shadow-2xl relative overflow-hidden">
@@ -313,6 +444,8 @@
             </div>
         </div>
     </section>
+
+    
 
     <!-- 6. DÁM NÓI THẬT (GÓC NHÌN BẢO HIỂM) -->
     <section id="dam-noi-that" class="py-16 md:py-24 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -385,6 +518,8 @@
             </div>
         </div>
     </section>
+
+    
 
     <!-- 8. FOOTER -->
     <footer id="tu-van" class="bg-space-950 text-slate-400 py-12 text-sm border-t border-white/10">
