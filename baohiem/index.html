@@ -292,8 +292,8 @@
                                     Đã trừ 3 năm phí ban đầu, chi phí rủi ro (COI) tăng dần theo tuổi và phí quản lý quỹ (~1.5%/năm). Rút vốn trước hạn chịu phạt.
                                 </p>
                             </div>
-                            <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-slate-500 font-mono">
-                                Lợi suất thực sau trừ phí: ~6.0%/năm
+                            <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-slate-400 font-mono">
+                                Lợi suất thực sau trừ phí: ~5.0%/năm (đã trừ COI tăng theo tuổi &amp; phí quỹ)
                             </div>
                         </div>
 
@@ -864,8 +864,8 @@
         const valDelta = document.getElementById('valDelta');
 
         function calcLongTermProjections(annualPremium, years) {
-            // Scenario A: ILP net rate ~6.0% after ongoing fees
-            const rA = 0.060;
+            // Scenario A: ILP net rate ~5.0% after ongoing fees & COI
+            const rA = 0.050;
             let fvA = 0;
             for (let y = 1; y <= years; y++) {
                 let netInv = 0;
