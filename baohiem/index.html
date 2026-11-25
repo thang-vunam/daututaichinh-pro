@@ -833,9 +833,20 @@
             cumYear1.textContent = `~ ${formatVND(s1)}`;
             cumYear2.textContent = `~ ${formatVND(s1 + s2)}`;
             cumYear3.textContent = `~ ${formatVND(s1 + s2 + s3)}`;
+
+            if (typeof updateSimulator === 'function') {
+                updateSimulator();
+            }
         }
 
-        premiumRange.addEventListener('input', updateCalculator);
+        premiumRange.addEventListener('input', () => {
+            updateCalculator();
+            if (typeof updateSimulator === 'function') updateSimulator();
+        });
+        premiumRange.addEventListener('change', () => {
+            updateCalculator();
+            if (typeof updateSimulator === 'function') updateSimulator();
+        });
 
         // 3. Form Submit Feedback Simulation
         const auditForm = document.getElementById('auditForm');
@@ -895,12 +906,7 @@
             });
         });
 
-        // Hook simulator into existing updateCalculator
-        const originalUpdateCalculator = updateCalculator;
-        updateCalculator = function() {
-            originalUpdateCalculator();
-            updateSimulator();
-        };
+        // Initial render for simulator
         updateSimulator();
 
         // 5. Checklist Tự Bắt Bệnh Logic
