@@ -258,6 +258,73 @@
                 <div class="mt-5 p-4 rounded-xl bg-gold-500/10 border border-gold-500/30 text-xs text-gold-200/90 leading-relaxed font-sans">
                     <strong>⚠️ Lời khuyên thẳng thắn từ người trong nghề:</strong> Số tiền thực tế trong tài khoản sẽ còn trừ thêm <em>Phí rủi ro bảo hiểm (COI)</em> và <em>Phí quản lý hợp đồng hàng tháng</em>. Do đó, <strong>hủy hợp đồng ở năm 1 hoặc năm 2 bạn sẽ chịu tổn thất tài chính rất nặng nề</strong>. Đừng bao giờ tham gia bảo hiểm nếu bạn chỉ xem đây là kênh gửi tiền sinh lời ngắn hạn dưới 5 năm!
                 </div>
+
+                <!-- DỰ PHÓNG SO SÁNH DÀI HẠN: MÓNG VỮNG + TỰ ĐẦU TƯ VS GÓI ÔM ĐỒM -->
+                <div class="mt-8 pt-8 border-t border-white/10">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6">
+                        <div>
+                            <span class="text-xs uppercase tracking-wider text-gold-400 font-mono font-semibold">Dự phóng dòng tiền dài hạn</span>
+                            <h3 class="text-lg sm:text-xl font-bold text-white mt-1">So sánh tài sản tích lũy sau thời gian đóng phí</h3>
+                        </div>
+                        <!-- Bộ chọn mốc năm -->
+                        <div class="inline-flex rounded-xl bg-space-800 p-1 border border-white/10" id="horizonSelector">
+                            <button type="button" data-years="10" class="horizon-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">10 Năm</button>
+                            <button type="button" data-years="15" class="horizon-btn active px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gold-400 text-space-950 shadow transition">15 Năm</button>
+                            <button type="button" data-years="20" class="horizon-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition">20 Năm</button>
+                        </div>
+                    </div>
+
+                    <!-- 2 Thẻ so sánh Side-by-side -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Thẻ A: Gói bảo hiểm ôm đồm -->
+                        <div class="bg-space-900/80 rounded-2xl p-5 sm:p-6 border border-white/10 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Cách thông thường</span>
+                                    <span class="text-[10px] font-mono bg-white/5 text-slate-400 px-2 py-0.5 rounded border border-white/10">100% Bảo hiểm</span>
+                                </div>
+                                <div class="text-sm font-semibold text-slate-300 mb-1">Gói liên kết đầu tư ôm đồm</div>
+                                <div class="font-mono text-2xl font-bold text-slate-200" id="valScenarioA">~ 993.000.000 đ</div>
+                                <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                                    Đã trừ 3 năm phí ban đầu, chi phí rủi ro (COI) tăng dần theo tuổi và phí quản lý quỹ (~1.5%/năm). Rút vốn trước hạn chịu phạt.
+                                </p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-slate-500 font-mono">
+                                Lợi suất thực sau trừ phí: ~6.0%/năm
+                            </div>
+                        </div>
+
+                        <!-- Thẻ B: Móng vững + Tự đầu tư VN30/Quỹ mở -->
+                        <div class="bg-gradient-to-br from-emerald-500/10 via-space-850 to-space-850 rounded-2xl p-5 sm:p-6 border border-emerald-500/30 flex flex-col justify-between relative shadow-lg shadow-emerald-500/5">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Chiến lược Móng &amp; Nhà</span>
+                                    <span class="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">30% Móng • 70% Tự đầu tư</span>
+                                </div>
+                                <div class="text-sm font-semibold text-white mb-1">Móng bảo vệ 2 tỷ + Tự tích sản VN30</div>
+                                <div class="font-mono text-2xl font-bold text-emerald-400" id="valScenarioB">~ 1.398.000.000 đ</div>
+                                <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                                    Phần 70% tự đầu tư <strong>không bị trừ phí ban đầu</strong>, hưởng trọn lãi kép thị trường (bình quân ~11.5%/năm) và thanh khoản tự do 100%.
+                                </p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-white/5 text-[11px] text-emerald-400/80 font-mono">
+                                Lợi suất thị trường cổ phiếu/quỹ mở: ~11.5%/năm
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Banner chênh lệch tài sản -->
+                    <div class="mt-5 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-gold-500/15 via-gold-500/10 to-transparent border border-gold-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">💰</span>
+                            <div>
+                                <span class="text-xs text-slate-300 font-medium">Tài sản dôi dư thêm nhờ tự đầu tư độc lập:</span>
+                                <div class="font-mono text-xl sm:text-2xl font-bold text-gold-400" id="valDelta">+405.000.000 đ</div>
+                            </div>
+                        </div>
+                        <span class="text-xs text-slate-400 italic">Và gia đình bạn vẫn duy trì trọn vẹn quyền lợi bảo vệ 2 tỷ đồng!</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -387,6 +454,143 @@
                     <strong class="text-white block mb-1">3. Kê khai trung thực tuyệt đối</strong>
                     <span class="text-slate-400 leading-relaxed">Dù tiền sử bệnh nhỏ nhất cũng phải khai báo rõ ràng. Đó là chìa khóa duy nhất để bảo đảm bạn được bồi thường khi hữu sự.</span>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4.8. CHECKLIST TỰ BẮT BỆNH HỢP ĐỒNG BẢO HIỂM TẠI NHÀ -->
+    <section id="bat-benh" class="py-16 md:py-24 max-w-5xl mx-auto px-4 sm:px-6 border-b border-white/10">
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-xs font-semibold text-red-400 font-mono mb-3">
+                <span>🔍 TỰ KIỂM TRA TẠI NHÀ • MIỄN PHÍ & BẢO MẬT</span>
+            </div>
+            <h2 class="font-serif text-2xl md:text-4xl font-bold text-white mt-1">
+                5 Điểm Nghi Vấn Cần Kiểm Tra Ngay Trên Hợp Đồng
+            </h2>
+            <p class="text-slate-400 mt-3 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+                Mở hợp đồng ra hoặc nhớ lại thời điểm tư vấn, click chọn tình trạng thực tế của bạn để hệ thống tự động chấm điểm nguy cơ rủi ro:
+            </p>
+        </div>
+
+        <div class="space-y-4" id="quizContainer">
+            <!-- Câu 1 -->
+            <div class="quiz-card bg-space-850 border border-white/10 rounded-2xl p-5 sm:p-6 transition hover:border-white/20" data-qid="1">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-mono font-semibold text-gold-400 uppercase">Câu hỏi 01 / 05</span>
+                        <h4 class="text-base sm:text-lg font-bold text-white mt-1">Lúc làm hồ sơ, ai là người trả lời các câu hỏi về tiền sử bệnh?</h4>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <button type="button" data-score="0" class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Tôi tự tay kê khai chi tiết mọi bệnh sử, thuốc men</span>
+                        <span class="opt-check hidden text-emerald-400 font-bold">✓</span>
+                    </button>
+                    <button type="button" data-score="25" data-warn="Nguy cơ cao bị từ chối chi trả do vi phạm nghĩa vụ kê khai trung thực!" class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Đại lý tự tick 'Không' vào tất cả các ô / Không nhớ rõ</span>
+                        <span class="opt-check hidden text-red-400 font-bold">⚠️</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Câu 2 -->
+            <div class="quiz-card bg-space-850 border border-white/10 rounded-2xl p-5 sm:p-6 transition hover:border-white/20" data-qid="2">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-mono font-semibold text-gold-400 uppercase">Câu hỏi 02 / 05</span>
+                        <h4 class="text-base sm:text-lg font-bold text-white mt-1">Thẻ chăm sóc sức khỏe của bạn thuộc loại nào?</h4>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <button type="button" data-score="0" class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Gắn kèm hợp đồng nhân thọ (Cam kết gia hạn định kỳ)</span>
+                        <span class="opt-check hidden text-emerald-400 font-bold">✓</span>
+                    </button>
+                    <button type="button" data-score="20" data-warn="Thẻ rời có thể bị từ chối tái tục hoặc tăng phí nếu năm trước bồi thường lớn." class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Thẻ rời phi nhân thọ / Xét duyệt lại từng năm</span>
+                        <span class="opt-check hidden text-amber-400 font-bold">⚠️</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Câu 3 -->
+            <div class="quiz-card bg-space-850 border border-white/10 rounded-2xl p-5 sm:p-6 transition hover:border-white/20" data-qid="3">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-mono font-semibold text-gold-400 uppercase">Câu hỏi 03 / 05</span>
+                        <h4 class="text-base sm:text-lg font-bold text-white mt-1">Người tư vấn ký tên trên hợp đồng hiện còn làm việc không?</h4>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <button type="button" data-score="0" class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Vẫn đang làm việc, chăm sóc và giải đáp thường xuyên</span>
+                        <span class="opt-check hidden text-emerald-400 font-bold">✓</span>
+                    </button>
+                    <button type="button" data-score="20" data-warn="Hợp đồng mồ côi: Rất lúng túng khi làm thủ tục bồi thường hoặc bảo lãnh viện phí." class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Đã nghỉ việc / Không còn liên lạc / Không quen biết</span>
+                        <span class="opt-check hidden text-red-400 font-bold">⚠️</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Câu 4 -->
+            <div class="quiz-card bg-space-850 border border-white/10 rounded-2xl p-5 sm:p-6 transition hover:border-white/20" data-qid="4">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-mono font-semibold text-gold-400 uppercase">Câu hỏi 04 / 05</span>
+                        <h4 class="text-base sm:text-lg font-bold text-white mt-1">Tổng phí đóng hàng năm chiếm bao nhiêu % thu nhập của bạn?</h4>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <button type="button" data-score="0" class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Dưới 15% tổng thu nhập hàng năm (Tài chính nhẹ nhàng)</span>
+                        <span class="opt-check hidden text-emerald-400 font-bold">✓</span>
+                    </button>
+                    <button type="button" data-score="20" data-warn="Móng nhà quá nặng: Dễ bị đứt gãy tài chính và buộc phải bỏ hợp đồng mất vốn." class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Trên 20% thu nhập (Cảm thấy áp lực mỗi khi đến kỳ đóng phí)</span>
+                        <span class="opt-check hidden text-amber-400 font-bold">⚠️</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Câu 5 -->
+            <div class="quiz-card bg-space-850 border border-white/10 rounded-2xl p-5 sm:p-6 transition hover:border-white/20" data-qid="5">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-mono font-semibold text-gold-400 uppercase">Câu hỏi 05 / 05</span>
+                        <h4 class="text-base sm:text-lg font-bold text-white mt-1">Kỳ vọng của bạn về dòng tiền nhận lại từ hợp đồng này là gì?</h4>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                    <button type="button" data-score="0" class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Mua sự an tâm dài hạn, không kỳ vọng rút lời ngắn hạn</span>
+                        <span class="opt-check hidden text-emerald-400 font-bold">✓</span>
+                    </button>
+                    <button type="button" data-score="25" data-warn="Bảo hiểm không phải gửi tiết kiệm! 3 năm đầu bị trừ phí lớn, rút sớm sẽ lỗ nặng." class="quiz-opt w-full text-left p-3.5 rounded-xl border border-white/10 bg-space-900/60 hover:bg-space-800 text-xs sm:text-sm text-slate-300 transition flex items-center justify-between">
+                        <span>Tưởng là gửi tiết kiệm lãi cao, định rút tiền sau 3-5 năm</span>
+                        <span class="opt-check hidden text-red-400 font-bold">⚠️</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng Kết quả Chẩn đoán Rủi ro -->
+        <div id="quizResultBox" class="mt-8 bg-gradient-to-br from-space-850 to-space-800 border border-white/15 rounded-3xl p-6 sm:p-8 text-center transition-all duration-300">
+            <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Kết quả chẩn đoán sơ bộ</span>
+            <div class="mt-2 text-2xl sm:text-3xl font-bold font-serif text-white" id="quizStatusText">
+                Hãy click chọn 5 câu hỏi phía trên để xem đánh giá
+            </div>
+            <div class="max-w-md mx-auto my-4 bg-space-950 h-3 rounded-full overflow-hidden border border-white/10">
+                <div id="quizProgressBar" class="h-full bg-slate-600 transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto" id="quizAdviceText">
+                Mỗi lựa chọn sẽ giúp bạn nhìn nhận rõ ràng mức độ an toàn của hợp đồng bảo hiểm gia đình đang nắm giữ.
+            </p>
+            <div class="mt-6">
+                <a href="#ra-soat" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gold-400 hover:bg-gold-500 text-space-950 font-bold text-sm shadow-lg shadow-gold-500/20 transition duration-200">
+                    <span>Yêu cầu Cố vấn rà soát chi tiết 1 trang A4 miễn phí</span>
+                    <span>↓</span>
+                </a>
             </div>
         </div>
     </section>
@@ -636,6 +840,133 @@
         // 3. Form Submit Feedback Simulation
         const auditForm = document.getElementById('auditForm');
         const formSuccess = document.getElementById('formSuccess');
+
+        
+        // 4. Simulator Horizon Selector & Long-term Projections
+        let currentHorizon = 15;
+        const horizonButtons = document.querySelectorAll('.horizon-btn');
+        const valScenarioA = document.getElementById('valScenarioA');
+        const valScenarioB = document.getElementById('valScenarioB');
+        const valDelta = document.getElementById('valDelta');
+
+        function calcLongTermProjections(annualPremium, years) {
+            // Scenario A: ILP net rate ~6.0% after ongoing fees
+            const rA = 0.060;
+            let fvA = 0;
+            for (let y = 1; y <= years; y++) {
+                let netInv = 0;
+                if (y === 1) netInv = annualPremium * 0.35;
+                else if (y === 2) netInv = annualPremium * 0.65;
+                else if (y === 3) netInv = annualPremium * 0.85;
+                else netInv = annualPremium * 0.88;
+                fvA = (fvA + netInv) * (1 + rA);
+            }
+
+            // Scenario B: BTID (30% protection, 70% VN30/Funds at 11.5%)
+            const rB = 0.115;
+            const investB = annualPremium * 0.70;
+            let fvB = 0;
+            for (let y = 1; y <= years; y++) {
+                fvB = (fvB + investB) * (1 + rB);
+            }
+
+            const delta = fvB - fvA;
+            return { fvA, fvB, delta };
+        }
+
+        function updateSimulator() {
+            const val = parseInt(premiumRange.value, 10);
+            const { fvA, fvB, delta } = calcLongTermProjections(val, currentHorizon);
+            if (valScenarioA) valScenarioA.textContent = `~ ${formatVND(fvA)}`;
+            if (valScenarioB) valScenarioB.textContent = `~ ${formatVND(fvB)}`;
+            if (valDelta) valDelta.textContent = `+${formatVND(delta)}`;
+        }
+
+        horizonButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                horizonButtons.forEach(b => {
+                    b.classList.remove('active', 'bg-gold-400', 'text-space-950', 'shadow');
+                    b.classList.add('text-slate-300');
+                });
+                btn.classList.add('active', 'bg-gold-400', 'text-space-950', 'shadow');
+                btn.classList.remove('text-slate-300');
+                currentHorizon = parseInt(btn.getAttribute('data-years'), 10);
+                updateSimulator();
+            });
+        });
+
+        // Hook simulator into existing updateCalculator
+        const originalUpdateCalculator = updateCalculator;
+        updateCalculator = function() {
+            originalUpdateCalculator();
+            updateSimulator();
+        };
+        updateSimulator();
+
+        // 5. Checklist Tự Bắt Bệnh Logic
+        const quizAnswers = {};
+        const quizStatusText = document.getElementById('quizStatusText');
+        const quizProgressBar = document.getElementById('quizProgressBar');
+        const quizAdviceText = document.getElementById('quizAdviceText');
+
+        document.querySelectorAll('.quiz-card').forEach(card => {
+            const qid = card.getAttribute('data-qid');
+            const opts = card.querySelectorAll('.quiz-opt');
+
+            opts.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    opts.forEach(o => {
+                        o.classList.remove('border-gold-400', 'bg-space-800', 'text-white');
+                        o.classList.add('border-white/10', 'bg-space-900/60', 'text-slate-300');
+                        const check = o.querySelector('.opt-check');
+                        if (check) check.classList.add('hidden');
+                    });
+
+                    opt.classList.remove('border-white/10', 'bg-space-900/60', 'text-slate-300');
+                    opt.classList.add('border-gold-400', 'bg-space-800', 'text-white');
+                    const activeCheck = opt.querySelector('.opt-check');
+                    if (activeCheck) activeCheck.classList.remove('hidden');
+
+                    const score = parseInt(opt.getAttribute('data-score'), 10);
+                    const warn = opt.getAttribute('data-warn') || '';
+                    quizAnswers[qid] = { score, warn };
+
+                    updateQuizResult();
+                });
+            });
+        });
+
+        function updateQuizResult() {
+            const answeredCount = Object.keys(quizAnswers).length;
+            if (answeredCount === 0) return;
+
+            let totalRisk = 0;
+            const warnings = [];
+            for (const qid in quizAnswers) {
+                totalRisk += quizAnswers[qid].score;
+                if (quizAnswers[qid].warn) {
+                    warnings.push(quizAnswers[qid].warn);
+                }
+            }
+
+            // Max possible score is 110, normalize to 100%
+            const pct = Math.min(100, Math.round((totalRisk / 90) * 100));
+            quizProgressBar.style.width = `${pct}%`;
+
+            if (pct === 0 && answeredCount === 5) {
+                quizStatusText.innerHTML = '<span class="text-emerald-400">✅ HỢP ĐỒNG RẤT AN TOÀN (0% Rủi ro)</span>';
+                quizProgressBar.className = 'h-full bg-emerald-400 transition-all duration-500';
+                quizAdviceText.textContent = 'Chúc mừng bạn! Hợp đồng của bạn đã được tư vấn rất chuẩn mực và trung thực. Hãy tiếp tục duy trì!';
+            } else if (pct <= 40) {
+                quizStatusText.innerHTML = `<span class="text-amber-400">⚠️ CẢNH BÁO MỨC TRUNG BÌNH (${pct}% Rủi ro)</span>`;
+                quizProgressBar.className = 'h-full bg-amber-400 transition-all duration-500';
+                quizAdviceText.innerHTML = `Hợp đồng tiềm ẩn <strong>${warnings.length} điểm nghi vấn</strong> có thể gây bất lợi cho bạn khi phát sinh sự kiện bảo hiểm. Nên rà soát lại sớm.`;
+            } else {
+                quizStatusText.innerHTML = `<span class="text-red-400">🚨 CẢNH BÁO NGUY CƠ CAO (${pct}% Rủi ro)</span>`;
+                quizProgressBar.className = 'h-full bg-red-500 transition-all duration-500';
+                quizAdviceText.innerHTML = `<strong>Rất đáng báo động:</strong> Hợp đồng có ${warnings.length} rủi ro lớn (khai báo bệnh sử, áp lực phí hoặc hợp đồng mồ côi). Khả năng cao bạn sẽ gặp khó khăn khi yêu cầu bồi thường!`;
+            }
+        }
 
         auditForm.addEventListener('submit', function(e) {
             e.preventDefault();
