@@ -203,10 +203,13 @@
             </div>
 
             <div class="bg-space-850 border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl">
-                <!-- Slider nhập phí -->
-                <div class="mb-8">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-3 gap-1">
-                        <label for="premiumRange" class="text-sm font-medium text-slate-300">Mức phí đóng sản phẩm chính mỗi năm:</label>
+                <!-- Slider nhập phí (Cố định Sticky khi cuộn để dễ dàng quan sát Bảng 3 năm và Dự phóng) -->
+                <div class="sticky top-20 z-30 bg-space-850/95 backdrop-blur-md py-4 px-4 sm:px-6 rounded-2xl border border-gold-500/20 shadow-xl mb-8 -mx-2 sm:-mx-4 transition-all">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-2 gap-1">
+                        <label for="premiumRange" class="text-sm font-medium text-slate-200 flex items-center gap-2">
+                            <span>Mức phí đóng sản phẩm chính mỗi năm:</span>
+                            <span class="text-[10px] font-mono text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded border border-gold-500/20 hidden sm:inline-block">Kéo để xem tác động</span>
+                        </label>
                         <span id="premiumDisplay" class="font-mono text-2xl font-bold text-gold-400">20.000.000 đ</span>
                     </div>
                     <input type="range" id="premiumRange" min="10000000" max="100000000" step="5000000" value="20000000" class="w-full h-2.5 bg-space-700 rounded-lg appearance-none cursor-pointer accent-gold-400">
